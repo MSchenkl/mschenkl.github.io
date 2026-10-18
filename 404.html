@@ -20,7 +20,8 @@
 <body>
   <header class="hero">
     <div class="hero-media" aria-hidden="true">
-      <video muted loop playsinline autoplay preload="auto" poster="/assets/poster-16x9.jpg"></video>
+      <canvas></canvas>
+      <video muted loop playsinline autoplay preload="none" poster="/assets/poster-16x9.jpg"></video>
     </div>
     <div class="spot"></div>
     <div class="hero-inner">
@@ -56,6 +57,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <script>document.getElementById("path").textContent = location.pathname;</script>
+  <script src="/assets/cloud.js"></script>
   <script src="/assets/site.js"></script>
 </body>
 </html>

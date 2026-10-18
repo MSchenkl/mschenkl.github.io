@@ -1,0 +1,443 @@
+// Partikelwolke für den Hero: zehntausende Punkte wechseln zwischen Kugel,
+// freier Strömung und dem Monogramm "MS". Reines WebGL2, keine Bibliothek.
+// render(t) hängt nur von t ab (Schleife LOOP Sekunden) – damit läuft dieselbe
+// Datei live im Browser und deterministisch in HyperFrames.
+(function () {
+  const LOOP = 22.5;
+  const LINES = 22;          // Anzahl Stromlinien im Kugelinneren
+  const LINE_SAMPLES = 256;  // Stützpunkte je Linie
+  const WARM_EDGE = 0.4;     // Tiefe im Buchstaben (0 Rand .. 1 Kern), ab der es gelb-orange wird
+  const MS_DEPTH = 0.22;     // halbe Dicke der MS-Platte (blau/türkise Wände)
+  const MS_CORE_DEPTH = 0.15; // halbe Dicke des warmen Kerns – immer innerhalb der Wände
+
+  const VERT = `#version 300 es
+  precision highp float;
+  in vec4 aSphere;           // Hülle: xyz Position, w=0 | Band: xyz Grundnormale der Linie, w=1 (Band) / 2 (Dunst)
+  in vec4 aRib;              // Band: Linienindex, Startposition u0, Lage quer im Band (-1..1), Streuung
+  uniform highp sampler2D uLines; // Stromlinien, je Zeile eine Linie
+  in vec4 aMS;              // xyz = Position, w = Tiefe im Buchstaben (0 Rand .. 1 Kern)
+  in vec4 aSeed;
+  uniform float uT;          // Sekunden 0..LOOP
+  uniform vec2 uCenter;      // Mittelpunkt in NDC
+  uniform float uScale;      // Radius der Kugel in NDC-Höhe
+  uniform float uAspect;     // Breite / Höhe
+  uniform vec2 uTilt;        // Neigung durch den Zeiger
+  uniform vec3 uPointer;     // xy in NDC, z = Stärke
+  uniform float uSize;
+  out vec3 vColor;
+  out float vAlpha;
+
+  const float LOOP = ${LOOP.toFixed(1)};
+  const int LINE_SAMPLES = ${LINE_SAMPLES};
+  const float WARM_EDGE = ${WARM_EDGE.toFixed(2)};
+  const float MS_DEPTH = ${MS_DEPTH.toFixed(3)};
+  const float TAU = 6.2831853;
+
+  // Simplex-Noise 3D (Ashima Arts / Stefan Gustavson, MIT)
+  vec3 mod289(vec3 x){return x-floor(x*(1./289.))*289.;}
+  vec4 mod289(vec4 x){return x-floor(x*(1./289.))*289.;}
+  vec4 permute(vec4 x){return mod289(((x*34.)+1.)*x);}
+  vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-.85373472095314*r;}
+  float snoise(vec3 v){
+    const vec2 C=vec2(1./6.,1./3.);const vec4 D=vec4(0.,.5,1.,2.);
+    vec3 i=floor(v+dot(v,C.yyy));vec3 x0=v-i+dot(i,C.xxx);
+    vec3 g=step(x0.yzx,x0.xyz);vec3 l=1.-g;vec3 i1=min(g.xyz,l.zxy);vec3 i2=max(g.xyz,l.zxy);
+    vec3 x1=x0-i1+C.xxx;vec3 x2=x0-i2+C.yyy;vec3 x3=x0-D.yyy;
+    i=mod289(i);
+    vec4 p=permute(permute(permute(i.z+vec4(0.,i1.z,i2.z,1.))+i.y+vec4(0.,i1.y,i2.y,1.))+i.x+vec4(0.,i1.x,i2.x,1.));
+    float n_=.142857142857;vec3 ns=n_*D.wyz-D.xzx;
+    vec4 j=p-49.*floor(p*ns.z*ns.z);vec4 x_=floor(j*ns.z);vec4 y_=floor(j-7.*x_);
+    vec4 x=x_*ns.x+ns.yyyy;vec4 y=y_*ns.x+ns.yyyy;vec4 h=1.-abs(x)-abs(y);
+    vec4 b0=vec4(x.xy,y.xy);vec4 b1=vec4(x.zw,y.zw);
+    vec4 s0=floor(b0)*2.+1.;vec4 s1=floor(b1)*2.+1.;vec4 sh=-step(h,vec4(0.));
+    vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;
+    vec3 p0=vec3(a0.xy,h.x);vec3 p1=vec3(a0.zw,h.y);vec3 p2=vec3(a1.xy,h.z);vec3 p3=vec3(a1.zw,h.w);
+    vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
+    p0*=norm.x;p1*=norm.y;p2*=norm.z;p3*=norm.w;
+    vec4 m=max(.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.);m=m*m;
+    return 42.*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
+  }
+
+  mat3 rotY(float a){float c=cos(a),s=sin(a);return mat3(c,0.,-s,0.,1.,0.,s,0.,c);}
+  mat3 rotX(float a){float c=cos(a),s=sin(a);return mat3(1.,0.,0.,0.,c,s,0.,-s,c);}
+  float ease(float x){x=clamp(x,0.,1.);return x*x*x*(x*(x*6.-15.)+10.);}
+
+  void main(){
+    float ph = TAU * uT / LOOP;
+    // Zeitpunkt als Kreis im Rauschraum -> nahtlose Schleife
+    vec3 loopOff = vec3(cos(ph), sin(ph), 0.) * 0.9;
+
+    // gestaffelter Zustand pro Punkt
+    float tt = mod(uT - aSeed.w * 0.9 + LOOP, LOOP);
+    float wS = 0., wF = 0., wM = 0.;
+    // Kugel und MS stehen jeweils 7,5 s
+    if (tt < 7.5)       { wS = 1.; }
+    else if (tt < 9.0)  { float e = ease((tt-7.5)/1.5);  wS = 1.-e; wF = e; }
+    else if (tt < 11.0) { float e = ease((tt-9.0)/2.0);  wF = 1.-e; wM = e; }
+    else if (tt < 18.5) { wM = 1.; }
+    else if (tt < 20.0) { float e = ease((tt-18.5)/1.5); wM = 1.-e; wF = e; }
+    else                { float e = ease((tt-20.0)/2.5); wF = 1.-e; wS = e; }
+
+    // Kugel: Hülle aus zufälligen Punkten, innen warme Bänder entlang von Stromlinien
+    vec3 sphere;
+    float ribFade = 1.;
+    float u = 0.;
+    if (aSphere.w < 0.5) {
+      sphere = aSphere.xyz * (1. + 0.012 * snoise(aSphere.xyz * 2.2 + loopOff));
+    } else {
+      u = fract(aRib.y + 2. * uT / LOOP);            // zwei Runden pro Schleife -> nahtlos
+      float fi = u * float(LINE_SAMPLES - 1);
+      int i0 = int(floor(fi));
+      int row = int(aRib.x);
+      vec3 a = texelFetch(uLines, ivec2(i0, row), 0).xyz;
+      vec3 b = texelFetch(uLines, ivec2(min(i0 + 1, LINE_SAMPLES - 1), row), 0).xyz;
+      // Band dreht sich um die Linie (Schleier), Breite schwillt an und ab
+      vec3 tg = normalize(b - a + 1e-5);
+      vec3 n0 = normalize(aSphere.xyz - tg * dot(aSphere.xyz, tg));
+      vec3 n1 = cross(tg, n0);
+      float tw = u * TAU * 1.2 + aRib.x + ph * 2.;  // Band dreht sich laufend
+      vec3 dir = cos(tw) * n0 + sin(tw) * n1;
+      float width = 0.025 + 0.16 * pow(0.5 + 0.5 * sin(u * TAU * 1.3 + aRib.x * 1.7 + ph * 3.), 2.);
+      vec3 jit = (aSeed.xyz * 2. - 1.) * aRib.w;
+      vec3 c = mix(a, b, fract(fi));
+      // die Linien selbst wogen langsam im Rauschfeld
+      vec3 wq = c * 1.6 + loopOff * 1.4;
+      vec3 wave = vec3(snoise(wq), snoise(wq + 11.3), snoise(wq + 27.1)) * 0.09;
+      sphere = c + wave + dir * aRib.z * width + jit;
+      if (length(sphere) > 0.97) sphere *= 0.97 / length(sphere);
+      ribFade = smoothstep(0., 0.07, u) * smoothstep(1., 0.93, u);
+    }
+
+    // freie Strömung: Startpunkt in einer weiten Wolke + Rauschfeld
+    vec3 base = (aSeed.xyz * 2. - 1.) * vec3(1.35, 0.95, 0.95);
+    // verwirbeltes Feld in zwei Stufen -> Schlieren und Falten statt Staub
+    vec3 q = base * 0.6 + loopOff;
+    vec3 w1 = vec3(snoise(q), snoise(q + 17.3), snoise(q + 41.7));
+    vec3 q2 = q * 1.9 + w1 * 0.8;
+    vec3 w2 = vec3(snoise(q2 + 5.1), snoise(q2 + 23.9), snoise(q2 + 61.2));
+    vec3 flow = base * 0.75 + 0.7 * w1 + 0.32 * w2;
+
+    // Monogramm mit feinem Flimmern
+    // Außen (blau/türkis) bleibt ruhig, nur der warme Kern wabert –
+    // seitlich nur so weit, dass er nicht in den äußeren Bereich gerät, dafür kräftig in der Tiefe
+    vec3 ms = aMS.xyz;
+    vec3 loopFast = vec3(cos(ph * 3.), sin(ph * 3.), 0.) * 0.9;
+    vec3 mq = aMS.xyz * 2.4 + loopFast;
+    float core = smoothstep(WARM_EDGE + 0.08, WARM_EDGE + 0.3, aMS.w);
+    ms += vec3(snoise(mq) * 0.018, snoise(mq + 13.7) * 0.018, snoise(mq + 29.3) * 0.07) * core;
+    // nie vor oder hinter die blau/türkisen Wände
+    ms.z = clamp(ms.z, -MS_DEPTH * 0.88, MS_DEPTH * 0.88);
+
+    mat3 spin = rotY(ph) * rotX(0.35);
+    // MS schwenkt deutlich, damit die räumliche Punktwolke sichtbar wird
+    mat3 msRot = rotX(0.16 * sin(ph)) * rotY(0.62 * sin(ph * 2.));
+    mat3 tilt = rotX(uTilt.y) * rotY(uTilt.x);
+    vec3 p = tilt * (spin * (sphere * wS + flow * wF) + msRot * ms * wM);
+
+    float persp = 3.2 / (3.2 - p.z);
+    vec2 clip = uCenter + vec2(p.x / uAspect, p.y) * uScale * persp;
+
+    // Punkte weichen dem Zeiger aus
+    vec2 d = (clip - uPointer.xy) * vec2(uAspect, 1.);
+    float dl = length(d);
+    clip += (d / max(dl, 1e-4)) / vec2(uAspect, 1.) * 0.07 * uPointer.z * exp(-dl * dl / 0.02);
+
+    gl_Position = vec4(clip, 0., 1.);
+
+    // Farbe: Blau/Türkis, warme Strömungsbänder in Gelb-Orange
+    vec3 blue = vec3(0.302, 0.639, 1.0);
+    vec3 teal = vec3(0.2, 0.878, 0.753);
+    vec3 amber = vec3(1.0, 0.706, 0.329);
+    // Kugel: Hülle hell-türkis, Bänder je Linie in Gelb, Orange oder Koralle
+    vec3 cS;
+    if (aSphere.w < 0.5) {
+      cS = mix(vec3(0.5, 0.88, 0.92), mix(teal, blue, 0.35), aSeed.x);
+    } else {
+      float hue = fract(aRib.x * 0.618034);
+      vec3 yellow = vec3(1.0, 0.88, 0.58);
+      vec3 coral = vec3(1.0, 0.42, 0.3);
+      cS = hue < 0.5 ? mix(yellow, amber, hue * 2.) : mix(amber, coral, hue * 2. - 1.);
+    }
+
+    // Strömung: lebendiger Mix
+    vec3 cpF = base * 0.6;
+    float cn = snoise(cpF * 1.1 + loopOff * 0.6);
+    float ridge = 1. - abs(snoise(cpF * 1.3 - loopOff * 0.7 + 3.0));
+    float zone = smoothstep(-0.35, 0.45, snoise(cpF * 0.55 + loopOff * 0.5 + 7.0));
+    vec3 cF = mix(mix(blue, teal, cn * 0.5 + 0.5), amber, clamp(max(smoothstep(0.8, 0.97, ridge) * zone, 0.45 * smoothstep(0.35, 0.85, zone)), 0., 1.));
+
+    // MS: außen Türkis/Blau, Kern der Buchstaben Gelb-Orange
+    // feste Grenze: außen Blau/Türkis, innen Gelb-Orange (Helligkeit flackert nur im Kern)
+    float flare = 0.5 + 0.5 * snoise(aMS.xyz * 3.1 - loopFast + 8.0);
+    vec3 warmM = mix(amber, vec3(1.0, 0.88, 0.58), flare * 0.6);
+    vec3 cM = mix(mix(blue, teal, smoothstep(-1.1, 1.1, aMS.x)), warmM, smoothstep(WARM_EDGE - 0.04, WARM_EDGE + 0.04, aMS.w));
+
+    vec3 col = cS * wS + cF * wF + cM * wM;
+
+    float depth = clamp((p.z + 1.4) / 2.8, 0., 1.);
+    vColor = col;
+    float kindA = aSphere.w < 0.5 ? 0.7 : (aSphere.w > 1.5 ? 0.4 : 0.9);
+    vAlpha = (0.26 + 0.85 * depth) * (0.8 + 0.45 * wM + 0.35 * wF) * mix(1., kindA * ribFade, wS);
+    gl_PointSize = max(1., uSize * (0.75 + 0.5 * fract(aSeed.w * 7.31)) * persp);
+  }`;
+
+  const FRAG = `#version 300 es
+  precision mediump float;
+  in vec3 vColor;
+  in float vAlpha;
+  out vec4 outColor;
+  void main(){
+    vec2 c = gl_PointCoord - 0.5;
+    float a = smoothstep(0.5, 0.38, length(c)) * vAlpha;
+    outColor = vec4(vColor * a, a);
+  }`;
+
+  function mulberry32(seed) {
+    return function () {
+      seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
+      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  // Gefüllte Pixel des Schriftzugs "MS" als Zielpunkte
+  function sampleMonogram(count, rnd, fontFamily) {
+    const W = 1000, H = 460;
+    const c = document.createElement("canvas");
+    c.width = W; c.height = H;
+    const g = c.getContext("2d");
+    g.fillStyle = "#fff";
+    g.textAlign = "center";
+    g.textBaseline = "middle";
+    g.font = `900 400px ${fontFamily}`;
+    g.fillText("MS", W / 2, H / 2 + 14);
+    const data = g.getImageData(0, 0, W, H).data;
+    // Raster in 2-px-Schritten, dazu Abstand jedes Pixels zum Buchstabenrand (Chamfer)
+    const GW = W / 2, GH = H / 2;
+    const dist = new Float32Array(GW * GH);
+    let minX = GW, maxX = 0, minY = GH, maxY = 0;
+    for (let y = 0; y < GH; y++) {
+      for (let x = 0; x < GW; x++) {
+        const on = data[(y * 2 * W + x * 2) * 4 + 3] > 128;
+        dist[y * GW + x] = on ? 1e6 : 0;
+        if (on) {
+          if (x < minX) minX = x; if (x > maxX) maxX = x;
+          if (y < minY) minY = y; if (y > maxY) maxY = y;
+        }
+      }
+    }
+    const D = 1.4142;
+    const relax = (i, j, c) => { if (dist[j] + c < dist[i]) dist[i] = dist[j] + c; };
+    for (let y = 1; y < GH - 1; y++) for (let x = 1; x < GW - 1; x++) {
+      const i = y * GW + x;
+      relax(i, i - 1, 1); relax(i, i - GW, 1); relax(i, i - GW - 1, D); relax(i, i - GW + 1, D);
+    }
+    for (let y = GH - 2; y > 0; y--) for (let x = GW - 2; x > 0; x--) {
+      const i = y * GW + x;
+      relax(i, i + 1, 1); relax(i, i + GW, 1); relax(i, i + GW + 1, D); relax(i, i + GW - 1, D);
+    }
+    const filled = [];
+    let maxD = 1;
+    for (let i = 0; i < GW * GH; i++) if (dist[i] > 0) { filled.push(i); if (dist[i] > maxD) maxD = dist[i]; }
+
+    const cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
+    const s = 2.2 / (maxX - minX); // Breite ≈ 2,2 Kugelradien
+    const out = new Float32Array(count * 4);
+    for (let i = 0; i < count; i++) {
+      const k = filled[Math.floor(rnd() * filled.length)];
+      const e = Math.min(1, dist[k] / maxD);
+      out[i * 4] = ((k % GW) + rnd() - cx) * s;
+      out[i * 4 + 1] = -(Math.floor(k / GW) + rnd() - cy) * s;
+      // flache Platte: Randpunkte über die volle Dicke, warmer Kern dünner und innen
+      out[i * 4 + 2] = (rnd() * 2 - 1) * (e > WARM_EDGE ? MS_CORE_DEPTH : MS_DEPTH);
+      out[i * 4 + 3] = e;
+    }
+    return out;
+  }
+
+  function randomUnit(rnd) {
+    const z = rnd() * 2 - 1, a = rnd() * Math.PI * 2, r = Math.sqrt(1 - z * z);
+    return [Math.cos(a) * r, Math.sin(a) * r, z];
+  }
+
+  // Stromlinien durch eine ABC-Strömung (chaotisch, divergenzfrei) im Kugelinneren,
+  // gleichmäßig nach Bogenlänge auf LINE_SAMPLES Punkte verteilt.
+  function traceStreamlines(rnd) {
+    const K = 3.1, A = 1, B = 0.85, C = 0.62, H = 0.006, SWIRL = 1.4;
+    const field = (x, y, z) => {
+      const X = x * K + 0.7, Y = y * K - 0.4, Z = z * K + 1.3;
+      // ABC-Wirbel plus Drehung um die Hochachse -> geschwungene Bögen entlang der Kugel
+      const vx = A * Math.sin(Z) + C * Math.cos(Y) - SWIRL * z;
+      const vy = B * Math.sin(X) + A * Math.cos(Z);
+      const vz = C * Math.sin(Y) + B * Math.cos(X) + SWIRL * x;
+      const l = Math.hypot(vx, vy, vz) || 1;
+      return [vx / l, vy / l, vz / l];
+    };
+    const out = new Float32Array(LINES * LINE_SAMPLES * 4);
+    for (let l = 0; l < LINES; l++) {
+      let pts;
+      for (let attempt = 0; attempt < 30; attempt++) {
+        const d = randomUnit(rnd), r = 0.5 + 0.4 * rnd();
+        let p = [d[0] * r, d[1] * r, d[2] * r];
+        pts = [p];
+        for (let k = 0; k < 1600; k++) {
+          const v = field(p[0], p[1], p[2]);
+          p = [p[0] + v[0] * H, p[1] + v[1] * H, p[2] + v[2] * H];
+          if (Math.hypot(p[0], p[1], p[2]) > 0.95) break;
+          pts.push(p);
+        }
+        if (pts.length * H > 2.6) break;
+      }
+      // nach Bogenlänge neu abtasten (Schrittweite ist konstant)
+      for (let s = 0; s < LINE_SAMPLES; s++) {
+        const f = (s / (LINE_SAMPLES - 1)) * (pts.length - 1);
+        const i0 = Math.floor(f), i1 = Math.min(i0 + 1, pts.length - 1), t = f - i0;
+        const o = (l * LINE_SAMPLES + s) * 4;
+        for (let c = 0; c < 3; c++) out[o + c] = pts[i0][c] + (pts[i1][c] - pts[i0][c]) * t;
+        out[o + 3] = 1;
+      }
+    }
+    return out;
+  }
+
+  function compile(gl, type, src) {
+    const sh = gl.createShader(type);
+    gl.shaderSource(sh, src);
+    gl.compileShader(sh);
+    if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(sh));
+    return sh;
+  }
+
+  /**
+   * createCloud(canvas, { count, portrait, dpr, fontFamily, preserveDrawingBuffer })
+   * -> { ready: Promise, render(t), setPointer(x, y, active), resize(), LOOP }
+   * Liefert null, wenn kein WebGL2 verfügbar ist.
+   */
+  function createCloud(canvas, opts = {}) {
+    const gl = canvas.getContext("webgl2", {
+      antialias: false, alpha: true, premultipliedAlpha: true,
+      preserveDrawingBuffer: !!opts.preserveDrawingBuffer,
+    });
+    if (!gl) return null;
+
+    const count = opts.count || 60000;
+    const fontFamily = opts.fontFamily || "Inter, system-ui, sans-serif";
+    const rnd = mulberry32(20261018);
+
+    const prog = gl.createProgram();
+    gl.attachShader(prog, compile(gl, gl.VERTEX_SHADER, VERT));
+    gl.attachShader(prog, compile(gl, gl.FRAGMENT_SHADER, FRAG));
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+    gl.useProgram(prog);
+
+    // Kugel: gut die Hälfte als Hülle (zufällig, kein Gitter), der Rest fließt in Bändern
+    const sphere = new Float32Array(count * 4);
+    const rib = new Float32Array(count * 4);
+    const normals = [];
+    for (let l = 0; l < LINES; l++) normals.push(randomUnit(rnd));
+    for (let i = 0; i < count; i++) {
+      if (rnd() < 0.52) {
+        const v = randomUnit(rnd), shell = 1 + (rnd() - 0.5) * 0.03;
+        sphere.set([v[0] * shell, v[1] * shell, v[2] * shell, 0], i * 4);
+      } else {
+        const line = Math.floor(rnd() * LINES);
+        const n = normals[line];
+        const haze = rnd() < 0.28;
+        // Lage quer im Band: zu den Rändern hin dichter -> helle Kanten wie Schleier
+        const q = rnd() * 2 - 1, sv = Math.sign(q) * Math.pow(Math.abs(q), 0.6);
+        sphere.set([n[0], n[1], n[2], haze ? 2 : 1], i * 4);
+        rib.set([line, rnd(), sv, haze ? 0.08 + rnd() * 0.17 : 0.004], i * 4);
+      }
+    }
+    const seed = new Float32Array(count * 4);
+    for (let i = 0; i < count * 4; i++) seed[i] = rnd();
+
+    const buf = (name, data, size) => {
+      const loc = gl.getAttribLocation(prog, name);
+      const b = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, b);
+      gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+      gl.enableVertexAttribArray(loc);
+      gl.vertexAttribPointer(loc, size, gl.FLOAT, false, 0, 0);
+    };
+    const vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
+    buf("aSphere", sphere, 4);
+    buf("aRib", rib, 4);
+    buf("aSeed", seed, 4);
+
+    // Stromlinien als Float-Textur
+    const tex = gl.createTexture();
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, LINE_SAMPLES, LINES, 0, gl.RGBA, gl.FLOAT, traceStreamlines(rnd));
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.uniform1i(gl.getUniformLocation(prog, "uLines"), 0);
+
+    const U = {};
+    ["uT", "uCenter", "uScale", "uAspect", "uTilt", "uPointer", "uSize"].forEach((n) => (U[n] = gl.getUniformLocation(prog, n)));
+
+    gl.disable(gl.DEPTH_TEST);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.ONE, gl.ONE); // additiv: Überlagerungen leuchten
+
+    const pointer = { x: 0, y: 0, tx: 0, ty: 0, s: 0, ts: 0 };
+    let dpr = 1, w = 1, h = 1;
+
+    function resize() {
+      dpr = opts.dpr || Math.min(window.devicePixelRatio || 1, 2);
+      w = Math.max(1, Math.round(canvas.clientWidth * dpr));
+      h = Math.max(1, Math.round(canvas.clientHeight * dpr));
+      if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+      gl.viewport(0, 0, w, h);
+    }
+
+    function layout() {
+      const aspect = w / h;
+      const portrait = opts.portrait !== undefined ? opts.portrait : aspect < 0.8;
+      if (portrait) {
+        // oben mittig; MS (Breite 2,2) muss in die Breite passen
+        return { cx: 0, cy: 0.6, scale: Math.min(0.17, 0.3 * aspect) };
+      }
+      // rechts, Text links bleibt frei
+      return { cx: 0.36, cy: 0, scale: Math.min(0.36, 0.18 * aspect) };
+    }
+
+    function render(t) {
+      resize();
+      const L = layout();
+      // Zeiger weich nachführen
+      pointer.x += (pointer.tx - pointer.x) * 0.08;
+      pointer.y += (pointer.ty - pointer.y) * 0.08;
+      pointer.s += (pointer.ts - pointer.s) * 0.06;
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.uniform1f(U.uT, ((t % LOOP) + LOOP) % LOOP);
+      gl.uniform2f(U.uCenter, L.cx, L.cy);
+      gl.uniform1f(U.uScale, L.scale * 2);
+      gl.uniform1f(U.uAspect, w / h);
+      gl.uniform2f(U.uTilt, pointer.x * 0.35, -pointer.y * 0.25);
+      gl.uniform3f(U.uPointer, pointer.x, pointer.y, pointer.s);
+      gl.uniform1f(U.uSize, (opts.pointSize || 1.0) * dpr);
+      gl.drawArrays(gl.POINTS, 0, count);
+    }
+
+    function setPointer(x, y, active) {
+      pointer.tx = x; pointer.ty = y; pointer.ts = active ? 1 : 0;
+    }
+
+    const ready = (document.fonts ? document.fonts.load(`900 400px ${fontFamily}`).catch(() => {}) : Promise.resolve())
+      .then(() => {
+        gl.bindVertexArray(vao);
+        buf("aMS", sampleMonogram(count, rnd, fontFamily), 4);
+      });
+
+    resize();
+    return { ready, render, setPointer, resize, LOOP };
+  }
+
+  window.createCloud = createCloud;
+})();

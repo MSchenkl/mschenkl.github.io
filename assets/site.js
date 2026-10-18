@@ -10,16 +10,58 @@
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const arrow = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 
-  // ---------- Hero-Video passend zur Ausrichtung ----------
+  // ---------- Hero: Live-Partikelwolke, sonst Video ----------
+  const canvas = document.querySelector(".hero-media canvas");
   const video = document.querySelector(".hero-media video");
-  if (video) {
+  let cloud = null;
+  if (canvas && window.createCloud) {
+    try {
+      const small = Math.min(innerWidth, innerHeight) < 700 || (navigator.hardwareConcurrency || 8) <= 4;
+      cloud = createCloud(canvas, { count: small ? 32000 : 90000 });
+    } catch (e) {
+      cloud = null;
+    }
+  }
+  if (cloud) {
+    if (video) video.remove();
+    const heroEl = document.querySelector(".hero");
+    cloud.ready.then(() => {
+      if (reduce) {
+        // Standbild: Kugel
+        cloud.render(3.5);
+        addEventListener("resize", () => cloud.render(3.5));
+        return;
+      }
+      let visible = true, raf = 0, last = performance.now(), t = 0;
+      const frame = (now) => {
+        t += Math.min(now - last, 100) / 1000; // nach Pausen nicht springen
+        last = now;
+        cloud.render(t);
+        raf = visible && !document.hidden ? requestAnimationFrame(frame) : 0;
+      };
+      const start = () => { if (!raf && visible && !document.hidden) { last = performance.now(); raf = requestAnimationFrame(frame); } };
+      new IntersectionObserver(([e]) => { visible = e.isIntersecting; start(); }).observe(heroEl);
+      document.addEventListener("visibilitychange", start);
+      start();
+      if (matchMedia("(hover: hover)").matches) {
+        heroEl.addEventListener("pointermove", (e) => {
+          const r = canvas.getBoundingClientRect();
+          cloud.setPointer(((e.clientX - r.left) / r.width) * 2 - 1, 1 - ((e.clientY - r.top) / r.height) * 2, true);
+        });
+        heroEl.addEventListener("pointerleave", () => cloud.setPointer(0, 0, false));
+      }
+    });
+  } else if (canvas) {
+    canvas.remove();
+  }
+  if (!cloud && video) {
     const mq = matchMedia("(max-aspect-ratio: 4/5)");
     const pick = () => {
       const v = mq.matches ? "9x16" : "16x9";
       if (video.dataset.variant === v) return;
       video.dataset.variant = v;
       video.poster = `/assets/poster-${v}.jpg`;
-      video.innerHTML = `<source src="/assets/hero-${v}.webm" type="video/webm"><source src="/assets/hero-${v}.mp4" type="video/mp4">`;
+      video.innerHTML = `<source src="/assets/hero-${v}.mp4" type="video/mp4">`;
       video.load();
       if (!reduce) video.play().catch(() => {});
     };
@@ -171,12 +213,15 @@
         i = (i + 1) % words.length;
         const next = document.createElement("span");
         next.className = "word"; next.textContent = words[i];
+        const olds = [...box.children];
         box.appendChild(next);
-        const prev = box.firstElementChild;
         if (hasGsap) {
           gsap.fromTo(next, { yPercent: 100, opacity: 0 }, { yPercent: 0, opacity: 1, duration: .55, ease: "power3.out" });
-          gsap.to(prev, { yPercent: -100, opacity: 0, duration: .55, ease: "power3.in", onComplete: () => prev.remove() });
-        } else prev.remove();
+          olds.forEach((o) => {
+            gsap.killTweensOf(o);
+            gsap.to(o, { yPercent: -100, opacity: 0, duration: .55, ease: "power3.in", onComplete: () => o.remove() });
+          });
+        } else olds.forEach((o) => o.remove());
       }, 2200);
     }
   }

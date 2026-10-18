@@ -36,7 +36,11 @@ a { color: inherit; text-decoration: none; }
   overflow: hidden;
   isolation: isolate;
 }
-.hero-media { position: absolute; inset: 0; z-index: -2; }
+.hero-media {
+  position: absolute; inset: 0; z-index: -2;
+  background: radial-gradient(60vmin 60vmin at 68% 50%, rgba(77,163,255,.10), transparent 70%);
+}
+.hero-media canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .hero-media video, .hero-media img {
   width: 100%; height: 100%; object-fit: cover; display: block;
 }
@@ -117,6 +121,7 @@ a { color: inherit; text-decoration: none; }
   .hero::before { background: linear-gradient(90deg, rgba(11,18,32,.94) 0%, rgba(11,18,32,.75) 60%, rgba(11,18,32,.35) 100%), linear-gradient(0deg, var(--bg) 0%, rgba(11,18,32,0) 22%); }
 }
 @media (max-aspect-ratio: 4/5) {
+  .hero-media { background: radial-gradient(60vmin 60vmin at 50% 22%, rgba(77,163,255,.12), transparent 70%); }
   .hero { align-items: flex-end; padding-top: 38svh; padding-bottom: 96px; }
   .hero::before {
     background: linear-gradient(0deg, var(--bg) 0%, rgba(11,18,32,.88) 45%, rgba(11,18,32,0) 70%);

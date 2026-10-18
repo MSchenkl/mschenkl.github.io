@@ -8,10 +8,12 @@ Startseite und Visitenkarte von Mark Schenkl, live unter https://mschenkl.github
   - Felder: `title`, `subtitle`, `url`, `tag`, `accent`
   - Optional: `featured` (breite Karte), `links` (Zusatzlinks), `repo` (verhindert eine doppelte Auto-Karte)
 
-## Hero-Film (HeyGen HyperFrames)
-- Quelle: `_hero/src/` (Komposition + `hero.js`, ein Datennetz, das sich zum Monogramm „MS“ formt)
-- `_hero/build.sh` erzeugt `_hero/landscape/` und `_hero/portrait/`.
-- Rendern: `npx hyperframes render .` in beiden Ordnern, danach mit ffmpeg nach `assets/hero-*.{mp4,webm}` komprimieren.
+## Hero: Partikelwolke
+- `assets/cloud.js`: WebGL2-Partikelsystem ohne Bibliothek (Kugel mit Strömungsbändern → Strömung → „MS“ → zurück, 22,5-s-Schleife). Es läuft live im Browser.
+- **Ohne WebGL2:** Dann spielt das Ersatzvideo `assets/hero-*.mp4`.
+- **Poster, Social-Preview und Ersatzvideo** kommen aus HeyGen HyperFrames:
+  - `_hero/build.sh` bettet `cloud.js` in `_hero/landscape|portrait/index.html` ein.
+  - Danach in beiden Ordnern `npx hyperframes render .` ausführen und mit ffmpeg nach `assets/` verkleinern.
 - `_hero/` wird von Jekyll nicht veröffentlicht, weil der Ordner mit einem Unterstrich beginnt.
 
 ## Lokal testen
