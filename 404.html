@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nicht gefunden · Mark Schenkl</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0b1220">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/site.css">
+  <style>
+    .hero { min-height: 72svh; }
+    .name { font-size: clamp(90px, 18vw, 240px); }
+    .path { font: 600 15px ui-monospace, Menlo, monospace; color: var(--amber); word-break: break-all; }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-media" aria-hidden="true">
+      <video muted loop playsinline autoplay preload="auto" poster="/assets/poster-16x9.jpg"></video>
+    </div>
+    <div class="spot"></div>
+    <div class="hero-inner">
+      <span class="kicker"><span class="dot" style="background:var(--amber);box-shadow:0 0 12px var(--amber)"></span>Fehler 404</span>
+      <h1 class="name"><span class="line"><span class="grad">404</span></span></h1>
+      <p class="role">Unter <span class="path" id="path"></span> liegt kein Datensatz. Die Produktstammdaten sind sauber, nur dieser Link nicht.</p>
+      <div class="actions">
+        <a class="btn primary" href="/">Zur Startseite</a>
+        <button class="btn" type="button" data-open-palette>Seite suchen <kbd>⌘K</kbd></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="section-head">
+      <h2>Dafür habe ich das hier gefunden</h2>
+    </div>
+    <div class="grid" id="pages" aria-live="polite"></div>
+    <div class="repos" hidden>
+      <h3>Open Source auf GitHub</h3>
+      <div class="chips" id="repo-chips"></div>
+    </div>
+  </main>
+
+  <div class="palette" id="palette" role="dialog" aria-modal="true" aria-label="Schnellsprung">
+    <div class="palette-box">
+      <input type="text" placeholder="Wohin? z. B. „HMD“, „Abi“, „Werdegang“ …" aria-label="Seite suchen">
+      <ul></ul>
+      <div class="hint">↑↓ auswählen · Enter öffnen · Esc schließen</div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script>document.getElementById("path").textContent = location.pathname;</script>
+  <script src="/assets/site.js"></script>
+</body>
+</html>

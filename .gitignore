@@ -1,0 +1,6 @@
+.DS_Store
+_hero/*/snapshots/
+_hero/*/renders/
+_hero/*/node_modules/
+_hero/*/.hyperframes/
+_hero/*/.thumbnails/

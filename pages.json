@@ -1,0 +1,46 @@
+{
+  "_hinweis": "Neue Unterseite = ein Eintrag in 'pages'. Repos mit GitHub Pages erscheinen zusätzlich automatisch. 'featured' macht die Karte breit, 'repo' verhindert eine doppelte Auto-Karte.",
+  "pages": [
+    {
+      "title": "Partizipative KI-Einführung im Produktdatenmanagement",
+      "subtitle": "Fachartikel in HMD Praxis der Wirtschaftsinformatik (2026), gemeinsam mit Michael Koch: Wie Mitarbeitende die KI-Transformation aktiv mitgestalten.",
+      "url": "https://mschenkl.github.io/cv/hmd/",
+      "tag": "Publikation",
+      "accent": "#33e0c0",
+      "featured": true,
+      "repo": "cv",
+      "links": [
+        { "label": "DOI", "url": "https://doi.org/10.1365/s40702-026-01339-z" },
+        { "label": "Volltext (frei)", "url": "https://rdcu.be/k5rteoyv753a" }
+      ]
+    },
+    {
+      "title": "Werdegang",
+      "subtitle": "Interaktive Zeitleiste: über 20 Jahre Produktdaten, Lösungsarchitektur und KI im Produktivbetrieb.",
+      "url": "https://mschenkl.github.io/cv/",
+      "tag": "Profil",
+      "accent": "#4da3ff",
+      "repo": "cv"
+    },
+    {
+      "title": "Abi – was dann?",
+      "subtitle": "Vortrag für Schülerinnen und Schüler am MTG München: Studium, Beruf und was wirklich zählt.",
+      "url": "https://mschenkl.github.io/cv/abi/",
+      "tag": "Vortrag",
+      "accent": "#ffb454",
+      "repo": "cv"
+    },
+    {
+      "title": "KI-Team-Challenge",
+      "subtitle": "Teambuilding-Workshop „Wer ist es?“: Vibecoding und Personality Matching mit Google Colab und Gemini.",
+      "url": "https://mschenkl.github.io/KI-Team-Challenge/",
+      "tag": "Workshop",
+      "accent": "#33e0c0",
+      "repo": "KI-Team-Challenge"
+    }
+  ],
+  "profiles": [
+    { "label": "LinkedIn", "url": "https://www.linkedin.com/in/mark-schenkl-84842b134/" },
+    { "label": "GitHub", "url": "https://github.com/MSchenkl" }
+  ]
+}

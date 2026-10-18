@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mark Schenkl</title>
+  <meta name="description" content="Mark Schenkl – Leiter zentrale Produktstammdaten bei der BMW Group. Produktdaten, Lösungsarchitektur und generative KI. Vorträge, Publikationen und Projekte.">
+  <meta name="theme-color" content="#0b1220">
+  <meta property="og:title" content="Mark Schenkl">
+  <meta property="og:description" content="Produktdaten, Lösungsarchitektur und generative KI – Vorträge, Publikationen und Projekte.">
+  <meta property="og:image" content="https://mschenkl.github.io/assets/og.jpg">
+  <meta property="og:url" content="https://mschenkl.github.io/">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-media" aria-hidden="true">
+      <video muted loop playsinline autoplay preload="auto" poster="/assets/poster-16x9.jpg"></video>
+    </div>
+    <div class="spot"></div>
+
+    <div class="hero-inner">
+      <span class="kicker"><span class="dot"></span>München · BMW Group</span>
+      <h1 class="name">
+        <span class="line">Mark</span>
+        <span class="line"><span class="grad">Schenkl</span></span>
+      </h1>
+      <p class="role"><strong>Leiter zentrale Produktstammdaten</strong> bei der BMW Group – Produktdaten, Lösungsarchitektur und generative KI im Produktivbetrieb.</p>
+      <div class="ticker" aria-hidden="true">Schwerpunkte <span class="word-box"></span></div>
+      <div class="actions">
+        <a class="btn primary" href="#seiten">Vorträge &amp; Projekte</a>
+        <button class="btn" type="button" data-open-palette>Schnellsprung <kbd>⌘K</kbd></button>
+        <a class="btn" data-profile href="https://www.linkedin.com/in/mark-schenkl-84842b134/" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="btn" data-profile href="https://github.com/MSchenkl" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+    <a class="scroll-hint" href="#seiten" aria-label="Zu den Seiten scrollen"></a>
+  </header>
+
+  <main class="section" id="seiten">
+    <div class="section-head">
+      <h2>Vorträge, Publikationen &amp; Projekte</h2>
+      <p>Neue Seiten erscheinen hier automatisch.</p>
+    </div>
+    <div class="grid" id="pages" aria-live="polite"></div>
+
+    <div class="repos" hidden>
+      <h3>Open Source auf GitHub</h3>
+      <div class="chips" id="repo-chips"></div>
+    </div>
+  </main>
+
+  <footer>
+    <span>© <span id="year">2026</span> Mark Schenkl</span>
+    <nav>
+      <a href="https://www.linkedin.com/in/mark-schenkl-84842b134/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://github.com/MSchenkl" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://mschenkl.github.io/cv/">Werdegang</a>
+    </nav>
+  </footer>
+
+  <div class="palette" id="palette" role="dialog" aria-modal="true" aria-label="Schnellsprung">
+    <div class="palette-box">
+      <input type="text" placeholder="Wohin? z. B. „HMD“, „Abi“, „Werdegang“ …" aria-label="Seite suchen">
+      <ul></ul>
+      <div class="hint">↑↓ auswählen · Enter öffnen · Esc schließen</div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+  <script src="/assets/site.js"></script>
+</body>
+</html>
