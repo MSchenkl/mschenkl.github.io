@@ -37,6 +37,13 @@
       "tag": "Workshop",
       "accent": "#33e0c0",
       "repo": "KI-Team-Challenge"
+    },
+    {
+      "title": "Aurel Schenkl",
+      "subtitle": "Die Seite meines Sohnes: Developer & Game Creator – Pixel-Art-Shooter, Strategiespiele mit KI-Gegner und ein interaktives Terminal.",
+      "url": "https://aschenkl.github.io/ASchenkl/",
+      "tag": "Mein Sohn",
+      "accent": "#39ff7a"
     }
   ],
   "profiles": [
