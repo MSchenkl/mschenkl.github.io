@@ -44,6 +44,13 @@
       "url": "https://aschenkl.github.io/ASchenkl/",
       "tag": "Mein Sohn",
       "accent": "#39ff7a"
+    },
+    {
+      "title": "Julius Schenkl",
+      "subtitle": "Die Seite meines Sohnes: Browser-Rennspiele – ein 3D-BMW-M4 mit Three.js und ein 2D-Racer mit Strecken-Editor, Gamepad und Motorsound.",
+      "url": "https://jschenkl.github.io/",
+      "tag": "Mein Sohn",
+      "accent": "#ff5c7a"
     }
   ],
   "profiles": [
