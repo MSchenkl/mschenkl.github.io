@@ -82,45 +82,46 @@
   // ---------- Daten ----------
   const loadJSON = (url) => fetch(url, { cache: "no-cache" }).then((r) => (r.ok ? r.json() : Promise.reject(r.status)));
 
-  const cachedRepos = () => {
+  // Cache: frisch für 30 Minuten; ältere Daten dienen als Rückfall, wenn die API scheitert (z. B. Rate-Limit)
+  const cached = (key, fresh) => {
     try {
-      const c = JSON.parse(localStorage.getItem("repos") || "null");
-      if (c && Date.now() - c.t < 30 * 60 * 1000) return c.data;
+      const c = JSON.parse(localStorage.getItem(key) || "null");
+      if (c && (!fresh || Date.now() - c.t < 30 * 60 * 1000)) return c.data;
     } catch (e) {}
     return null;
   };
   const loadRepos = () => {
-    const c = cachedRepos();
+    const c = cached("repos", true);
     if (c) return Promise.resolve(c);
     return loadJSON(`https://api.github.com/users/${USER}/repos?per_page=100&sort=pushed`).then((data) => {
       const slim = data
         .filter((r) => !r.private)
-        .map((r) => ({ name: r.name, description: r.description, has_pages: r.has_pages, html_url: r.html_url, pushed_at: r.pushed_at, fork: r.fork }));
+        .map((r) => ({ name: r.name, description: r.description, has_pages: r.has_pages, html_url: r.html_url, pushed_at: r.pushed_at, fork: r.fork, archived: r.archived, homepage: r.homepage, forks: r.forks_count }));
       try { localStorage.setItem("repos", JSON.stringify({ t: Date.now(), data: slim })); } catch (e) {}
       return slim;
-    });
+    }).catch((e) => cached("repos", false) || Promise.reject(e));
   };
 
   // Beiträge zu fremden Projekten: offene/gemergte PRs, gemeldete und behobene Issues
   // sowie eigene Commits in Forks (für Projekte, die keine PRs annehmen).
   // Fremde Commits in Fork-Branches zählen nicht.
   const loadContribs = (repos) => {
-    try {
-      const c = JSON.parse(localStorage.getItem("contribs") || "null");
-      if (c && Date.now() - c.t < 30 * 60 * 1000) return Promise.resolve(c.data);
-    } catch (e) {}
+    const c = cached("contribs", true);
+    if (c) return Promise.resolve(c);
     const api = "https://api.github.com";
     const me = USER.toLowerCase();
+    let failed = !repos.length; // unvollständige Ergebnisse (z. B. API-Limit) nicht cachen
+    const fail = (v) => () => { failed = true; return v; };
     const prs = loadJSON(`${api}/search/issues?q=author:${USER}+type:pr&per_page=50`).then((d) =>
       (d.items || [])
         .filter((i) => !i.repository_url.toLowerCase().includes(`/repos/${me}/`))
         .map((i) => ({ repo: i.repository_url.split("/repos/")[1], title: i.title, url: i.html_url, status: i.state === "open" ? "open" : i.pull_request?.merged_at ? "merged" : "closed" }))
-    ).catch(() => []);
+    ).catch(fail([]));
     const issues = loadJSON(`${api}/search/issues?q=author:${USER}+type:issue+is:closed+reason:completed&per_page=50`).then((d) =>
       (d.items || [])
         .filter((i) => !i.repository_url.toLowerCase().includes(`/repos/${me}/`))
         .map((i) => ({ repo: i.repository_url.split("/repos/")[1], title: i.title.replace(/^title:\s*/i, ""), url: i.html_url, status: "fixed" }))
-    ).catch(() => []);
+    ).catch(fail([]));
     const forks = Promise.all(repos.filter((r) => r.fork).map((f) =>
       Promise.all([loadJSON(`${api}/repos/${USER}/${f.name}`), loadJSON(`${api}/repos/${USER}/${f.name}/branches?per_page=30`)])
         .then(([info, branches]) => Promise.all(branches.map((b) =>
@@ -131,14 +132,15 @@
               const title = own[own.length - 1].commit.message.split("\n")[0];
               return { repo: info.parent.full_name, title: own.length > 1 ? `${title} (+${own.length - 1})` : title, url: `${f.html_url}/tree/${encodeURIComponent(b.name)}`, status: "fork" };
             })
-            .catch(() => null)
+            .catch(fail(null))
         )))
-        .catch(() => [])
+        .catch(fail([]))
     )).then((l) => l.flat(2).filter(Boolean));
     return Promise.all([prs, forks, issues]).then(([p, f, iss]) => {
       // Gibt es zu einem Projekt schon einen PR, zählt nur dessen Status; abgelehnte PRs fallen weg
       const prRepos = new Set(p.map((x) => x.repo.toLowerCase()));
       const data = [...p.filter((x) => x.status !== "closed"), ...f.filter((x) => !prRepos.has(x.repo.toLowerCase())), ...iss];
+      if (failed) return cached("contribs", false) || data;
       try { localStorage.setItem("contribs", JSON.stringify({ t: Date.now(), data })); } catch (e) {}
       return data;
     });
@@ -170,8 +172,15 @@
 
     if (chips) {
       const code = repos.filter((r) => !r.fork && !r.has_pages && !SKIP_REPOS.includes(r.name.toLowerCase()));
+      // Archivierte Repos mit GitHub-Repo als Homepage gelten als „weitergeführt“ dort
+      const successor = (r) => r.archived && /^https:\/\/github\.com\/[^/]+\/[^/]+\/?$/.test(r.homepage || "") ? r.homepage.replace("https://github.com/", "").replace(/\/$/, "") : "";
       chips.innerHTML = code
-        .map((r) => `<a class="chip" href="${esc(r.html_url)}" target="_blank" rel="noopener"><strong>${esc(r.name)}</strong>${r.description ? `<small>${esc(r.description)}</small>` : ""}</a>`)
+        .map((r) => {
+          const succ = successor(r);
+          const text = succ ? `weitergeführt von ${succ.split("/")[0]}` : r.description;
+          const badges = (r.forks ? `<span class="badge">⑂ ${r.forks}</span>` : "") + (r.archived ? `<span class="badge">archiviert</span>` : "");
+          return `<a class="chip" href="${esc(r.html_url)}" target="_blank" rel="noopener"><strong>${esc(r.name)}</strong>${text ? `<small>${esc(text)}</small>` : ""}${badges}</a>`;
+        })
         .join("");
       chips.closest(".repos").hidden = code.length === 0;
       code.forEach((r) => paletteItems.push({ label: r.name, hint: "GitHub", url: r.html_url, keys: r.description }));
