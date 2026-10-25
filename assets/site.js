@@ -94,10 +94,53 @@
     if (c) return Promise.resolve(c);
     return loadJSON(`https://api.github.com/users/${USER}/repos?per_page=100&sort=pushed`).then((data) => {
       const slim = data
-        .filter((r) => !r.fork && !r.private)
-        .map((r) => ({ name: r.name, description: r.description, has_pages: r.has_pages, html_url: r.html_url, pushed_at: r.pushed_at }));
+        .filter((r) => !r.private)
+        .map((r) => ({ name: r.name, description: r.description, has_pages: r.has_pages, html_url: r.html_url, pushed_at: r.pushed_at, fork: r.fork }));
       try { localStorage.setItem("repos", JSON.stringify({ t: Date.now(), data: slim })); } catch (e) {}
       return slim;
+    });
+  };
+
+  // Beiträge zu fremden Projekten: offene/gemergte PRs, gemeldete und behobene Issues
+  // sowie eigene Commits in Forks (für Projekte, die keine PRs annehmen).
+  // Fremde Commits in Fork-Branches zählen nicht.
+  const loadContribs = (repos) => {
+    try {
+      const c = JSON.parse(localStorage.getItem("contribs") || "null");
+      if (c && Date.now() - c.t < 30 * 60 * 1000) return Promise.resolve(c.data);
+    } catch (e) {}
+    const api = "https://api.github.com";
+    const me = USER.toLowerCase();
+    const prs = loadJSON(`${api}/search/issues?q=author:${USER}+type:pr&per_page=50`).then((d) =>
+      (d.items || [])
+        .filter((i) => !i.repository_url.toLowerCase().includes(`/repos/${me}/`))
+        .map((i) => ({ repo: i.repository_url.split("/repos/")[1], title: i.title, url: i.html_url, status: i.state === "open" ? "open" : i.pull_request?.merged_at ? "merged" : "closed" }))
+    ).catch(() => []);
+    const issues = loadJSON(`${api}/search/issues?q=author:${USER}+type:issue+is:closed+reason:completed&per_page=50`).then((d) =>
+      (d.items || [])
+        .filter((i) => !i.repository_url.toLowerCase().includes(`/repos/${me}/`))
+        .map((i) => ({ repo: i.repository_url.split("/repos/")[1], title: i.title.replace(/^title:\s*/i, ""), url: i.html_url, status: "fixed" }))
+    ).catch(() => []);
+    const forks = Promise.all(repos.filter((r) => r.fork).map((f) =>
+      Promise.all([loadJSON(`${api}/repos/${USER}/${f.name}`), loadJSON(`${api}/repos/${USER}/${f.name}/branches?per_page=30`)])
+        .then(([info, branches]) => Promise.all(branches.map((b) =>
+          loadJSON(`${api}/repos/${info.parent.full_name}/compare/${info.parent.default_branch}...${USER}:${f.name}:${encodeURIComponent(b.name)}`)
+            .then((cmp) => {
+              const own = (cmp.commits || []).filter((c) => (c.author?.login || "").toLowerCase() === me);
+              if (!own.length) return null;
+              const title = own[own.length - 1].commit.message.split("\n")[0];
+              return { repo: info.parent.full_name, title: own.length > 1 ? `${title} (+${own.length - 1})` : title, url: `${f.html_url}/tree/${encodeURIComponent(b.name)}`, status: "fork" };
+            })
+            .catch(() => null)
+        )))
+        .catch(() => [])
+    )).then((l) => l.flat(2).filter(Boolean));
+    return Promise.all([prs, forks, issues]).then(([p, f, iss]) => {
+      // Gibt es zu einem Projekt schon einen PR, zählt nur dessen Status; abgelehnte PRs fallen weg
+      const prRepos = new Set(p.map((x) => x.repo.toLowerCase()));
+      const data = [...p.filter((x) => x.status !== "closed"), ...f.filter((x) => !prRepos.has(x.repo.toLowerCase())), ...iss];
+      try { localStorage.setItem("contribs", JSON.stringify({ t: Date.now(), data })); } catch (e) {}
+      return data;
     });
   };
 
@@ -126,7 +169,7 @@
     pages.forEach((p) => paletteItems.push({ label: p.title, hint: p.tag || "Seite", url: p.url, keys: `${p.subtitle} ${p.url}` }));
 
     if (chips) {
-      const code = repos.filter((r) => !r.has_pages && !SKIP_REPOS.includes(r.name.toLowerCase()));
+      const code = repos.filter((r) => !r.fork && !r.has_pages && !SKIP_REPOS.includes(r.name.toLowerCase()));
       chips.innerHTML = code
         .map((r) => `<a class="chip" href="${esc(r.html_url)}" target="_blank" rel="noopener"><strong>${esc(r.name)}</strong>${r.description ? `<small>${esc(r.description)}</small>` : ""}</a>`)
         .join("");
@@ -144,9 +187,10 @@
     }
   }
 
+  const reposP = loadRepos().catch(() => []);
   Promise.all([
     loadJSON("/pages.json").catch(() => ({ pages: [] })),
-    loadRepos().catch(() => []),
+    reposP,
   ]).then(([cfg, repos]) => {
     const pages = (cfg.pages || []).slice();
     const known = new Set(pages.map((p) => (p.repo || "").toLowerCase()));
@@ -159,6 +203,18 @@
       });
     render(pages, repos);
   });
+
+  const contribChips = document.getElementById("contrib-chips");
+  const STATUS = { merged: "✓ gemerged", open: "PR offen", fork: "im Fork", fixed: "✓ behoben" };
+  if (contribChips) {
+    reposP.then(loadContribs).then((items) => {
+      contribChips.innerHTML = items
+        .map((c) => `<a class="chip" href="${esc(c.url)}" target="_blank" rel="noopener"><strong>${esc(c.repo)}</strong><small>${esc(c.title)}</small><span class="badge ${c.status}">${STATUS[c.status]}</span></a>`)
+        .join("");
+      contribChips.closest(".repos").hidden = items.length === 0;
+      items.forEach((c) => paletteItems.push({ label: c.title, hint: "Beitrag", url: c.url, keys: c.repo }));
+    }).catch(() => {});
+  }
 
   // ---------- 3D-Tilt + Glow ----------
   function bindCards() {
