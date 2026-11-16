@@ -1,12 +1,11 @@
 {
-  "_hinweis": "Neue Unterseite = ein Eintrag in 'pages'. Repos mit GitHub Pages erscheinen zusätzlich automatisch. 'featured' macht die Karte breit, 'repo' verhindert eine doppelte Auto-Karte.",
+  "_hinweis": "Neue Unterseite = ein Eintrag in 'pages'. Repos mit GitHub Pages erscheinen zusätzlich automatisch. 'featured' macht die Karte breit, 'repo' verhindert eine doppelte Auto-Karte. Die Farbe ergibt sich aus 'tag' (TAG_COLORS in assets/site.js); 'accent' nur für neue Kategorien.",
   "pages": [
     {
       "title": "Partizipative KI-Einführung im Produktdatenmanagement",
       "subtitle": "Fachartikel in HMD Praxis der Wirtschaftsinformatik (2026), gemeinsam mit Michael Koch: Wie Mitarbeitende die KI-Transformation aktiv mitgestalten.",
       "url": "https://mschenkl.github.io/cv/hmd/",
       "tag": "Publikation",
-      "accent": "#33e0c0",
       "featured": true,
       "repo": "cv",
       "links": [
@@ -19,7 +18,6 @@
       "subtitle": "Interaktive Zeitleiste: über 20 Jahre Produktdaten, Lösungsarchitektur und KI im Produktivbetrieb.",
       "url": "https://mschenkl.github.io/cv/",
       "tag": "Profil",
-      "accent": "#4da3ff",
       "repo": "cv"
     },
     {
@@ -27,7 +25,6 @@
       "subtitle": "Vortrag für Schülerinnen und Schüler am MTG München: Studium, Beruf und was wirklich zählt.",
       "url": "https://mschenkl.github.io/cv/abi/",
       "tag": "Vortrag",
-      "accent": "#ffb454",
       "repo": "cv"
     },
     {
@@ -35,7 +32,6 @@
       "subtitle": "KI-Hacking-Workshop: Fünf Chatbots bewachen je ein Codewort, Level für Level besser geschützt. Teams knacken sie per Prompt Injection und lernen dabei, wie Sprachmodelle ticken. Mit Google Colab und Gemini.",
       "url": "https://mschenkl.github.io/KI-Tresor-Challenge/",
       "tag": "Workshop",
-      "accent": "#b48cff",
       "repo": "KI-Tresor-Challenge",
       "links": [
         { "label": "Präsentation", "url": "https://mschenkl.github.io/KI-Tresor-Challenge/praesentation/" },
@@ -47,22 +43,19 @@
       "subtitle": "Teambuilding-Workshop „Wer ist es?“: Vibecoding und Personality Matching mit Google Colab und Gemini.",
       "url": "https://mschenkl.github.io/KI-Team-Challenge/",
       "tag": "Workshop",
-      "accent": "#b48cff",
       "repo": "KI-Team-Challenge"
     },
     {
       "title": "Aurel Schenkl",
       "subtitle": "Die Seite meines Sohnes: Developer & Game Creator – Pixel-Art-Shooter, Strategiespiele mit KI-Gegner und ein interaktives Terminal.",
       "url": "https://aschenkl.github.io/ASchenkl/",
-      "tag": "Mein Sohn",
-      "accent": "#9ae66e"
+      "tag": "Mein Sohn"
     },
     {
       "title": "Julius Schenkl",
       "subtitle": "Die Seite meines Sohnes: Browser-Rennspiele – ein 3D-BMW-M4 mit Three.js und ein 2D-Racer mit Strecken-Editor, Gamepad und Motorsound.",
       "url": "https://jschenkl.github.io/",
-      "tag": "Mein Sohn",
-      "accent": "#9ae66e"
+      "tag": "Mein Sohn"
     }
   ],
   "profiles": [
