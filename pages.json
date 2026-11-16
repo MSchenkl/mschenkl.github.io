@@ -31,6 +31,18 @@
       "repo": "cv"
     },
     {
+      "title": "KI-Tresor-Challenge",
+      "subtitle": "KI-Hacking-Workshop: Fünf Chatbots bewachen je ein Codewort, Level für Level besser geschützt. Teams knacken sie per Prompt Injection und lernen dabei, wie Sprachmodelle ticken. Mit Google Colab und Gemini.",
+      "url": "https://mschenkl.github.io/KI-Tresor-Challenge/",
+      "tag": "Workshop",
+      "accent": "#ffd166",
+      "repo": "KI-Tresor-Challenge",
+      "links": [
+        { "label": "Präsentation", "url": "https://mschenkl.github.io/KI-Tresor-Challenge/praesentation/" },
+        { "label": "Colab", "url": "https://colab.research.google.com/github/MSchenkl/KI-Tresor-Challenge/blob/main/Tresor_Level.ipynb" }
+      ]
+    },
+    {
       "title": "KI-Team-Challenge",
       "subtitle": "Teambuilding-Workshop „Wer ist es?“: Vibecoding und Personality Matching mit Google Colab und Gemini.",
       "url": "https://mschenkl.github.io/KI-Team-Challenge/",
