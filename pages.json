@@ -35,7 +35,7 @@
       "subtitle": "KI-Hacking-Workshop: Fünf Chatbots bewachen je ein Codewort, Level für Level besser geschützt. Teams knacken sie per Prompt Injection und lernen dabei, wie Sprachmodelle ticken. Mit Google Colab und Gemini.",
       "url": "https://mschenkl.github.io/KI-Tresor-Challenge/",
       "tag": "Workshop",
-      "accent": "#ffd166",
+      "accent": "#b48cff",
       "repo": "KI-Tresor-Challenge",
       "links": [
         { "label": "Präsentation", "url": "https://mschenkl.github.io/KI-Tresor-Challenge/praesentation/" },
@@ -47,7 +47,7 @@
       "subtitle": "Teambuilding-Workshop „Wer ist es?“: Vibecoding und Personality Matching mit Google Colab und Gemini.",
       "url": "https://mschenkl.github.io/KI-Team-Challenge/",
       "tag": "Workshop",
-      "accent": "#33e0c0",
+      "accent": "#b48cff",
       "repo": "KI-Team-Challenge"
     },
     {
@@ -55,14 +55,14 @@
       "subtitle": "Die Seite meines Sohnes: Developer & Game Creator – Pixel-Art-Shooter, Strategiespiele mit KI-Gegner und ein interaktives Terminal.",
       "url": "https://aschenkl.github.io/ASchenkl/",
       "tag": "Mein Sohn",
-      "accent": "#39ff7a"
+      "accent": "#9ae66e"
     },
     {
       "title": "Julius Schenkl",
       "subtitle": "Die Seite meines Sohnes: Browser-Rennspiele – ein 3D-BMW-M4 mit Three.js und ein 2D-Racer mit Strecken-Editor, Gamepad und Motorsound.",
       "url": "https://jschenkl.github.io/",
       "tag": "Mein Sohn",
-      "accent": "#ff5c7a"
+      "accent": "#9ae66e"
     }
   ],
   "profiles": [
