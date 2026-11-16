@@ -4,6 +4,17 @@
   const USER = "MSchenkl";
   const BASE = "https://mschenkl.github.io";
   const SKIP_REPOS = ["mschenkl.github.io"];
+  // Kachelfarbe je Kategorie (Tag) – gleiche Kategorie, gleiche Farbe.
+  // "accent" in pages.json gilt nur noch für Tags, die hier nicht stehen.
+  const TAG_COLORS = {
+    "Publikation": "#33e0c0",
+    "Profil": "#4da3ff",
+    "Vortrag": "#ffb454",
+    "Workshop": "#b48cff",
+    "Mein Sohn": "#9ae66e",
+    "Projekt": "#ff8fc7",
+  };
+  const accentOf = (p) => TAG_COLORS[p.tag] || p.accent || "#4da3ff";
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const hasGsap = typeof window.gsap !== "undefined" && !reduce;
 
@@ -155,7 +166,7 @@
 
   function cardHTML(p) {
     const sub = (p.links || []).map((l) => `<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)} ↗</a>`).join("");
-    return `<article class="card${p.featured ? " featured" : ""}" style="--accent:${esc(p.accent || "#4da3ff")}">
+    return `<article class="card${p.featured ? " featured" : ""}" style="--accent:${esc(accentOf(p))}">
       <a class="stretch" href="${esc(p.url)}" aria-label="${esc(p.title)} öffnen"></a>
       ${p.isNew ? '<span class="new">NEU</span>' : ""}
       <span class="tag">${esc(p.tag || "Seite")}</span>
@@ -208,7 +219,7 @@
       .filter((r) => r.has_pages && !known.has(r.name.toLowerCase()) && !SKIP_REPOS.includes(r.name.toLowerCase()))
       .forEach((r) => {
         const fresh = Date.now() - new Date(r.pushed_at).getTime() < 30 * 24 * 3600 * 1000;
-        pages.push({ title: prettify(r.name), subtitle: r.description || "Neue Seite auf GitHub Pages.", url: `${BASE}/${r.name}/`, tag: "Projekt", accent: "#ffb454", isNew: fresh, repo: r.name });
+        pages.push({ title: prettify(r.name), subtitle: r.description || "Neue Seite auf GitHub Pages.", url: `${BASE}/${r.name}/`, tag: "Projekt", isNew: fresh, repo: r.name });
       });
     render(pages, repos);
   });
