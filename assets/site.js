@@ -101,6 +101,9 @@
     } catch (e) {}
     return null;
   };
+  // Fester Rückfall-Stand im Repo, falls API und Browser-Cache leer sind
+  let snapP = null;
+  const snapshot = () => (snapP ||= loadJSON("/assets/github-snapshot.json").catch(() => ({})));
   const loadRepos = () => {
     const c = cached("repos", true);
     if (c) return Promise.resolve(c);
@@ -110,7 +113,7 @@
         .map((r) => ({ name: r.name, description: r.description, has_pages: r.has_pages, html_url: r.html_url, pushed_at: r.pushed_at, fork: r.fork, archived: r.archived, homepage: r.homepage, forks: r.forks_count }));
       try { localStorage.setItem("repos", JSON.stringify({ t: Date.now(), data: slim })); } catch (e) {}
       return slim;
-    }).catch((e) => cached("repos", false) || Promise.reject(e));
+    }).catch((e) => cached("repos", false) || snapshot().then((s) => s.repos || Promise.reject(e)));
   };
 
   // Beiträge zu fremden Projekten: offene/gemergte PRs, gemeldete und behobene Issues
@@ -151,7 +154,11 @@
       // Gibt es zu einem Projekt schon einen PR, zählt nur dessen Status; abgelehnte PRs fallen weg
       const prRepos = new Set(p.map((x) => x.repo.toLowerCase()));
       const data = [...p.filter((x) => x.status !== "closed"), ...f.filter((x) => !prRepos.has(x.repo.toLowerCase())), ...iss];
-      if (failed) return cached("contribs", false) || data;
+      if (failed) {
+        const stale = cached("contribs", false);
+        if (stale) return stale;
+        return snapshot().then((s) => (s.contribs && s.contribs.length > data.length ? s.contribs : data));
+      }
       try { localStorage.setItem("contribs", JSON.stringify({ t: Date.now(), data })); } catch (e) {}
       return data;
     });
