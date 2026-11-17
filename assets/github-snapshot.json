@@ -1,0 +1,97 @@
+{
+ "_hinweis": "Rückfall-Stand für Open-Source- und Beitrags-Liste, falls die GitHub-API nicht antwortet (z. B. Rate-Limit). Bei Bedarf aktualisieren.",
+ "stand": "2026-11-17",
+ "repos": [
+  {
+   "name": "mschenkl.github.io",
+   "description": "Startseite mschenkl.github.io",
+   "has_pages": true,
+   "html_url": "https://github.com/MSchenkl/mschenkl.github.io",
+   "pushed_at": "2026-11-16T15:27:36Z",
+   "fork": false,
+   "archived": false,
+   "homepage": null,
+   "forks": 0
+  },
+  {
+   "name": "KI-Tresor-Challenge",
+   "description": null,
+   "has_pages": true,
+   "html_url": "https://github.com/MSchenkl/KI-Tresor-Challenge",
+   "pushed_at": "2026-11-10T05:49:38Z",
+   "fork": false,
+   "archived": false,
+   "homepage": null,
+   "forks": 0
+  },
+  {
+   "name": "KI-Team-Challenge",
+   "description": "Who is it Game for Teambuilding Workshops",
+   "has_pages": true,
+   "html_url": "https://github.com/MSchenkl/KI-Team-Challenge",
+   "pushed_at": "2026-11-08T19:41:22Z",
+   "fork": false,
+   "archived": false,
+   "homepage": null,
+   "forks": 0
+  },
+  {
+   "name": "homeassistant-duofern",
+   "description": "No longer maintained — actively developed fork: irstmon/homeassistant-duofern. Original Rademacher DuoFern integration for Home Assistant.",
+   "has_pages": false,
+   "html_url": "https://github.com/MSchenkl/homeassistant-duofern",
+   "pushed_at": "2026-10-25T06:47:20Z",
+   "fork": false,
+   "archived": true,
+   "homepage": "https://github.com/irstmon/homeassistant-duofern",
+   "forks": 4
+  },
+  {
+   "name": "tuya-local",
+   "description": "Local support for Tuya devices in Home Assistant",
+   "has_pages": false,
+   "html_url": "https://github.com/MSchenkl/tuya-local",
+   "pushed_at": "2026-10-25T05:13:52Z",
+   "fork": true,
+   "archived": false,
+   "homepage": "",
+   "forks": 0
+  },
+  {
+   "name": "cv",
+   "description": "Vortrag: Abi - was dann? (MTG Muenchen)",
+   "has_pages": true,
+   "html_url": "https://github.com/MSchenkl/cv",
+   "pushed_at": "2026-10-20T19:03:59Z",
+   "fork": false,
+   "archived": false,
+   "homepage": null,
+   "forks": 0
+  },
+  {
+   "name": "ha-canton-smart-connect",
+   "description": "Canton Plugin für Home Assistant",
+   "has_pages": false,
+   "html_url": "https://github.com/MSchenkl/ha-canton-smart-connect",
+   "pushed_at": "2026-02-23T06:16:20Z",
+   "fork": false,
+   "archived": false,
+   "homepage": "",
+   "forks": 0
+  }
+ ],
+ "contribs": [
+  {
+   "repo": "make-all/tuya-local",
+   "title": "Add WityPower Mobile Wallbox 22kW EV charger",
+   "url": "https://github.com/MSchenkl/tuya-local/tree/add-witypower-22kw-evcharger",
+   "status": "fork"
+  },
+  {
+   "repo": "j-a-n/lovelace-wallpanel",
+   "title": "Safari/iPad: handleInteractionEvent throws error on touch events",
+   "url": "https://github.com/j-a-n/lovelace-wallpanel/issues/541",
+   "status": "fixed"
+  }
+ ]
+}
