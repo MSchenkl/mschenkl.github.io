@@ -88,6 +88,7 @@ select.btn{padding:0 8px}
 #inset{width:auto;height:auto;position:fixed;right:var(--g,16px);bottom:150px;z-index:4;border:1px solid var(--line);border-radius:12px;background:#0a111fe0;box-shadow:0 6px 24px #0008}
 .ref{fill:#8fa3c4;font-weight:500;paint-order:stroke;stroke:#0b1220;stroke-linejoin:round;pointer-events:none}
 .lbl.act{fill:#fff}
+.lbl.thin{font-weight:300;fill:#b9c8e0}
 #card .who{margin:4px 0 6px}
 #card .person{margin-bottom:6px;padding-left:10px;border-left:3px solid var(--c,#4da3ff)}
 #card .person strong{display:block;font-size:17px;font-weight:700;line-height:1.25}
@@ -196,7 +197,7 @@ per("mk","Margaretha Kürner",7,"burglengenfeld","um 1743 · † 1800");
 per("mkr","Magdalena Krempl",6,"burglengenfeld","*1782 · † 1862");
 per("gk","Georg Karl",6,"burglengenfeld","*1780 · † 1848","Maurer");
 per("kk","Konrad Karl",5,"burglengenfeld","*1820 · † 1888","Maurer");
-per("mh","Maria Hofer",5,"meldau","*1817 · Eltern in Meldau","",{u:1});
+per("mh","Maria Hofer",5,"meldau","*1817 · † 1878","",{u:1,assumed:1});
 per("wk","Walburga Karl",4,"burglengenfeld","*1860");
 per("ji","Joseph Igl",7,"fischbach","*1769 · † 1844","");
 per("kh","Kunigunda Herrmann",7,"schirndorf","*1775 Schirndorf · † 1855");
@@ -258,15 +259,46 @@ per("sp","Sabina Přerost",2,"oberndorf","*1917 · † 2001");
 per("va","Mein Vater",1,"muenchen","");
 per("mark","Mark Schenkl",0,"landsberg","geboren in Landsberg am Lech");
 per("mark2","Mark Schenkl",0,"muenchen","heute in München");
+/* Eltern der Partner (nur eine Ebene) */
+per("gks","Georg Karl",7,"burglengenfeld","","",{u:1,assumed:1});
+per("csi","Catharina Silbereisen",7,"burglengenfeld","† 1832");
+per("mhs","Martin Hofer",6,"meldau","um 1772 · † 1851","Bauer");
+per("mei","Magdalena Eichinger",6,"meldau","um 1778 · † 1843");
+per("abi","Abraham Igl",8,"fischbach","","",{u:1,assumed:1});
+per("ani","Anna",8,"fischbach","","",{u:1,assumed:1});
+per("woh","Wolfgang Herrmann",8,"schirndorf","","",{u:1,assumed:1});
+per("bpl","Barbara Pleicher",8,"schirndorf","","",{u:1,assumed:1});
+per("jfe","Johann Feuerer",7,"teublitz","","",{u:1,assumed:1});
+per("mko","Margaretha Koller",7,"teublitz","","",{u:1,assumed:1});
+per("cli","Caspar Liebl",7,"buechelkuehn","","",{u:1,assumed:1});
+per("bbe","Barbara Beimel",7,"buechelkuehn","","",{u:1,assumed:1});
+per("lei","Lorenz Eigl",7,"ettmannsdorf","","",{u:1,assumed:1});
+per("ezi","Elisabeth Zitzler",7,"ettmannsdorf","","",{u:1,assumed:1});
+per("jgo","Johann Gottlieb",5,"freiberg","","",{u:1,assumed:1});
+per("jsch","Johanna Schulze",5,"freiberg","","",{u:1,assumed:1});
+per("cff","Christian Friedrich Fischer",5,"niedergorbitz","","",{u:1,assumed:1});
+per("hrb","Hanna Rosina Berger",5,"niedergorbitz","","",{u:1,assumed:1});
+per("ssc","Stephan Schraml",6,"helmbrechts","aus Helmbrechts");
+per("lro","Laurentius Rosner",6,"kleinsterz","","Bauer");
+per("ubu","Ursula Burger",6,"kleinsterz","aus Kleinsterz");
+per("jor","Johannes Rosner",6,"kleinsterz","","Bauer in Groppenheim",{u:1,assumed:1});
+per("jpo","Josepha Pötzl",6,"kleinsterz","aus Münchenreuth","",{u:1,assumed:1});
 /* ---------- Szenen: Eltern → Kind ---------- */
 const SC=[];
 const sc=(br,par,ch,y,txt,o={})=>SC.push({br,par,ch,y,txt,via:[],...o});
 /* Mutterseite · Naab-Tal */
 sc("N",["pk","mk"],"mkr","1782","Das älteste bekannte Paar. Beide starben in Burglengenfeld, ihre Geburtsorte sind unbekannt. Margaretha Kürner ist die älteste datierte Vorfahrin.");
+sc("N",["gks","csi"],"gk","1780","Georg Karl, der spätere Maurer, ist der Sohn von Georg Karl und Catharina Silbereisen († 1832 in Burglengenfeld).",{u:1});
 sc("N",["mkr","gk"],"kk","1820","Georg Karl, Maurer in Burglengenfeld, und Magdalena Krempl bekommen ihren Sohn Konrad.");
+sc("N",["mhs","mei"],"mh","1817","Maria Hofer ist die Tochter des Bauern Martin Hofer und der Magdalena Eichinger aus Meldau bei Wackersdorf. Ihr eigener Geburtsort ist nicht bekannt.",{u:1});
 sc("N",["kk","mh"],"wk","1860","Konrad Karl heiratet 1846 die Bauerntochter Maria Hofer. Ihr Vater Martin Hofer war Bauer in Meldau. Tochter Walburga wird 1860 geboren.");
+sc("N",["abi","ani"],"ji","1769","Joseph Igl wird am 18.1.1769 in Fischbach bei Kallmünz getauft. Von seinen Eltern Abraham Igl und Anna sind nur die Namen bekannt.",{u:1});
+sc("N",["woh","bpl"],"kh","1775","Kunigunda Herrmann wird am 21.5.1775 in Schirndorf geboren. Von ihren Eltern Wolfgang Herrmann und Barbara Pleicher sind nur die Namen bekannt.",{u:1});
 sc("N",["ji","kh"],"jig","1806","Joseph Igl ist der älteste Vorfahre mit Taufeintrag. Kunigunda Herrmann kommt aus Schirndorf. Ihr Sohn Johann wird 1806 in Fischbach bei Kallmünz geboren.");
+sc("N",["jfe","mko"],"af","1810","Anna Feuerer wird am 23.6.1810 in Teublitz geboren. Von ihren Eltern Johann Feuerer und Margaretha Koller sind nur die Namen bekannt.",{u:1});
 sc("N",["jig","af"],"mi","1835","Johann Igl wird Bauer in Teublitz und heiratet Anna Feuerer. Tochter Maria wird dort 1835 geboren.");
+sc("N",["cli","bbe"],"jl1","1795","Joseph Liebl wird am 8.3.1795 in Büchelkühn geboren, Sohn von Caspar Liebl und Barbara Beimel.",{u:1});
+sc("N",["lei","ezi"],"me","1794","Margaretha Eigl wird 1794 in Ettmannsdorf geboren, Tochter von Lorenz Eigl und Elisabeth Zitzler.",{u:1});
 sc("N",["jl1","me"],"jl2","1829","Zwei Dörfer bei Schwandorf: Margaretha Eigl kommt aus Ettmannsdorf zu Joseph Liebl nach Büchelkühn. Ihr Sohn Joseph wird dort 1829 geboren.");
 sc("N",["jl2","mi"],"jl3","1859","Joseph Liebl, Tagelöhner, und Maria Igl heiraten am 16.6.1857 in Burglengenfeld. Beide ziehen vom Land in die Stadt.");
 sc("N",["jl3","wk"],"jol","1882","Joseph Liebl heiratet 1882 Walburga Karl. Ihr Sohn Johann wird Fabrikarbeiter in Burglengenfeld.");
@@ -275,17 +307,22 @@ sc("N",["mr"],"amr","1861","Unehelich geboren in Oberschlag bei Bubach am Forst.
 sc("N",["jb","amr"],"mb","1891","Johann Braun heiratet am 7.1.1891 die verwitwete Anna Maria Bizer, geborene Reil. Tochter Maria wird in Pirkensee geboren.");
 sc("N",["jol","mb"],"gm","1920","Johann Liebl und Maria Braun leben in Burglengenfeld. Dort wird 1920 meine Großmutter mütterlicherseits geboren.");
 /* Mutterseite · Sachsen */
+sc("D",["jgo","jsch"],"edb","1833","Emilie Dorothea Braune wird laut Familienüberlieferung 1833 in Freiberg geboren. Ihre Eltern: Johann Gottlieb und Johanna Schulze.",{u:1});
 sc("D",["fwg","edb"],"obg","1870","Der Zimmermann Güttler lebt in Freiberg. Beide Geburtsangaben stammen nur aus der Familienüberlieferung. Sohn Oskar Bernhard wird 1870 geboren.",{u:1});
 sc("D",["jkp","jcm"],"aap","1843","Der Berginvalide Pätzold und seine Frau lebten in Deuben bei Freital. Tochter Anna Auguste wird 1843 in Weistropp bei Meißen geboren.");
+sc("D",["cff","hrb"],"ejf","1845","Ernst Julius Fischer wird laut Familienüberlieferung am 22.11.1845 geboren. Seine Eltern: Christian Friedrich Fischer und Hanna Rosina Berger.",{u:1});
 sc("D",["ejf","aap"],"iaf","1875","Ernst Julius Fischer, Handarbeiter, und Anna Auguste Pätzold leben in Niedergorbitz im Dresdner Westen. Tochter Ida wird 1875 geboren.");
 sc("D",["obg","iaf"],"gv","1914","Oskar Güttler und Ida Fischer heiraten am 14.11.1896 in Löbtau (Dresden). 1914 wird in Dresden mein Großvater mütterlicherseits geboren.");
 sc("D",["gm","gv"],"mu","offen","In meiner Mutter treffen sich die Oberpfälzer Linie Liebl und die sächsische Linie Güttler. Wann und wohin die Großeltern zogen, ist noch offen.",{u:1});
 /* Vaterseite · Stiftland */
+sc("S",["ssc"],"ms","vor 1861","Maria Schraml ist die Tochter von Stephan Schraml aus Helmbrechts in Oberfranken.");
 sc("S",["jr","ms"],"amre","1861","Johann Reindl, Maurer, und Maria Schraml aus Helmbrechts in Oberfranken. Tochter Anna Margaretha wird 1861 in Groschlattengrün geboren.");
 sc("S",["jsz"],"ms2","vor 1838","Zimmermann in Ebnath (1838 belegt). Es gab zwei gleichnamige Zimmerleute in der Pfarrei, welcher es ist, ist noch offen.",{u:1});
 sc("S",["ms2","gg"],"mms","1838","Maria Schenkl bekommt unehelich Tochter Maria Magdalena. Im Taufbuch genannter Vater: Georg Gillich, Schmiedegeselle in Kleinsterz.");
 sc("S",["mms","gb"],"js","1860","Maria Magdalena Schenkl bekommt unehelich Sohn Johann. Im Taufbuch genannter Vater: Georgius Brucker, Zeugmacher in Waldershof. Die Gleichsetzung ist wahrscheinlich, aber nicht bewiesen.",{u:1});
 sc("S",["js","amre"],"jfs","1884","Johann Schenkl, Tagarbeiter, heiratet am 26.11.1882 in Marktredwitz. Sohn Johann Friedrich wird 1884 in Groschlattengrün geboren.");
+sc("S",["lro","ubu"],"mro","1808","Michael Rosner wird am 5.1.1808 in Kleinsterz geboren, Sohn des Bauern Laurentius Rosner und der Ursula Burger.");
+sc("S",["jor","jpo"],"jro","1823","Josepha Rosner wird am 11.12.1823 geboren. Ihre Eltern: Johannes Rosner, Bauer in Groppenheim, und Josepha Pötzl aus Münchenreuth.",{u:1});
 sc("S",["mro","jro"],"mgr","1860","Michael Rosner, Bauer in Kleinsterz bei Mitterteich, heiratet 1848 Josepha Rosner. Tochter Margaretha wird 1860 geboren.");
 sc("S",["mgr"],"mar","1879","Magdalena wird unehelich in Kleinsterz geboren.");
 sc("S",["jfs","mar"],"kas","1914","Der Steinbrucharbeiter Johann Friedrich Schenkl und Magdalena Rosner haben 8 Kinder. Sohn Karl Alfons wird 1914 in Pechbrunn geboren.");
@@ -301,7 +338,10 @@ sc("B",["kas","sp"],"va","Heirat 1939","Karl Alfons Schenkl und Sabina Přerost 
 sc("M",["mu","va"],"mark","","Meine Eltern bekommen mich in Landsberg am Lech.");
 sc("M",["mark"],"mark2","heute","Heute lebe ich in München. Hier laufen alle Linien zusammen.",{title:"Mark Schenkl lebt heute in München"});
 const N=SC.length;
-SC.forEach((s,i)=>{s.i=i;s.pids=[...s.par,s.ch];s.pts=[...new Set([...s.pids.map(p=>PERS[p].at),...s.via])]});
+SC.forEach((s,i)=>{s.i=i;s.hold=[];s.keep=false});
+/* Kind bleibt stehen, bis sein Partner dazukommt (höchstens 5 Szenen) */
+SC.forEach((s,i)=>{for(let j=i+1;j<N&&j-i<=5;j++){if(SC[j].par.includes(s.ch)){s.keep=true;for(let k=i+1;k<j;k++)SC[k].hold.push(s.ch);break}}});
+SC.forEach(s=>{s.pids=[...s.par,s.ch];s.pts=[...new Set([...s.pids.map(p=>PERS[p].at),...s.via])];s.cpts=[...new Set([...s.pts,...s.hold.map(p=>PERS[p].at)])]});
 
 /* ---------- Aufbau ---------- */
 const svg=d3.select("#svg"),ovl=d3.select("#ovl");
@@ -347,7 +387,7 @@ function build(){
   });
   placeEls={};Object.keys(PL).forEach(p=>{placeEls[p]=gT.append("text").attr("class","lbl").text(PL[p][0]).node()});
   // Überlagerung (Bildschirmkoordinaten)
-  ovEls={leaders:[0,1,2].map(()=>ovl.append("line").attr("class","leader").node()),
+  ovEls={leaders:[0,1,2,3,4,5].map(()=>ovl.append("line").attr("class","leader").node()),
     l1a:ovl.append("line").attr("class","conn").node(),l1b:ovl.append("line").attr("class","conn").node(),l2:ovl.append("line").attr("class","conn").node(),
     jd:ovl.append("circle").attr("r",3.2).node(),ar:ovl.append("path").attr("d","M0,0L-9,-4.5L-9,4.5Z").node(),
     yr:ovl.append("text").attr("class","cyr").attr("text-anchor","middle").node()};
@@ -356,15 +396,15 @@ function build(){
 function buildChips(){
   const box=$("chips");box.innerHTML="";chipEls=[];
   SC.forEach(s=>{
-    const roles=[["p0",s.par[0]],["p1",s.par[1]],["c",s.ch]].filter(r=>r[1]);
+    const roles=[["p0",s.par[0]],["p1",s.par[1]],["c",s.ch],...s.hold.map((pid,x)=>["h"+x,pid])].filter(r=>r[1]);
     s.chip={};
     roles.forEach(([r,pid])=>{
       const P=PERS[pid],d=document.createElement("div");d.className="chip";d.style.setProperty("--c",LINES[s.br].c);
       const a=document.createElement("b");a.textContent=P.n;d.appendChild(a);
       if(P.b){const j=document.createElement("em");j.textContent=P.b;d.appendChild(j)}
       if(P.r){const t=document.createElement("span");t.textContent=P.r;d.appendChild(t)}
-      const o=document.createElement("small");o.textContent="◉ "+PL[P.at][0];d.appendChild(o)
-      if(P.u)d.classList.add("u");
+      const o=document.createElement("small");o.textContent="◉ "+PL[P.at][0]+(P.assumed?" (angenommen)":"");d.appendChild(o)
+      if(P.u||P.assumed)d.classList.add("u");
       box.appendChild(d);s.chip[r]={el:d,pid};chipEls.push(d);
     });
   });
@@ -395,6 +435,7 @@ function camBox(pts,kmin,kmax){
   const dw=Math.max(x1-x0,.5),dh=Math.max(y1-y0,.5);
   let kk=Math.min((W-440)/dw,(safeBot()-SAFE_TOP-150)/dh);
   kk=Math.max(kmin,Math.min(kmax,kk));
+  if(x1-x0<.8&&y1-y0<.8)kk=Math.min(kmax,8);
   return {x:(x0+x1)/2,y:(y0+y1)/2,k:kk};
 }
 const overview=()=>({x:W/2,y:VC(),k:1});
@@ -402,7 +443,7 @@ function camFor(i){
   if(camCache[i])return camCache[i];
   let c;
   if(i<0)c=camBox(["burglengenfeld","dresden","muenchen","oberndorf","ustalec","daetzingen"].map(pt),1,6);
-  else c=camBox(SC[i].pts.map(pt),1.6,8);
+  else c=camBox(SC[i].cpts.map(pt),1.6,40);
   return camCache[i]=c;
 }
 function camAt(n,f){
@@ -413,7 +454,7 @@ function camAt(n,f){
 /* Chip-Anordnung je Szene (feste Versätze zum Ortspunkt, Eltern oben, Kind unten) */
 function layoutAll(){
   chipEls.forEach(el=>{el.classList.add("meas")});
-  const safe=[8,SAFE_TOP,W-8,safeBot()];
+  const safe=[8,SAFE_TOP,W-8,safeBot()],lastOff={};
   const ov=(a,b)=>Math.max(0,Math.min(a[2],b[2])-Math.max(a[0],b[0]))*Math.max(0,Math.min(a[3],b[3])-Math.max(a[1],b[1]));
   SC.forEach((s,i)=>{
     const cf=camFor(i);
@@ -421,10 +462,12 @@ function layoutAll(){
     s.off={};const placed=[];
     const roles=Object.entries(s.chip);
     roles.forEach(([r,o])=>{o.w=o.el.offsetWidth;o.h=o.el.offsetHeight});
-    // weitergereichte Person behält ihren Versatz
+    // weitergereichte und gehaltene Personen behalten ihren Versatz
     roles.forEach(([r,o])=>{
-      if(r!=="c"&&i>0&&SC[i-1].ch===o.pid&&SC[i-1].off.c){
-        s.off[r]=SC[i-1].off.c;const a=A(o.pid),f=s.off[r];placed.push([a[0]+f[0],a[1]+f[1],a[0]+f[0]+o.w,a[1]+f[1]+o.h]);o.carry=true;
+      const held=r[0]==="h",carried=r[0]==="p"&&i>0&&((SC[i-1].ch===o.pid&&SC[i-1].keep)||SC[i-1].hold.includes(o.pid));
+      o.carry=held||carried;
+      if(o.carry&&lastOff[o.pid]){
+        s.off[r]=lastOff[o.pid];const a=A(o.pid),f=s.off[r];placed.push([a[0]+f[0],a[1]+f[1],a[0]+f[0]+o.w,a[1]+f[1]+o.h]);
       }
     });
     const order=[...roles.filter(([r])=>r!=="c"),...roles.filter(([r])=>r==="c")];
@@ -442,6 +485,7 @@ function layoutAll(){
       });
       s.off[r]=best;const rc=[a[0]+best[0],a[1]+best[1],a[0]+best[0]+w,a[1]+best[1]+h];placed.push(rc);
     });
+    roles.forEach(([r,o])=>{lastOff[o.pid]=s.off[r]});
   });
   chipEls.forEach(el=>el.classList.remove("meas"));
 }
@@ -483,13 +527,13 @@ function render(i){
   }
   const rects=[],cen={};
   if(!all){
-    const nextC=n+1<N&&SC[n+1].par.includes(s.ch);
     Object.entries(s.chip).forEach(([r,o])=>{
       const a=scr(PERS[o.pid].at),of=s.off[r],x=a[0]+of[0],y=a[1]+of[1];
       o.el.style.transform=`translate(${x}px,${y}px)`;
-      const carried=r!=="c"&&n>0&&SC[n-1].ch===o.pid;
+      const carried=r[0]==="p"&&n>0&&((SC[n-1].ch===o.pid&&SC[n-1].keep)||SC[n-1].hold.includes(o.pid));
       let op;
-      if(r==="c"){op=sm(f,.58,.74);if(!nextC)op*=1-sm(f,.9,1)}
+      if(r==="c"){op=sm(f,.58,.74);if(!s.keep)op*=1-sm(f,.9,1)}
+      else if(r[0]==="h")op=1;
       else{op=carried?1:sm(f,.04,.2);op*=1-sm(f,.9,1)}
       o.el.style.opacity=op;
       o.rect=[x,y,x+o.el.offsetWidth,y+o.el.offsetHeight];o.a=a;o.op=op;rects.push(o.rect);
@@ -518,6 +562,7 @@ function render(i){
     ovEls.yr.textContent=s.y;ovEls.yr.setAttribute("x",mx+(Math.abs(end[0]-J[0])<Math.abs(end[1]-J[1])?22:0));ovEls.yr.setAttribute("y",my-(Math.abs(end[0]-J[0])<Math.abs(end[1]-J[1])?-4:7));
     ovEls.yr.setAttribute("fill",col);ovEls.yr.setAttribute("opacity",L2>20?pB*fade:0);
     // Bindelinien Chip ↔ Ortspunkt
+    ovEls.leaders.forEach(le=>le.setAttribute("opacity",0));
     Object.entries(s.chip).forEach(([r,o],x)=>{
       const le=ovEls.leaders[x],c=cen[r],e=clip(c,o.el.offsetWidth,o.el.offsetHeight,o.a,0);
       le.setAttribute("x1",e[0]);le.setAttribute("y1",e[1]);le.setAttribute("x2",o.a[0]);le.setAttribute("y2",o.a[1]);le.setAttribute("opacity",o.op*.55);
@@ -534,11 +579,16 @@ function render(i){
     boxes.push(bx);el.setAttribute("x",pp[0]+dx/k);el.setAttribute("y",pp[1]+(fs-2)/k);el.setAttribute("font-size",fs/k);el.setAttribute("stroke-width",3.6/k);el.setAttribute("opacity",op);return true;
   };
   Object.values(placeEls).forEach(el=>el.setAttribute("opacity",0));
-  if(!all)s.via.forEach(pl=>place(placeEls[pl],pt(pl),PL[pl][0],13,1,9));
-  else ["muenchen","burglengenfeld","dresden","oberndorf","pechbrunn","landsberg"].forEach(pl=>place(placeEls[pl],pt(pl),PL[pl][0],13,1,9));
+  const curPts=all?[]:s.pts;
+  const order=[...curPts,...Object.keys(PL).filter(pl=>!curPts.includes(pl))];
+  order.forEach(pl=>{
+    const isCur=curPts.includes(pl),el=placeEls[pl];
+    el.classList.toggle("thin",!isCur);
+    place(el,pt(pl),PL[pl][0],isCur?13:11,isCur?1:.72,9);
+  });
   refEls.forEach(r=>{
     r.c.setAttribute("r",2.2/k);r.c.setAttribute("opacity",k>=2?.5:0);r.t.setAttribute("opacity",0);
-    if(k>=2&&place(r.t,r.p,r.n,11,.55,7))r.t.setAttribute("opacity",.55);
+    if(k>=2&&place(r.t,r.p,r.n,11,.5,7))r.t.setAttribute("opacity",.5);
   });
   // Anzeige
   const ce=PERS[s.ch];
@@ -562,7 +612,7 @@ function showCard(s){
 }
 /* ---------- Wiedergabe ---------- */
 let playing=false,last=0;
-const SEC=7.5; // Sekunden je Szene bei Tempo 1
+const SEC=6.5; // Sekunden je Szene bei Tempo 1
 function tick(ts){
   if(!playing)return;
   const dt=Math.min(.1,(ts-last)/1000);last=ts;
