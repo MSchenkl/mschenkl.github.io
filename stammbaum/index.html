@@ -107,7 +107,7 @@ select.btn{padding:0 8px}
 #intro p{color:#cfdbee;line-height:1.55;font-size:15px;margin-bottom:10px}
 #intro small{color:var(--muted);display:block;margin-top:12px;line-height:1.5}
 @media (max-width:900px){
-  #app{grid-template-columns:1fr;grid-template-rows:auto auto minmax(0,1fr) 118px auto;grid-template-areas:"head" "left" "map" "lupes" "bar";gap:8px;padding:8px 8px 8px}
+  #app{grid-template-columns:1fr;grid-template-rows:auto auto minmax(0,1fr) 150px auto;grid-template-areas:"head" "left" "map" "lupes" "bar";gap:8px;padding:8px 8px 8px}
   #lupes{grid-template-rows:1fr;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
   #list{display:none;position:fixed;left:8px;right:8px;bottom:96px;max-height:46vh;background:#13213bfa;border:1px solid var(--line);border-radius:14px;z-index:7;box-shadow:0 8px 28px #000a}
   #list.open{display:block}
@@ -584,9 +584,11 @@ function render(i){
   views.forEach(v=>{
     if(v.R)$("v_"+v.key).classList.toggle("act",!fin&&al===v.R.line);
     v.frames.forEach(fr=>{const on=!fin&&al===fr.line;fr.rect.setAttribute("stroke-opacity",on?1:.55);fr.rect.setAttribute("stroke-width",on?2:1.2);fr.t.setAttribute("opacity",on?1:.75)});
-    v.legs.forEach(o=>{const L=o.L,t=legT(L,s,f),cur=!fin&&L.step===s,un=L.u?.6:1;
+    const selPl=new Set([...selSet].map(i=>PERS[i].at));if(selSet.has("mark"))selPl.add("muenchen");
+    v.legs.forEach(o=>{const L=o.L,t=legT(L,s,f),cur=!fin&&L.step===s,un=L.u?.6:1,hi=selSet.has(L.id)&&t>0&&(L.id===sel||selPl.has(L.from));
       o.pe.setAttribute("stroke-dasharray",`${o.len*t} ${o.len+2}`);
-      o.pe.setAttribute("stroke-width",cur?2.2:1.3);o.pe.setAttribute("opacity",t<=0?0:(cur?1:fin?.8:.42)*un);
+      o.pe.setAttribute("stroke",hi?"#fff":o.c);o.head.setAttribute("fill",hi?"#fff":o.c);
+      o.pe.setAttribute("stroke-width",hi?2.6:cur?2.2:1.3);o.pe.setAttribute("opacity",t<=0?0:hi?1:(cur?1:fin?.8:.42)*un);
       o.head.setAttribute("opacity",sm(t,.9,1)*(cur?1:fin?.8:.42)*un);
       if(o.txt)o.txt.setAttribute("opacity",sm(t,.45,.75)*(cur?1:fin?.9:0))});
     v.dots.forEach(o=>{let n=0,curN=0,pulse=0;
@@ -596,6 +598,7 @@ function render(i){
       const r=(n>0?2.6+1.5*Math.sqrt(n):2)*(o.small?.55:1);
       o.dot.setAttribute("r",r);o.dot.setAttribute("fill",n>.02?o.c:"#4a5d80");
       o.dot.setAttribute("fill-opacity",n>.02?(curN>.02||fin?1:.6):.8);
+      const hp=selPl.has(o.pl);o.dot.setAttribute("stroke",hp?"#fff":"#0b1220");o.dot.setAttribute("stroke-width",hp?2:.8);
       o.halo.setAttribute("r",r+(o.small?10:16)*pulse);o.halo.setAttribute("opacity",pulse?(1-pulse)*.9:0);
       if(o.lab){o.lab.classList.toggle("on",curN>.3||fin&&o.pl==="muenchen");o.lab.setAttribute("opacity",n>.02?1:.6)}});
   });
