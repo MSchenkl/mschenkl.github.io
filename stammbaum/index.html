@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Wege der Vorfahren</title>
-<meta name="description" content="Ahnenbaum und Karte: Von wo aus die Vorfahren von Mark Schenkl nach München kamen, von den ältesten bekannten Ahnen (um 1743) bis heute.">
+<meta name="description" content="Ahnenbaum und Karte: Von wo aus die Vorfahren von Mark Schenkl nach München kamen, von den ältesten bekannten Ahnen im 17. Jahrhundert bis heute.">
 <meta name="theme-color" content="#0b1220">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <style>
@@ -245,7 +245,17 @@ per("mu","Meine Mutter",1,"muenchen","","",{u:1});
 per("jr","Johann Reindl",5,"groschlattengruen","","Maurer");
 per("ms","Maria Schraml",5,"helmbrechts","aus Helmbrechts");
 per("amre","Anna Margaretha Reindl",4,"groschlattengruen","*1861 Groschlattengrün");
-per("jsz","Johann Schenkl",7,"ebnath","1838 belegt","Zimmermann",{u:1});
+per("jsz","Johann Schenkl",7,"ebnath","*1785 oder *1788 · Schwarzenreuth, Pfarrei Ebnath","Zimmermann",{u:1});
+per("cms","Caspar oder Matthias Schenkl",8,"ebnath","*1756 bzw. *1762 · Schwarzenreuth, Pfarrei Ebnath","Zimmermann",{u:1});
+per("jas","Johann Adam Schenkl",9,"ebnath","*1725 Ebnath · Schwarzenreuth","Zimmermann");
+per("aup","Anna Ursula Philberth",9,"ebnath","aus Schwarzenreuth, Pfarrei Ebnath");
+per("jos","Joseph Schenkl",10,"ebnath","*1686 Ebnath (wahrscheinlich)","Zimmermann");
+per("bge","Barbara Gebhard",10,"ebnath","aus Ebnath");
+per("jsm","Johann Schenkl",11,"ebnath","1717 in Ebnath belegt","Müller, Baumeister und Hammerherr");
+per("bsr","Barbara Schreier",11,"ebnath","∞ 1684 Ebnath","",{u:1});
+per("gsc","Georg Schengl",12,"ebnath","† vor 1684 · Ebnath","",{u:1});
+per("jgk","Johann Georg Kürner",8,"burglengenfeld","um 1707 · † 1773 Burglengenfeld","Maurer");
+per("mkm","Margaretha, verh. Kürner",8,"burglengenfeld","um 1722 · † 1772 Burglengenfeld");
 per("ms2","Maria Schenkl",6,"ebnath","ledig");
 per("gg","Georg Gillich",6,"kleinsterz","","Schmiedegeselle");
 per("mms","Maria Magdalena Schenkl",5,"ebnath","*1838 Ebnath");
@@ -302,7 +312,8 @@ per("jpo","Josepha Pötzl",6,"kleinsterz","aus Münchenreuth","",{u:1,assumed:1}
 const SC=[];
 const sc=(br,par,ch,y,txt,o={})=>SC.push({br,par,ch,y,txt,via:[],...o});
 /* Mutterseite · Naab-Tal */
-sc("N",["pk","mk"],"mkr","1782","Das älteste bekannte Paar. Beide starben in Burglengenfeld, ihre Geburtsorte sind unbekannt. Margaretha Kürner ist die älteste datierte Vorfahrin.");
+sc("N",["jgk","mkm"],"mk","1749","Am 10.10.1749 wird in Burglengenfeld Anna Margaretha getauft, Tochter des Maurers Johann Georg Kürner aus der Vorstadt und seiner Frau Margaretha. Sie ist wahrscheinlich die spätere Frau Krempl. Das Sterbebuch von 1800 nennt allerdings 57 Jahre, das ergäbe ein Geburtsjahr um 1743. Der Geburtsname der Mutter ist unbekannt.",{u:1});
+sc("N",["pk","mk"],"mkr","1782","Paul Krempl, Zimmermann, und Margaretha Kürner. Beide starben in Burglengenfeld, Pauls Geburtsort ist unbekannt.");
 sc("N",["gks","csi"],"gk","1780","Georg Karl, der spätere Maurer, ist der Sohn von Georg Karl und Catharina Silbereisen († 1832 in Burglengenfeld).",{u:1});
 sc("N",["mkr","gk"],"kk","1820","Georg Karl, Maurer in Burglengenfeld, und Magdalena Krempl bekommen ihren Sohn Konrad.");
 sc("N",["mhs","mei"],"mh","1817","Maria Hofer ist die Tochter des Bauern Martin Hofer und der Magdalena Eichinger aus Meldau bei Wackersdorf. Ihr eigener Geburtsort ist nicht bekannt.",{u:1});
@@ -332,7 +343,12 @@ sc("D",["gm","gv"],"mu","offen","In meiner Mutter treffen sich die Oberpfälzer 
 /* Vaterseite · Stiftland */
 sc("S",["ssc"],"ms","vor 1861","Maria Schraml ist die Tochter von Stephan Schraml aus Helmbrechts in Oberfranken.");
 sc("S",["jr","ms"],"amre","1861","Johann Reindl, Maurer, und Maria Schraml aus Helmbrechts in Oberfranken. Tochter Anna Margaretha wird 1861 in Groschlattengrün geboren.");
-sc("S",["jsz"],"ms2","vor 1838","Zimmermann in Ebnath (1838 belegt). Es gab zwei gleichnamige Zimmerleute in der Pfarrei, welcher es ist, ist noch offen.",{u:1});
+sc("S",["gsc"],"jsm","vor 1684","Georg Schengl ist der früheste bekannte Namensträger. Er wird 1684 bei der Trauung seines Sohnes Johann in Ebnath als verstorben genannt.",{u:1});
+sc("S",["jsm","bsr"],"jos","1686","Johann Schenkl, Müller, Baumeister und Hammerherr in Ebnath, ist 1717 als Vater des Joseph belegt. Wahrscheinlich ist er der Johann Schengl, der am 18.1.1684 Barbara Schreier heiratet, Tochter des Hammermeisters im Oberen Hammer zu Ebnath. Joseph ist dann wahrscheinlich der am 3.8.1686 getaufte Sohn.",{u:1});
+sc("S",["jos","bge"],"jas","1725","Joseph Schenkl, Zimmermann in Ebnath, heiratet am 23.11.1717 Barbara Gebhard, Tochter des Wirts und Bäckers Christoph Gebhard. Sohn Johann Adam wird am 24.9.1725 in Ebnath getauft. Belegt.");
+sc("S",["jas","aup"],"cms","1756/1762","Johann Adam Schenkl, Zimmermann in Schwarzenreuth, heiratet am 7.2.1752 Anna Ursula Philberth, Tochter des Bauern Michael Philberth. Ihre Söhne Caspar (getauft 27.1.1756) und Matthias (getauft 10.1.1762) werden beide Zimmerleute. Belegt.");
+sc("S",["cms"],"jsz","1785/1788","Zwei Vettern heißen Johann Schenkl und sind Zimmerleute in Schwarzenreuth: der Sohn von Caspar (*1785, † 1857) und der Sohn von Matthias (*1788). Welcher von beiden der Vater der Maria ist, ist noch offen. Johann Adam Schenkl ist in beiden Fällen der Großvater.",{u:1});
+sc("S",["jsz"],"ms2","vor 1838","Zimmermann in Schwarzenreuth bei Ebnath. Es gab zwei gleichnamige Vettern, welcher es ist, ist noch offen.",{u:1});
 sc("S",["ms2","gg"],"mms","1838","Maria Schenkl bekommt unehelich Tochter Maria Magdalena. Im Taufbuch genannter Vater: Georg Gillich, Schmiedegeselle in Kleinsterz.");
 sc("S",["mms","gb"],"js","1860","Maria Magdalena Schenkl bekommt unehelich Sohn Johann. Im Taufbuch genannter Vater: Georgius Brucker, Zeugmacher in Waldershof. Die Gleichsetzung ist wahrscheinlich, aber nicht bewiesen.",{u:1});
 sc("S",["js","amre"],"jfs","1884","Johann Schenkl, Tagarbeiter, heiratet am 26.11.1882 in Marktredwitz. Sohn Johann Friedrich wird 1884 in Groschlattengrün geboren.");
@@ -368,7 +384,7 @@ const NS=8,stepOf=d=>Math.max(0,7-d);
 const relName=d=>d===0?"Ich":d===1?"Eltern":d===2?"Großeltern":d===3?"Urgroßeltern":d===4?"Ururgroßeltern":(d-2)+"× Urgroßeltern";
 const STEPNAME=["Älteste Vorfahren","4× Urgroßeltern","3× Urgroßeltern","Ururgroßeltern","Urgroßeltern","Großeltern","Eltern","Ich"];
 const STEPTXT=[
- "Um 1750: Die ältesten bekannten Vorfahren leben im Naab-Tal rund um Burglengenfeld. Im Stiftland ist ein Zimmermann Schenkl in Ebnath belegt.",
+ "Die ältesten bekannten Vorfahren: im Naab-Tal die Familien rund um Burglengenfeld, im Stiftland die Zimmerleute Schenkl in Ebnath, zurück bis ins 17. Jahrhundert.",
  "Die Familien bleiben in ihren Dörfern. Im Stiftland kommen Kleinsterz und das oberfränkische Helmbrechts dazu.",
  "Jetzt sind alle vier Herkunftsräume zu sehen: Naab-Tal, Sachsen, Stiftland und Böhmen.",
  "Im Naab-Tal ziehen die Familien vom Dorf in die Stadt Burglengenfeld. In Sachsen leben sie in Freiberg und im Umland von Dresden.",
@@ -376,7 +392,7 @@ const STEPTXT=[
  "Die Großeltern kommen in Burglengenfeld, Dresden, Pechbrunn und Oberndorf bei Salzburg zur Welt.",
  "Alle Linien laufen in München zusammen. Die Großeltern väterlicherseits heiraten 1939 im Münchner Dom, der Weg der Mutterseite ist noch offen.",
  "In Landsberg am Lech geboren, heute in München."];
-const ENDTXT="Von 1743 bis heute: vier Herkunftsräume, ein Ziel. Punkt im Baum oder Ort auf der Karte antippen für Einzelheiten.";
+const ENDTXT="Vom 17. Jahrhundert bis heute: vier Herkunftsräume, ein Ziel. Punkt im Baum oder Ort auf der Karte antippen für Einzelheiten.";
 IDS.forEach(id=>{const P=PERS[id];P.d=DEPTH[id];P.step=stepOf(P.d);
   P.line=P.d<=1?"M":(SCOF[id]?SCOF[id].br:SC.find(s=>s.par.includes(id)).br);
   const m=/(?:\*|um )(\d{4})/.exec(P.r);P.by=m?+m[1]:null});
@@ -385,7 +401,7 @@ PERS.mark.r="geboren in Landsberg am Lech · heute in München";
 const TX={};let leafN=0;
 (function lay(id){const p=PAR[id]||[];if(!p.length){TX[id]=leafN++;return}p.forEach(lay);TX[id]=p.reduce((a,b)=>a+TX[b],0)/p.length})("mark");
 const STEPS=[...Array(NS)].map((_,s)=>{
-  const ids=IDS.filter(i=>PERS[i].step===s).sort((a,b)=>ORDER.indexOf(PERS[a].line)-ORDER.indexOf(PERS[b].line)||TX[a]-TX[b]);
+  const ids=IDS.filter(i=>PERS[i].step===s).sort((a,b)=>ORDER.indexOf(PERS[a].line)-ORDER.indexOf(PERS[b].line)||PERS[b].d-PERS[a].d||TX[a]-TX[b]);
   const lines=ORDER.filter(l=>ids.some(i=>PERS[i].line===l)),ys=ids.map(i=>PERS[i].by).filter(Boolean);
   return {s,ids,lines,y0:ys.length?Math.min(...ys):null,y1:ys.length?Math.max(...ys):null}});
 /* Zeitfenster einer Linie innerhalb eines Schritts */
@@ -506,7 +522,7 @@ function buildView(key){
   return v;
 }
 function buildTree(){
-  const box=$("treeBox"),w=box.clientWidth,narrow=innerWidth<=900,rh=narrow?17:Math.max(26,Math.min(38,Math.floor((innerHeight-400)/(MAXD+1)))),top=narrow?4:8,h=top*2+(MAXD+1)*rh;
+  const box=$("treeBox"),w=box.clientWidth,narrow=innerWidth<=900,rh=narrow?14:Math.max(24,Math.min(38,Math.floor((innerHeight-400)/(MAXD+1)))),top=narrow?4:8,h=top*2+(MAXD+1)*rh;
   const svg=d3.select("#tree").attr("width",w).attr("height",h).attr("viewBox",`0 0 ${w} ${h}`);svg.selectAll("*").remove();
   const gut=104,x=id=>gut+(TX[id]+.5)*(w-gut-8)/leafN,y=d=>top+(MAXD-d)*rh+rh/2;
   const t={bands:[],lbls:[],links:[],nodes:[],x,y};
@@ -547,7 +563,7 @@ function buildList(s){
   const S=STEPS[s];
   S.lines.forEach(l=>{const L=LINES[l];
     h+=`<h3 data-l="${l}" style="color:${L.c}"><i></i>${esc(l==="M"?(s===7?"Ich":"Eltern"):L.side+" · "+L.n)}</h3>`;
-    S.ids.filter(i=>PERS[i].line===l).forEach(i=>{h+=entry(i,s===0&&PERS[i].d===8?" · 6× Urgroßeltern":"")});
+    S.ids.filter(i=>PERS[i].line===l).forEach(i=>{h+=entry(i,s===0?" · "+relName(PERS[i].d):"")});
   });
   el.innerHTML=h;el.scrollTop=0;
   el.querySelectorAll("button").forEach(b=>{b.onclick=()=>showPerson(b.dataset.id)});
@@ -559,7 +575,7 @@ function render(i){
   /* Kopf */
   $("nowK").textContent=fin?"Schlussbild":"Generation "+(s+1)+" von "+NS;
   $("nowG").textContent=fin?"Alle Wege":STEPNAME[s];
-  const S=STEPS[Math.min(ls,NS-1)];$("nowY").textContent=fin?"1743 bis heute":S.y0?(S.y0===S.y1?"geboren "+S.y0:"geboren ca. "+S.y0+"–"+S.y1):"";
+  const S=STEPS[Math.min(ls,NS-1)];$("nowY").textContent=fin?"17. Jahrhundert bis heute":S.y0?(S.y0===S.y1?"geboren "+S.y0:"geboren ca. "+S.y0+"–"+S.y1):"";
   $("cap").textContent=fin?ENDTXT:STEPTXT[s];
   document.querySelectorAll("#legend span").forEach(e=>e.classList.toggle("on",fin||e.dataset.l===al));
   document.querySelectorAll("#steps button").forEach((e,j)=>e.classList.toggle("on",!fin&&j===s));
