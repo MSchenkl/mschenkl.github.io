@@ -20,7 +20,8 @@ body{background:var(--bg);color:var(--text);font-family:"Inter",ui-sans-serif,sy
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 :focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:6px}
 #stage{position:fixed;inset:0;background:radial-gradient(1200px 800px at 50% 40%,#0f1a2e,var(--sea))}
-svg{width:100%;height:100%;display:block}
+svg{display:block}
+#svg{width:auto;height:auto}
 .land{fill:#17284a;stroke:none}
 .border{fill:none;stroke:var(--border);stroke-linejoin:round}
 .lbl{fill:var(--text);font-weight:600;paint-order:stroke;stroke:#0b1220;stroke-linejoin:round;pointer-events:none}
@@ -93,6 +94,23 @@ select.btn{padding:0 8px}
 #card .person span{display:block;font-size:12.5px;color:var(--muted);margin-top:1px}
 #card .route{font-size:12.5px;color:var(--c,#33e0c0);margin:2px 0 6px;font-weight:600}
 @media (max-width:700px){#inset{display:none}#chip{max-width:60vw}}
+
+#ovl{position:fixed;left:0;top:0;width:auto;height:auto;z-index:3;pointer-events:none}
+#ovl .conn{stroke-width:1.5;stroke-linecap:round}
+#ovl .leader{stroke:#9db0cc;stroke-width:1;stroke-dasharray:2 3}
+#ovl .cyr{font-size:12px;font-weight:800;paint-order:stroke;stroke:#0b1220;stroke-width:4px;stroke-linejoin:round}
+#chips{position:fixed;inset:0;z-index:4;pointer-events:none}
+.chip{position:absolute;left:0;top:0;display:none;opacity:0;background:#0e1a33f5;border:1px solid var(--line);border-left:4px solid var(--c);border-radius:10px;padding:6px 10px 7px;max-width:230px;box-shadow:0 6px 20px #0009}
+.chip.meas{display:block;visibility:hidden;opacity:1}
+.chip b{display:block;font-size:13.5px;font-weight:700;line-height:1.25}
+.chip em{display:block;font-style:normal;font-size:12px;font-weight:600;color:var(--c);line-height:1.3}
+.chip span{display:block;font-size:11.5px;color:var(--muted);line-height:1.3}
+.chip small{display:block;font-size:11px;color:#c9d6ea;line-height:1.3;margin-top:1px}
+.chip.u{border-style:dashed;border-left-style:solid}
+.legend span{transition:opacity .3s}
+.legend span.dim{opacity:.35}
+#card .ttl{font-size:16px;font-weight:700;line-height:1.3;margin:4px 0 6px}
+#ticks span{font-weight:600}
 </style>
 </head>
 <body>
@@ -107,7 +125,8 @@ select.btn{padding:0 8px}
   <div id="yearBig" aria-live="off"><span id="yr">1743</span><small id="gen"></small></div>
 </header>
 
-<div id="chip"></div>
+<svg id="ovl" aria-hidden="true"></svg>
+<div id="chips"></div>
 <svg id="inset" role="img" aria-label="Übersichtskarte"></svg>
 <div id="card" aria-live="polite"></div>
 
@@ -135,8 +154,8 @@ select.btn{padding:0 8px}
 <div id="intro">
   <div class="box">
     <h2>Wo kamen wir her?</h2>
-    <p>Die Karte beginnt bei den ältesten bekannten Vorfahren (um 1743, Burglengenfeld) und folgt ihren Wegen Generation für Generation – aus der Oberpfalz, dem Stiftland, Sachsen, Böhmen und dem Salzburger Land – bis nach München.</p>
-    <p>Jeder Pfeil trägt das Jahr, in dem der Ortswechsel belegt ist.</p>
+    <p>Die Animation folgt der Abstammung: Erst erscheinen die Eltern mit Namen, Beruf und Daten, dann führt eine dünne Linie zum Kind. Die Eltern blenden aus, das Kind bleibt, bis sein Partner dazukommt, und dann geht es eine Generation weiter.</p>
+    <p>Sie beginnt bei den ältesten bekannten Vorfahren in Burglengenfeld (um 1743). Zuerst kommt die Mutterseite (Naab-Tal, Sachsen), dann die Vaterseite (Stiftland, Böhmen und Salzburg), am Ende ich.</p>
     <button class="btn primary" id="go" type="button">▶ Animation starten</button>
     <small>Grundlage: Kirchenbücher, Urkunden und der Ancestry-Stammbaum (Stand 22.11.2026). Namentlich genannt sind nur verstorbene Vorfahren. Gestrichelte Pfeile sind unsicher oder zeitlich offen. Ortspunkte liegen auf Gemeindeebene.</small>
   </div>
@@ -160,78 +179,149 @@ const PL={
  daetzingen:["Dätzingen",8.887,48.717],stjohann:["St. Johann in Tirol",12.429,47.522],seeham:["Seeham",13.078,47.968],mondsee:["Mondsee",13.350,47.856],
  oberndorf:["Oberndorf b. Salzburg",12.946,47.940],muenchen:["München",11.575,48.137],landsberg:["Landsberg am Lech",10.877,48.050]
 };
-/* Orientierungsstädte (nur grau, ohne Bezug zur Familie) */
 const REF=[["Prag",14.42,50.08],["Wien",16.37,48.21],["Nürnberg",11.08,49.45],["Regensburg",12.10,49.01],["Salzburg",13.04,47.80],["Innsbruck",11.40,47.27],["Leipzig",12.37,51.34],["Stuttgart",9.18,48.78],["Augsburg",10.90,48.37],["Pilsen",13.38,49.75],["Linz",14.29,48.31],["Würzburg",9.93,49.79],["Passau",13.46,48.57],["Berlin",13.40,52.52],["Karlsbad",12.87,50.23]];
 const LINES={
- S:{n:"Stiftland & Fichtelgebirge",c:"#4da3ff"},
- L:{n:"Naab-Tal & Burglengenfeld",c:"#ffb454"},
- D:{n:"Sachsen",c:"#33e0c0"},
- B:{n:"Böhmen & Salzburger Land",c:"#c58cff"},
- M:{n:"Ich",c:"#ff7a90"}
+ N:{n:"Naab-Tal",side:"Mutterseite",c:"#ffb454"},
+ D:{n:"Sachsen",side:"Mutterseite",c:"#33e0c0"},
+ S:{n:"Stiftland",side:"Vaterseite",c:"#4da3ff"},
+ B:{n:"Böhmen & Salzburg",side:"Vaterseite",c:"#c58cff"},
+ M:{n:"Ich",side:"",c:"#ff7a90"}
 };
-/* ---------- Ereignisse ----------
- ev(Jahr, Linie, Generation, Personen[{n,r,b}], Text, {starts:[Orte], legs:[[von,nach]], u, yl}) */
-const P=(n,r,b)=>({n,r,b});
-const E=[];
-const ev=(y,ln,g,ppl,txt,o={})=>E.push({y,ln,g,ppl,txt,starts:[],legs:[],...o});
-ev(1743,"L",7,[P("Margaretha Kürner","um 1743 – † 28.11.1800"),P("Paul Krempl","um 1745 – † 23.1.1805","Zimmermann")],"Das älteste bekannte Paar. Beide starben in Burglengenfeld, ihre Geburtsorte sind unbekannt. Margaretha Kürner ist die älteste datierte Vorfahrin.",{starts:["burglengenfeld"],yl:"um 1743"});
-ev(1769,"L",7,[P("Joseph Igl","*18.1.1769 Fischbach – † 1844")],"Der älteste Vorfahre mit Taufeintrag. Fischbach liegt bei Kallmünz im Landkreis Regensburg.",{starts:["fischbach"]});
-ev(1772,"L",6,[P("Martin Hofer","um 1772 – † 8.1.1851 Meldau","Bauer")],"Bauer in Meldau bei Wackersdorf. Sein Geburtsort ist unbekannt.",{starts:["meldau"],yl:"um 1772"});
-ev(1775,"L",7,[P("Kunigunda Herrmann","*21.5.1775 Schirndorf – † 1855")],"Geboren in Schirndorf bei Kallmünz.",{starts:["schirndorf"]});
-ev(1780,"L",6,[P("Georg Karl","*22.9.1780 – † 1848","Maurer"),P("Magdalena Krempl","*29.3.1782 – † 1862")],"Maurer in Burglengenfeld. Seine Frau ist die Tochter von Paul Krempl und Margaretha Kürner.",{starts:["burglengenfeld"]});
-ev(1794,"L",6,[P("Margaretha Eigl","*1794 Ettmannsdorf – † 1833"),P("Joseph Liebl","*8.3.1795 Büchelkühn – † 1865","Bauer")],"Zwei Dörfer bei Schwandorf, nur wenige Kilometer voneinander entfernt.",{starts:["ettmannsdorf","buechelkuehn"]});
-ev(1806,"L",7,[P("Kunigunda Herrmann","","")],"Sie zieht zu ihrem Mann Joseph Igl nach Fischbach. Ihr Sohn Johann Igl wird dort am 22.4.1806 geboren.",{legs:[["schirndorf","fischbach"]],yl:"bis 1806"});
-ev(1808,"S",5,[P("Michael Rosner","*5.1.1808 Kleinsterz – † 29.11.1877","Bauer")],"Bauer in Kleinsterz bei Mitterteich im Stiftland. Seine Eltern waren Laurentius Rosner und Ursula Burger.",{starts:["kleinsterz"]});
-ev(1810,"L",6,[P("Anna Feuerer","*23.6.1810 Teublitz – † 3.3.1842")],"Geboren in Teublitz an der Naab.",{starts:["teublitz"]});
-ev(1812,"S",5,[P("Georgius Brucker","*10.9.1812 Waldershof","Zeugmacher")],"Zeugmacher (Tuchmacher) in Waldershof. Laut Taufbuch ist er der Vater von Johann Schenkl; die Gleichsetzung ist wahrscheinlich, aber nicht bewiesen.",{starts:["waldershof"]});
-ev(1829,"L",6,[P("Margaretha Eigl","",""),P("Joseph Liebl","","Bauer")],"Heirat. Sie zieht von Ettmannsdorf nach Büchelkühn. Ihr Sohn Joseph wird dort am 10.4.1829 geboren.",{legs:[["ettmannsdorf","buechelkuehn"]],yl:"bis 1829"});
-ev(1832,"D",4,[P("Friedrich Wilhelm Güttler","*15.5.1832 Chemnitz","Zimmermann"),P("Emilie Dorothea Braune","*2.8.1833 Freiberg")],"Beide Geburtsangaben stammen nur aus der Familienüberlieferung. Gestorben sind beide vor 1896 in Freiberg.",{starts:["chemnitz","freiberg"],u:1});
-ev(1835,"L",6,[P("Johann Igl","*22.4.1806 Fischbach","Bauer")],"Er heiratet Anna Feuerer und wird Bauer in Teublitz. Ihre Tochter Maria wird dort am 9.2.1835 geboren.",{legs:[["fischbach","teublitz"]],yl:"bis 1835"});
-ev(1838,"S",7,[P("Johann Schenkl","1838 belegt","Zimmermann")],"1838 als Zimmermann in Ebnath belegt. Seine Enkelin Maria Magdalena Schenkl wird dort am 23.2.1838 geboren. Welcher von zwei gleichnamigen Zimmerleuten er ist, ist noch offen.",{starts:["ebnath"],u:1});
-ev(1840,"B",4,[P("Wáclav Přerost","*18.10.1840 Ústaleč","Taglöhner"),P("Rosalia Wazlawik","*1841 Hora – † 7.4.1906")],"Beide stammen aus dem Böhmerwald-Vorland (Bezirke Klatovy und Volyně).",{starts:["ustalec","hora"]});
-ev(1843,"D",4,[P("Anna Auguste Pätzold","*12.10.1843 Weistropp – † 21.4.1898")],"Geboren in Weistropp bei Meißen. Ihr Vater Johann Karl Gottlob Pätzold war Berginvalide.",{starts:["weistropp"]});
-ev(1846,"L",5,[P("Maria Hofer","*5.12.1817 – † 21.8.1878"),P("Konrad Karl","*30.1.1820 – † 2.12.1888","Maurer")],"Heirat am 17.2.1846 in Burglengenfeld. Sie ist die Tochter des Bauern Martin Hofer aus Meldau.",{legs:[["meldau","burglengenfeld"]]});
-ev(1857,"L",5,[P("Joseph Liebl","*10.4.1829 Büchelkühn","Tagelöhner"),P("Maria Igl","*9.2.1835 Teublitz – † 9.1.1886")],"Heirat am 16.6.1857 in Burglengenfeld. Beide ziehen vom Land in die Stadt. Ihr Sohn Joseph wird dort 1859 geboren.",{legs:[["buechelkuehn","burglengenfeld"],["teublitz","burglengenfeld"]]});
-ev(1860,"S",4,[P("Johann Schenkl","*9.1.1860 Ebnath","Tagarbeiter")],"Unehelich geboren. Im Taufbuch ist als Vater Georgius Brucker aus Waldershof genannt.",{legs:[["waldershof","ebnath"]],u:1});
-ev(1861,"S",5,[P("Maria Schraml","","Tochter eines Helmbrechters"),P("Johann Reindl","","Maurer")],"Maria Schraml kommt aus Helmbrechts in Oberfranken. Ihre Tochter Anna Margaretha Reindl wird am 12.5.1861 in Groschlattengrün geboren.",{legs:[["helmbrechts","groschlattengruen"]],yl:"bis 1861"});
-ev(1861,"L",4,[P("Anna Maria Reil","*11.3.1861 Oberschlag","Söldnerstochter")],"Unehelich geboren in Oberschlag (Pfarrei Bubach am Forst).",{starts:["oberschlag"]});
-ev(1869,"D",4,[P("Anna Auguste Pätzold","","")],"Sie lebt jetzt in Deuben bei Freital. Ihre Tochter Auguste Marie wird dort am 5.12.1869 geboren.",{legs:[["weistropp","deuben"]]});
-ev(1870,"D",4,[P("Friedrich Wilhelm Güttler","","Zimmermann")],"Zimmermann in Freiberg. Sein Sohn Oskar Bernhard wird dort am 21.7.1870 geboren.",{legs:[["chemnitz","freiberg"]],u:1,yl:"bis 1870"});
-ev(1870,"B",4,[P("Wáclav Přerost","","Taglöhner"),P("Rosalia Wazlawik","","")],"Heirat am 3.1.1870 im württembergischen Dätzingen. Beleg ist der Heiratsindex.",{legs:[["ustalec","daetzingen"],["hora","daetzingen"]]});
-ev(1875,"D",4,[P("Anna Auguste Pätzold","","") ,P("Ernst Julius Fischer","*22.11.1845 – † vor 1889","Handarbeiter")],"Die Familie lebt in Niedergorbitz im Dresdner Westen. Tochter Ida Auguste wird dort am 1.2.1875 geboren.",{legs:[["deuben","niedergorbitz"]]});
-ev(1879,"S",3,[P("Magdalena Rosner","*18.7.1879 Kleinsterz – † 15.8.1928")],"Unehelich geboren in Kleinsterz.",{starts:["kleinsterz"]});
-ev(1880,"B",4,[P("Wáclav und Rosalia Přerost","","Taglöhner")],"Sie leben jetzt in Tirol. Ihr Sohn Wenzel wird am 19.5.1880 in St. Johann geboren.",{legs:[["daetzingen","stjohann"]]});
-ev(1880,"B",4,[P("Johann Hovorka","† vor 1908","Maurer"),P("Anna Mareš","† 24.12.1928")],"Die Hochzeit war in Číhošť in Böhmen. Ihre Tochter Josefa wird am 26.11.1880 in Mondsee geboren.",{legs:[["cihost","mondsee"]]});
-ev(1882,"S",4,[P("Johann Schenkl","","Tagarbeiter"),P("Anna Margaretha Reindl","*12.5.1861 Groschlattengrün")],"Heirat am 26.11.1882 in Marktredwitz. Er zieht von Ebnath nach Groschlattengrün. Ihr Sohn Johann Friedrich wird dort 1884 geboren.",{legs:[["ebnath","groschlattengruen"]]});
-ev(1884,"B",4,[P("Familie Přerost","","Taglöhner")],"Die Familie lebt jetzt in Seeham bei Salzburg. Taufe der Tochter Justina am 15.11.1884.",{legs:[["stjohann","seeham"]]});
-ev(1891,"L",4,[P("Johann Braun","","Bergarbeiter"),P("Anna Maria Reil","","")],"Heirat am 7.1.1891 in Leonberg. Er kommt aus Ponholz, sie aus Oberschlag. Tochter Maria wird am 13.4.1891 in Pirkensee geboren.",{legs:[["ponholz","pirkensee"],["oberschlag","pirkensee"]]});
-ev(1896,"D",3,[P("Oskar Bernhard Güttler","*21.7.1870 Freiberg – † 27.10.1928","Fabrikarbeiter, Schiffsheizer"),P("Ida Auguste Fischer","*1.2.1875 Niedergorbitz")],"Heirat am 14.11.1896 in Löbtau, heute ein Stadtteil von Dresden.",{legs:[["freiberg","dresden"],["niedergorbitz","dresden"]]});
-ev(1908,"B",3,[P("Wenzel Přerost","*19.5.1880 St. Johann – † 1.7.1937","Taglöhner, Pflasterer"),P("Josefa Howorka","*26.11.1880 Mondsee – † 9.9.1943")],"Heirat am 3.11.1908 in Oberndorf bei Salzburg. Dort wohnt die Familie von da an.",{legs:[["seeham","oberndorf"],["mondsee","oberndorf"]]});
-ev(1914,"S",3,[P("Johann Friedrich Schenkl","*2.2.1884 Groschlattengrün – † 28.1.1976","Steinbrucharbeiter"),P("Magdalena Rosner","","")],"Das Paar hat 8 Kinder. Sohn Karl Alfons wird am 23.5.1914 in Pechbrunn geboren.",{legs:[["groschlattengruen","pechbrunn"],["kleinsterz","pechbrunn"]]});
-ev(1920,"L",3,[P("Maria Braun","*13.4.1891 Pirkensee"),P("Johann Liebl","*13.7.1882 Burglengenfeld","Fabrikarbeiter")],"Das Paar lebt in Burglengenfeld. Ihre Tochter wird dort 1920 geboren.",{legs:[["pirkensee","burglengenfeld"]]});
-ev(1939,"S",2,[P("Karl Alfons Schenkl","*23.5.1914 Pechbrunn – † 6.10.1982 München"),P("Sabina Přerost","*17.10.1917 Oberndorf – † 5.6.2001 München")],"Heirat am 29.4.1939 im Dom zu München. Beide bleiben in München. Damit sind die Linien aus der Oberpfalz und aus Österreich vereint.",{legs:[["pechbrunn","muenchen"],["oberndorf","muenchen"]]});
-ev(0,"D",2,[P("Großeltern mütterlicherseits","*1914 Dresden / *1920 Burglengenfeld")],"Die Linien Güttler (Sachsen) und Liebl (Oberpfalz) führen über meine Mutter nach Oberbayern. Wann sie zogen, ist noch offen.",{legs:[["dresden","muenchen"],["burglengenfeld","muenchen"]],u:1,yl:"Jahr offen"});
-ev(0,"M",0,[P("Mark Schenkl","geboren in Landsberg am Lech")],"Ich werde in Landsberg am Lech geboren.",{starts:["landsberg"]});
-ev(0,"M",0,[P("Mark Schenkl","","")],"Heute lebe ich hier: In München laufen alle Linien zusammen.",{legs:[["landsberg","muenchen"]],yl:"heute"});
-const N=E.length;
-E.forEach((e,i)=>{e.i=i;e.pts=[...e.starts,...e.legs.flat()]});
+/* ---------- Personen ---------- */
+const PERS={};
+const per=(id,n,g,at,r,b,o={})=>{PERS[id]={id,n,g,at,r:r||"",b:b||"",...o}};
+/* Naab-Tal */
+per("pk","Paul Krempl",7,"burglengenfeld","um 1745 · † 1805","Zimmermann");
+per("mk","Margaretha Kürner",7,"burglengenfeld","um 1743 · † 1800");
+per("mkr","Magdalena Krempl",6,"burglengenfeld","*1782 · † 1862");
+per("gk","Georg Karl",6,"burglengenfeld","*1780 · † 1848","Maurer");
+per("kk","Konrad Karl",5,"burglengenfeld","*1820 · † 1888","Maurer");
+per("mh","Maria Hofer",5,"meldau","*1817 · Eltern in Meldau","",{u:1});
+per("wk","Walburga Karl",4,"burglengenfeld","*1860");
+per("ji","Joseph Igl",7,"fischbach","*1769 · † 1844","");
+per("kh","Kunigunda Herrmann",7,"schirndorf","*1775 Schirndorf · † 1855");
+per("jig","Johann Igl",6,"fischbach","*1806","Bauer");
+per("af","Anna Feuerer",6,"teublitz","*1810 · † 1842");
+per("mi","Maria Igl",5,"teublitz","*1835 · † 1886");
+per("jl1","Joseph Liebl",6,"buechelkuehn","*1795 · † 1865","Bauer");
+per("me","Margaretha Eigl",6,"ettmannsdorf","*1794 · † 1833");
+per("jl2","Joseph Liebl",5,"buechelkuehn","*1829","Tagelöhner");
+per("jl3","Joseph Liebl",4,"burglengenfeld","*1859");
+per("jol","Johann Liebl",3,"burglengenfeld","*1882","Fabrikarbeiter");
+per("bb","Barbara Braun",5,"ponholz","um 1827","Schneiderstochter");
+per("jb","Johann Braun",4,"ponholz","geboren nach 1860","Bergarbeiter");
+per("mr","Margarethe Reil",5,"oberschlag","","Söldnerstochter");
+per("amr","Anna Maria Reil",4,"oberschlag","*1861");
+per("mb","Maria Braun",3,"pirkensee","*1891");
+per("gm","Meine Großmutter",2,"burglengenfeld","*1920");
+/* Sachsen */
+per("fwg","Friedrich Wilhelm Güttler",4,"chemnitz","*1832 (Familienüberlieferung)","Zimmermann",{u:1});
+per("edb","Emilie Dorothea Braune",4,"freiberg","*1833 (Familienüberlieferung)","",{u:1});
+per("obg","Oskar Bernhard Güttler",3,"freiberg","*1870 · † 1928","Fabrikarbeiter, Schiffsheizer");
+per("jkp","Johann Karl Gottlob Pätzold",5,"deuben","† 1898–1906","Berginvalide");
+per("jcm","Johanne Christiane Müller",5,"deuben","† vor 1889");
+per("aap","Anna Auguste Pätzold",4,"weistropp","*1843 · † 1898");
+per("ejf","Ernst Julius Fischer",4,"niedergorbitz","*1845 · † vor 1889","Handarbeiter");
+per("iaf","Ida Auguste Fischer",3,"niedergorbitz","*1875");
+per("gv","Mein Großvater",2,"dresden","*1914");
+per("mu","Meine Mutter",1,"muenchen","","",{u:1});
+/* Stiftland */
+per("jr","Johann Reindl",5,"groschlattengruen","","Maurer");
+per("ms","Maria Schraml",5,"helmbrechts","aus Helmbrechts");
+per("amre","Anna Margaretha Reindl",4,"groschlattengruen","*1861");
+per("jsz","Johann Schenkl",7,"ebnath","1838 belegt","Zimmermann",{u:1});
+per("ms2","Maria Schenkl",6,"ebnath","ledig");
+per("gg","Georg Gillich",6,"kleinsterz","","Schmiedegeselle");
+per("mms","Maria Magdalena Schenkl",5,"ebnath","*1838");
+per("gb","Georgius Brucker",5,"waldershof","*1812","Zeugmacher",{u:1});
+per("js","Johann Schenkl",4,"ebnath","*1860","Tagarbeiter");
+per("jfs","Johann Friedrich Schenkl",3,"groschlattengruen","*1884 · † 1976","Steinbrucharbeiter");
+per("mro","Michael Rosner",5,"kleinsterz","*1808 · † 1877","Bauer");
+per("jro","Josepha Rosner",5,"kleinsterz","*1823 · † 1907");
+per("mgr","Margaretha Rosner",4,"kleinsterz","*1860 · † 1944");
+per("mar","Magdalena Rosner",3,"kleinsterz","*1879 · † 1928");
+per("kas","Karl Alfons Schenkl",2,"pechbrunn","*1914 · † 1982");
+/* Böhmen / Salzburg */
+per("mp","Matěj Přerost",5,"ustalec","");
+per("ma","Marie",5,"ustalec","");
+per("wp","Wáclav Přerost",4,"ustalec","*1840","Taglöhner");
+per("mw","Martin Wazlawik",5,"hora","","Häusler");
+per("awi","Anna Wilček",5,"hora","");
+per("rw","Rosalia Wazlawik",4,"hora","*1841 · † 1906");
+per("wen","Wenzel Přerost",3,"stjohann","*1880 · † 1937","Taglöhner, Pflasterer");
+per("jm","Josef Mareš",6,"cihost","","Gemeindehirt");
+per("ml","Maria Lebeda",6,"cihost","");
+per("amj","Anna Mareš",4,"cihost","† 1928");
+per("jh","Johann Hovorka",4,"cihost","† vor 1908","Maurer");
+per("jho","Josefa Howorka",3,"mondsee","*1880 · † 1943");
+per("sp","Sabina Přerost",2,"oberndorf","*1917 · † 2001");
+per("va","Mein Vater",1,"muenchen","");
+per("mark","Mark Schenkl",0,"landsberg","geboren in Landsberg am Lech");
+per("mark2","Mark Schenkl",0,"muenchen","heute in München");
+/* ---------- Szenen: Eltern → Kind ---------- */
+const SC=[];
+const sc=(br,par,ch,y,txt,o={})=>SC.push({br,par,ch,y,txt,via:[],...o});
+/* Mutterseite · Naab-Tal */
+sc("N",["pk","mk"],"mkr","1782","Das älteste bekannte Paar. Beide starben in Burglengenfeld, ihre Geburtsorte sind unbekannt. Margaretha Kürner ist die älteste datierte Vorfahrin.");
+sc("N",["mkr","gk"],"kk","1820","Georg Karl, Maurer in Burglengenfeld, und Magdalena Krempl bekommen ihren Sohn Konrad.");
+sc("N",["kk","mh"],"wk","1860","Konrad Karl heiratet 1846 die Bauerntochter Maria Hofer. Ihr Vater Martin Hofer war Bauer in Meldau. Tochter Walburga wird 1860 geboren.");
+sc("N",["ji","kh"],"jig","1806","Joseph Igl ist der älteste Vorfahre mit Taufeintrag. Kunigunda Herrmann kommt aus Schirndorf. Ihr Sohn Johann wird 1806 in Fischbach bei Kallmünz geboren.");
+sc("N",["jig","af"],"mi","1835","Johann Igl wird Bauer in Teublitz und heiratet Anna Feuerer. Tochter Maria wird dort 1835 geboren.");
+sc("N",["jl1","me"],"jl2","1829","Zwei Dörfer bei Schwandorf: Margaretha Eigl kommt aus Ettmannsdorf zu Joseph Liebl nach Büchelkühn. Ihr Sohn Joseph wird dort 1829 geboren.");
+sc("N",["jl2","mi"],"jl3","1859","Joseph Liebl, Tagelöhner, und Maria Igl heiraten am 16.6.1857 in Burglengenfeld. Beide ziehen vom Land in die Stadt.");
+sc("N",["jl3","wk"],"jol","1882","Joseph Liebl heiratet 1882 Walburga Karl. Ihr Sohn Johann wird Fabrikarbeiter in Burglengenfeld.");
+sc("N",["bb"],"jb","nach 1860","Johann Braun ist Bergarbeiter in Ponholz. Seine Geburt ist nicht gefunden, sein Vater ist unbekannt.",{u:1});
+sc("N",["mr"],"amr","1861","Unehelich geboren in Oberschlag bei Bubach am Forst.");
+sc("N",["jb","amr"],"mb","1891","Johann Braun heiratet am 7.1.1891 die verwitwete Anna Maria Bizer, geborene Reil. Tochter Maria wird in Pirkensee geboren.");
+sc("N",["jol","mb"],"gm","1920","Johann Liebl und Maria Braun leben in Burglengenfeld. Dort wird 1920 meine Großmutter mütterlicherseits geboren.");
+/* Mutterseite · Sachsen */
+sc("D",["fwg","edb"],"obg","1870","Der Zimmermann Güttler lebt in Freiberg. Beide Geburtsangaben stammen nur aus der Familienüberlieferung. Sohn Oskar Bernhard wird 1870 geboren.",{u:1});
+sc("D",["jkp","jcm"],"aap","1843","Der Berginvalide Pätzold und seine Frau lebten in Deuben bei Freital. Tochter Anna Auguste wird 1843 in Weistropp bei Meißen geboren.");
+sc("D",["ejf","aap"],"iaf","1875","Ernst Julius Fischer, Handarbeiter, und Anna Auguste Pätzold leben in Niedergorbitz im Dresdner Westen. Tochter Ida wird 1875 geboren.");
+sc("D",["obg","iaf"],"gv","1914","Oskar Güttler und Ida Fischer heiraten am 14.11.1896 in Löbtau (Dresden). 1914 wird in Dresden mein Großvater mütterlicherseits geboren.");
+sc("D",["gm","gv"],"mu","offen","In meiner Mutter treffen sich die Oberpfälzer Linie Liebl und die sächsische Linie Güttler. Wann und wohin die Großeltern zogen, ist noch offen.",{u:1});
+/* Vaterseite · Stiftland */
+sc("S",["jr","ms"],"amre","1861","Johann Reindl, Maurer, und Maria Schraml aus Helmbrechts in Oberfranken. Tochter Anna Margaretha wird 1861 in Groschlattengrün geboren.");
+sc("S",["jsz"],"ms2","vor 1838","Zimmermann in Ebnath (1838 belegt). Es gab zwei gleichnamige Zimmerleute in der Pfarrei, welcher es ist, ist noch offen.",{u:1});
+sc("S",["ms2","gg"],"mms","1838","Maria Schenkl bekommt unehelich Tochter Maria Magdalena. Im Taufbuch genannter Vater: Georg Gillich, Schmiedegeselle in Kleinsterz.");
+sc("S",["mms","gb"],"js","1860","Maria Magdalena Schenkl bekommt unehelich Sohn Johann. Im Taufbuch genannter Vater: Georgius Brucker, Zeugmacher in Waldershof. Die Gleichsetzung ist wahrscheinlich, aber nicht bewiesen.",{u:1});
+sc("S",["js","amre"],"jfs","1884","Johann Schenkl, Tagarbeiter, heiratet am 26.11.1882 in Marktredwitz. Sohn Johann Friedrich wird 1884 in Groschlattengrün geboren.");
+sc("S",["mro","jro"],"mgr","1860","Michael Rosner, Bauer in Kleinsterz bei Mitterteich, heiratet 1848 Josepha Rosner. Tochter Margaretha wird 1860 geboren.");
+sc("S",["mgr"],"mar","1879","Magdalena wird unehelich in Kleinsterz geboren.");
+sc("S",["jfs","mar"],"kas","1914","Der Steinbrucharbeiter Johann Friedrich Schenkl und Magdalena Rosner haben 8 Kinder. Sohn Karl Alfons wird 1914 in Pechbrunn geboren.");
+/* Vaterseite · Böhmen & Salzburg */
+sc("B",["mp","ma"],"wp","1840","Matěj Přerost und Marie leben in Ústaleč im Böhmerwald-Vorland. Sohn Wáclav wird 1840 geboren.");
+sc("B",["mw","awi"],"rw","1841","Der Häusler Martin Wazlawik und Anna Wilček aus dem Bezirk Volyně. Tochter Rosalia wird 1841 in Hora geboren.");
+sc("B",["wp","rw"],"wen","1880","Wáclav Přerost und Rosalia Wazlawik heiraten am 3.1.1870 im württembergischen Dätzingen und ziehen später nach Tirol. Sohn Wenzel wird 1880 in St. Johann in Tirol geboren.",{via:["daetzingen"]});
+sc("B",["jm","ml"],"amj","vor 1880","Josef Mareš, Gemeindehirt, und Maria Lebeda aus Číhošť in Böhmen. Ihre Tochter Anna Mareš heiratet dort 1880.");
+sc("B",["jh","amj"],"jho","1880","Der Maurer Johann Hovorka und Anna Mareš ziehen nach Mondsee. Dort wird am 26.11.1880 Tochter Josefa geboren.");
+sc("B",["wen","jho"],"sp","1917","Wenzel Přerost, Taglöhner und Pflasterer, und Josefa Howorka heiraten am 3.11.1908 in Oberndorf bei Salzburg. Tochter Sabina wird dort 1917 geboren.");
+sc("B",["kas","sp"],"va","Heirat 1939","Karl Alfons Schenkl und Sabina Přerost heiraten am 29.4.1939 im Dom zu München. Die Linien aus dem Stiftland und dem Salzburger Land sind vereint.");
+/* Ich */
+sc("M",["mu","va"],"mark","","Meine Eltern bekommen mich in Landsberg am Lech.");
+sc("M",["mark"],"mark2","heute","Heute lebe ich in München. Hier laufen alle Linien zusammen.",{title:"Mark Schenkl lebt heute in München"});
+const N=SC.length;
+SC.forEach((s,i)=>{s.i=i;s.pids=[...s.par,s.ch];s.pts=[...new Set([...s.pids.map(p=>PERS[p].at),...s.via])]});
 
 /* ---------- Aufbau ---------- */
-const svg=d3.select("#svg");
-let W=0,H=0,proj,gCam,k=1,world,pathGen,els=[],placeEls={},refEls=[],insetS,projI,insetRect,insetLegs=[];
+const svg=d3.select("#svg"),ovl=d3.select("#ovl");
+let W=0,H=0,proj,gCam,k=1,world,els=[],placeEls={},refEls=[],insetS,projI,insetRect,insetLegs=[],chipEls=[],ovEls={},camCache={};
 const $=id=>document.getElementById(id);
 const genName=g=>g===0?"Ich":g===1?"Eltern":g===2?"Großeltern":g===3?"Urgroßeltern":g===4?"Ururgroßeltern":(g-2)+"× Urgroßeltern";
 const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
 const lerp=(a,b,t)=>a+(b-a)*t;
-const VC=()=>H*.42;
-function pt(pl){return proj([PL[pl][1],PL[pl][2]])}
+const sm=(f,a,b)=>f<=a?0:f>=b?1:ease((f-a)/(b-a));
+const SAFE_TOP=96,safeBot=()=>H-(innerWidth<700?350:305),VC=()=>(SAFE_TOP+safeBot())/2;
+const pt=pl=>proj([PL[pl][1],PL[pl][2]]);
+const clip=(c,w,h,to,pad)=>{const dx=to[0]-c[0],dy=to[1]-c[1];if(!dx&&!dy)return c;const t=Math.min((w/2+pad)/Math.abs(dx||1e-9),(h/2+pad)/Math.abs(dy||1e-9));return [c[0]+dx*t,c[1]+dy*t]};
 
 function build(){
-  W=innerWidth;H=innerHeight;
-  svg.attr("viewBox",`0 0 ${W} ${H}`);svg.selectAll("*").remove();
+  W=innerWidth;H=innerHeight;camCache={};
+  svg.attr("viewBox",`0 0 ${W} ${H}`).attr("width",W).attr("height",H);svg.selectAll("*").remove();
+  ovl.attr("viewBox",`0 0 ${W} ${H}`).attr("width",W).attr("height",H);ovl.selectAll("*").remove();
   const ext={type:"MultiPoint",coordinates:[[-11,36],[33,36],[33,61],[-11,61]]};
   proj=d3.geoMercator().fitExtent([[0,VC()-(H-190)/2],[W,VC()+(H-190)/2]],ext);
-  pathGen=d3.geoPath(proj);
+  const pathGen=d3.geoPath(proj);
   gCam=svg.append("g");
   gCam.append("path").attr("class","land").attr("d",pathGen(topojson.feature(world,world.objects.land)));
   gCam.append("path").attr("class","border").attr("d",pathGen(topojson.mesh(world,world.objects.countries,(a,b)=>a!==b)));
@@ -239,24 +329,45 @@ function build(){
   refEls=REF.map(r=>{const p=proj([r[1],r[2]]);
     const c=gR.append("circle").attr("cx",p[0]).attr("cy",p[1]).attr("fill","#6e82a6").node();
     const t=gR.append("text").attr("class","ref").text(r[0]).node();return {c,t,p,n:r[0]}});
-  els=E.map(e=>{
-    const c=LINES[e.ln].c,o={e,c,legs:[],dots:[]};
-    e.legs.forEach(([f,t])=>{
-      const a=pt(f),b=pt(t),dx=b[0]-a[0],dy=b[1]-a[1];
-      const ctl=[(a[0]+b[0])/2-dy*.16,(a[1]+b[1])/2+dx*.16];
-      const path=gA.append("path").attr("d",`M${a[0]},${a[1]} Q${ctl[0]},${ctl[1]} ${b[0]},${b[1]}`).attr("fill","none").attr("stroke",c).attr("stroke-linecap","round").node();
-      const head=gA.append("path").attr("d","M0,0L-11,-5.5L-11,5.5Z").attr("fill",c).node();
-      o.legs.push({a,b,ctl,path,head,len:path.getTotalLength()});
+  const line=d3.line().curve(d3.curveCatmullRom.alpha(.5));
+  els=SC.map(s=>{
+    const c=LINES[s.br].c,o={s,c,trails:[],dots:[]};
+    const cp=pt(PERS[s.ch].at);
+    s.par.forEach(pid=>{
+      const a=pt(PERS[pid].at),via=s.via.map(pt);
+      if(Math.hypot(a[0]-cp[0],a[1]-cp[1])<.4&&!via.length)return;
+      let d;
+      if(via.length)d=line([a,...via,cp]);
+      else{const dx=cp[0]-a[0],dy=cp[1]-a[1];d=`M${a[0]},${a[1]} Q${(a[0]+cp[0])/2-dy*.14},${(a[1]+cp[1])/2+dx*.14} ${cp[0]},${cp[1]}`}
+      const path=gA.append("path").attr("d",d).attr("fill","none").attr("stroke",c).attr("stroke-linecap","round").node();
+      o.trails.push({path,len:path.getTotalLength()});
     });
-    [...e.starts,...e.legs.map(l=>l[1])].forEach(pl=>{
-      const b=pt(pl);
-      o.dots.push({b,dot:gP.append("circle").attr("fill",c).attr("stroke","#fff").node(),ring:gP.append("circle").attr("class","ring").attr("stroke",c).node(),leg:!e.starts.includes(pl)});
-    });
+    s.pts.forEach(pl=>{const b=pt(pl);o.dots.push({pl,b,dot:gP.append("circle").attr("fill",c).attr("stroke","#fff").node()})});
     return o;
   });
-  placeEls={};
-  Object.keys(PL).forEach(p=>{placeEls[p]=gT.append("text").attr("class","lbl").text(PL[p][0]).node()});
-  buildInset();
+  placeEls={};Object.keys(PL).forEach(p=>{placeEls[p]=gT.append("text").attr("class","lbl").text(PL[p][0]).node()});
+  // Überlagerung (Bildschirmkoordinaten)
+  ovEls={leaders:[0,1,2].map(()=>ovl.append("line").attr("class","leader").node()),
+    l1a:ovl.append("line").attr("class","conn").node(),l1b:ovl.append("line").attr("class","conn").node(),l2:ovl.append("line").attr("class","conn").node(),
+    jd:ovl.append("circle").attr("r",3.2).node(),ar:ovl.append("path").attr("d","M0,0L-9,-4.5L-9,4.5Z").node(),
+    yr:ovl.append("text").attr("class","cyr").attr("text-anchor","middle").node()};
+  buildChips();buildInset();layoutAll();
+}
+function buildChips(){
+  const box=$("chips");box.innerHTML="";chipEls=[];
+  SC.forEach(s=>{
+    const roles=[["p0",s.par[0]],["p1",s.par[1]],["c",s.ch]].filter(r=>r[1]);
+    s.chip={};
+    roles.forEach(([r,pid])=>{
+      const P=PERS[pid],d=document.createElement("div");d.className="chip";d.style.setProperty("--c",LINES[s.br].c);
+      const a=document.createElement("b");a.textContent=P.n;d.appendChild(a);
+      if(P.b){const j=document.createElement("em");j.textContent=P.b;d.appendChild(j)}
+      if(P.r){const t=document.createElement("span");t.textContent=P.r;d.appendChild(t)}
+      const o=document.createElement("small");o.textContent="◉ "+PL[P.at][0];d.appendChild(o)
+      if(P.u)d.classList.add("u");
+      box.appendChild(d);s.chip[r]={el:d,pid};chipEls.push(d);
+    });
+  });
 }
 function buildInset(){
   const w=Math.min(230,W*.42),h=w*.72;
@@ -266,148 +377,196 @@ function buildInset(){
   const pg=d3.geoPath(projI);
   insetS.append("path").attr("d",pg(topojson.feature(world,world.objects.land))).attr("fill","#18294b");
   insetS.append("path").attr("d",pg(topojson.mesh(world,world.objects.countries,(a,b)=>a!==b))).attr("fill","none").attr("stroke","#34496f").attr("stroke-width",.6);
-  insetLegs=E.map(e=>{
-    const c=LINES[e.ln].c,g=insetS.append("g").attr("opacity",0);
-    e.legs.forEach(([f,t])=>{const a=projI([PL[f][1],PL[f][2]]),b=projI([PL[t][1],PL[t][2]]);
-      g.append("line").attr("x1",a[0]).attr("y1",a[1]).attr("x2",b[0]).attr("y2",b[1]).attr("stroke",c).attr("stroke-width",1.2).attr("stroke-dasharray",e.u?"3 2":null)});
-    e.starts.forEach(s=>{const b=projI([PL[s][1],PL[s][2]]);g.append("circle").attr("cx",b[0]).attr("cy",b[1]).attr("r",2).attr("fill",c)});
+  const P=pl=>projI([PL[pl][1],PL[pl][2]]);
+  insetLegs=SC.map(s=>{
+    const g=insetS.append("g").attr("opacity",0),c=LINES[s.br].c,cp=P(PERS[s.ch].at);
+    s.par.forEach(pid=>{const a=P(PERS[pid].at);g.append("line").attr("x1",a[0]).attr("y1",a[1]).attr("x2",cp[0]).attr("y2",cp[1]).attr("stroke",c).attr("stroke-width",1.1)});
+    g.append("circle").attr("cx",cp[0]).attr("cy",cp[1]).attr("r",1.8).attr("fill",c);
     return g.node();
   });
-  const m=projI([PL.muenchen[1],PL.muenchen[2]]);
+  const m=P("muenchen");
   insetS.append("circle").attr("cx",m[0]).attr("cy",m[1]).attr("r",3.2).attr("fill","none").attr("stroke","#ff7a90").attr("stroke-width",1.4);
   insetRect=insetS.append("rect").attr("fill","none").attr("stroke","#fff").attr("stroke-width",1.2).attr("rx",2).node();
 }
 /* Kamera */
-function camFor(i){
-  if(i<0)return camBox(["burglengenfeld","dresden","muenchen","oberndorf","ustalec","daetzingen"].map(pt),2,1,6);
-  const e=E[i];return camBox(e.pts.map(pt),e.legs.length?1.9:1.5,e.legs.length?2:6,e.legs.length?32:7);
-}
-function camBox(pts,pad,kmin,kmax){
+function camBox(pts,kmin,kmax){
   const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]);
   const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
-  const dw=Math.max(x1-x0,1),dh=Math.max(y1-y0,1);
-  let kk=Math.min((W-120)/(dw*pad),(H-330)/(dh*pad));
+  const dw=Math.max(x1-x0,.5),dh=Math.max(y1-y0,.5);
+  let kk=Math.min((W-440)/dw,(safeBot()-SAFE_TOP-150)/dh);
   kk=Math.max(kmin,Math.min(kmax,kk));
-  if(x1-x0<2&&y1-y0<2)kk=kmax;
   return {x:(x0+x1)/2,y:(y0+y1)/2,k:kk};
 }
 const overview=()=>({x:W/2,y:VC(),k:1});
-function camAt(n,frac,all){
+function camFor(i){
+  if(camCache[i])return camCache[i];
+  let c;
+  if(i<0)c=camBox(["burglengenfeld","dresden","muenchen","oberndorf","ustalec","daetzingen"].map(pt),1,6);
+  else c=camBox(SC[i].pts.map(pt),1.6,8);
+  return camCache[i]=c;
+}
+function camAt(n,f){
   if($("zoom").getAttribute("aria-pressed")==="false")return overview();
-  if(all)return camFor(-1);
-  const prev=n===0?overview():camFor(n-1),next=camFor(n);
-  const t=ease(Math.min(1,frac/.45));
+  const prev=n===0?overview():camFor(n-1),next=camFor(n),t=ease(Math.min(1,f/.34));
   return {x:lerp(prev.x,next.x,t),y:lerp(prev.y,next.y,t),k:Math.exp(lerp(Math.log(prev.k),Math.log(next.k),t))};
 }
-/* Zeichnen an Position i */
+/* Chip-Anordnung je Szene (feste Versätze zum Ortspunkt, Eltern oben, Kind unten) */
+function layoutAll(){
+  chipEls.forEach(el=>{el.classList.add("meas")});
+  const safe=[8,SAFE_TOP,W-8,safeBot()];
+  const ov=(a,b)=>Math.max(0,Math.min(a[2],b[2])-Math.max(a[0],b[0]))*Math.max(0,Math.min(a[3],b[3])-Math.max(a[1],b[1]));
+  SC.forEach((s,i)=>{
+    const cf=camFor(i);
+    const A=pid=>{const p=pt(PERS[pid].at);return [(p[0]-cf.x)*cf.k+W/2,(p[1]-cf.y)*cf.k+VC()]};
+    s.off={};const placed=[];
+    const roles=Object.entries(s.chip);
+    roles.forEach(([r,o])=>{o.w=o.el.offsetWidth;o.h=o.el.offsetHeight});
+    // weitergereichte Person behält ihren Versatz
+    roles.forEach(([r,o])=>{
+      if(r!=="c"&&i>0&&SC[i-1].ch===o.pid&&SC[i-1].off.c){
+        s.off[r]=SC[i-1].off.c;const a=A(o.pid),f=s.off[r];placed.push([a[0]+f[0],a[1]+f[1],a[0]+f[0]+o.w,a[1]+f[1]+o.h]);o.carry=true;
+      }
+    });
+    const order=[...roles.filter(([r])=>r!=="c"),...roles.filter(([r])=>r==="c")];
+    order.forEach(([r,o])=>{
+      if(s.off[r])return;
+      const a=A(o.pid),w=o.w,h=o.h,g=r==='c'?30:26;
+      const cand=r==="c"?[[g,g],[-w/2,g+4],[-w-g,g],[g,-h-g],[g+4,-h/2],[-w-g,-h-g],[-w/2,-h-g-4],[-w-g-4,-h/2]]
+                         :[[-w-g,-h-g],[g,-h-g],[-w/2,-h-g-4],[-w-g,g],[g,g],[-w-g-4,-h/2],[g+4,-h/2],[-w/2,g+4]];
+      let best=null,bs=1e18;
+      cand.forEach(f=>{
+        const rc=[a[0]+f[0],a[1]+f[1],a[0]+f[0]+w,a[1]+f[1]+h];
+        let sc=0;placed.forEach(q=>{sc+=ov([rc[0]-24,rc[1]-26,rc[2]+24,rc[3]+26],q)});
+        sc+=(Math.max(0,safe[0]-rc[0])+Math.max(0,rc[2]-safe[2])+Math.max(0,safe[1]-rc[1])+Math.max(0,rc[3]-safe[3]))*400;
+        if(sc<bs){bs=sc;best=f}
+      });
+      s.off[r]=best;const rc=[a[0]+best[0],a[1]+best[1],a[0]+best[0]+w,a[1]+best[1]+h];placed.push(rc);
+    });
+  });
+  chipEls.forEach(el=>el.classList.remove("meas"));
+}
+/* Zeichnen an Position i = Szene + Bruchteil */
 let pos=0,shown=-2;
 function render(i){
-  pos=i;const all=i>=N,n=all?N:Math.floor(i),frac=all?0:i-n;
-  const cam=camAt(n,frac,all);k=cam.k;
+  pos=i;const all=i>=N,n=all?N-1:Math.floor(i),f=all?1:i-n;
+  const cam=all?camFor(-1):camAt(n,f);k=cam.k;
   const tx=W/2-cam.x*k,ty=VC()-cam.y*k;
   gCam.select(".border").attr("stroke-width",.9/k);
   gCam.attr("transform",`translate(${tx},${ty}) scale(${k})`);
-  const cur=all?N-1:n;
+  const s=SC[n],col=LINES[s.br].c;
   const scr=pl=>{const p=pt(pl);return [p[0]*k+tx,p[1]*k+ty]};
-  const used={};
+  // Spuren und Punkte
   els.forEach((o,j)=>{
-    const e=o.e,vis=all||j<=n,cp=!all&&j===n,age=cur-j;
-    const p=!vis?0:cp?Math.min(1,frac/.7):1;
-    const strong=all?.85:cp?1:age<=2?.5:age<=8?.14:.08;
-    o.legs.forEach(l=>{
-      const sw=(cp?4:all||age<=2?2.4:1.4)/k;
-      l.path.setAttribute("stroke-width",sw);
-      if(e.u){l.path.setAttribute("stroke-dasharray",`${8/k} ${7/k}`);l.path.setAttribute("opacity",vis?strong*Math.min(1,p*2):0)}
-      else{l.path.setAttribute("stroke-dasharray",`${p*l.len} ${l.len+10}`);l.path.setAttribute("opacity",vis?strong:0)}
-      if(vis&&p>.02){
-        const t=p,a=l.a,c=l.ctl,b=l.b;
-        const X=(1-t)*(1-t)*a[0]+2*(1-t)*t*c[0]+t*t*b[0],Y=(1-t)*(1-t)*a[1]+2*(1-t)*t*c[1]+t*t*b[1];
-        const dX=2*(1-t)*(c[0]-a[0])+2*t*(b[0]-c[0]),dY=2*(1-t)*(c[1]-a[1])+2*t*(b[1]-c[1]);
-        l.head.setAttribute("transform",`translate(${X},${Y}) rotate(${Math.atan2(dY,dX)*180/Math.PI}) scale(${(cp?1.3:age<=2?.9:.6)/k})`);
-        l.head.setAttribute("opacity",Math.max(strong,.3)*(e.u&&!cp?.6:1));
-      }else l.head.setAttribute("opacity",0);
+    const done=all||j<n,cur=!all&&j===n;
+    const tp=cur?sm(f,.36,.64):1;
+    o.trails.forEach(t=>{
+      t.path.setAttribute("stroke-width",(cur?2.6:all?2:1.5)/k);
+      t.path.setAttribute("stroke-dasharray",`${tp*t.len} ${t.len+10}`);
+      t.path.setAttribute("opacity",done?(all?.9:(o.s.br===s.br?.3:.12)):cur?.95:0);
     });
     o.dots.forEach(d=>{
-      const arrived=vis&&(!d.leg||p>=.97);
+      const isCur=cur&&s.pts.includes(d.pl);
       d.dot.setAttribute("cx",d.b[0]);d.dot.setAttribute("cy",d.b[1]);
-      d.dot.setAttribute("r",(cp?6.5:age<=2?4.5:3)/k);d.dot.setAttribute("stroke-width",(cp?1.6:1)/k);
-      d.dot.setAttribute("opacity",arrived?(cp?1:Math.max(.35,strong+.2)):0);
-      d.ring.setAttribute("cx",d.b[0]);d.ring.setAttribute("cy",d.b[1]);
-      const rp=Math.max(0,(frac-(d.leg?.65:.1))/.35);
-      if(cp&&arrived){d.ring.setAttribute("r",(8+22*rp)/k);d.ring.setAttribute("stroke-width",2/k);d.ring.setAttribute("opacity",Math.max(0,1-rp)*.9)}
-      else d.ring.setAttribute("opacity",0);
+      d.dot.setAttribute("r",(cur?5.5:2.6)/k);d.dot.setAttribute("stroke-width",(cur?1.5:.6)/k);
+      d.dot.setAttribute("opacity",cur?1:done?(all?.8:(o.s.br===s.br?.3:.1)):0);
     });
-    insetLegs[j].setAttribute("opacity",vis&&(!cp||p>.1)?(cp?1:.75):0);
-    if(vis&&(!cp||p>.02))e.pts.forEach(pl=>{const w=cp?1000:age<=2?100:(age<=5?10:0);if(w)used[pl]=Math.max(used[pl]||0,w+j/100)});
+    insetLegs[j].setAttribute("opacity",done?.8:cur&&f>.35?1:0);
   });
-  // Ortsnamen (kollisionsfrei, aktuelle zuerst)
-  const boxes=[];
+  // Chips
+  const key=all?-9:n;
+  if(shown!==key){ // Szenenwechsel
+    chipEls.forEach(el=>el.style.display="none");
+    if(!all)Object.values(s.chip).forEach(o=>o.el.style.display="block");
+    shown=key;showCard(all?null:s);
+    document.querySelectorAll("#logList button").forEach((b,j)=>b.classList.toggle("on",j===n));
+    document.querySelectorAll(".legend span").forEach(e=>e.classList.toggle("dim",!all&&e.dataset.br!==s.br));
+  }
+  const rects=[],cen={};
+  if(!all){
+    const nextC=n+1<N&&SC[n+1].par.includes(s.ch);
+    Object.entries(s.chip).forEach(([r,o])=>{
+      const a=scr(PERS[o.pid].at),of=s.off[r],x=a[0]+of[0],y=a[1]+of[1];
+      o.el.style.transform=`translate(${x}px,${y}px)`;
+      const carried=r!=="c"&&n>0&&SC[n-1].ch===o.pid;
+      let op;
+      if(r==="c"){op=sm(f,.58,.74);if(!nextC)op*=1-sm(f,.9,1)}
+      else{op=carried?1:sm(f,.04,.2);op*=1-sm(f,.9,1)}
+      o.el.style.opacity=op;
+      o.rect=[x,y,x+o.el.offsetWidth,y+o.el.offsetHeight];o.a=a;o.op=op;rects.push(o.rect);
+      cen[r]=[x+o.el.offsetWidth/2,y+o.el.offsetHeight/2];
+    });
+    // Verbindungslinien (Eltern → Kind)
+    const par=["p0","p1"].filter(r=>s.chip[r]),ch=s.chip.c;
+    const fade=1-sm(f,.9,1);
+    const set=(el,x1,y1,x2,y2,p,op)=>{const L=Math.hypot(x2-x1,y2-y1);el.setAttribute("x1",x1);el.setAttribute("y1",y1);el.setAttribute("x2",x2);el.setAttribute("y2",y2);el.setAttribute("stroke",col);el.setAttribute("stroke-dasharray",`${p*L} ${L+4}`);el.setAttribute("opacity",op)};
+    const hide=el=>el.setAttribute("opacity",0);
+    const pA=sm(f,.2,.4),pB=sm(f,.4,.62);
+    let J;
+    if(par.length===2){
+      const M=[(cen.p0[0]+cen.p1[0])/2,(cen.p0[1]+cen.p1[1])/2];
+      J=[M[0]+(cen.c[0]-M[0])*.42,M[1]+(cen.c[1]-M[1])*.42];
+      [["l1a","p0"],["l1b","p1"]].forEach(([e,r])=>{const o=s.chip[r],st=clip(cen[r],o.el.offsetWidth,o.el.offsetHeight,J,1);set(ovEls[e],st[0],st[1],J[0],J[1],pA,.8*fade)});
+      ovEls.jd.setAttribute("cx",J[0]);ovEls.jd.setAttribute("cy",J[1]);ovEls.jd.setAttribute("fill",col);ovEls.jd.setAttribute("opacity",pA>.95?fade:0);
+    }else{
+      const o=s.chip.p0;J=clip(cen.p0,o.el.offsetWidth,o.el.offsetHeight,cen.c,1);hide(ovEls.l1a);hide(ovEls.l1b);ovEls.jd.setAttribute("opacity",0);
+    }
+    const o2=ch,end=clip(cen.c,o2.el.offsetWidth,o2.el.offsetHeight,J,5);
+    set(ovEls.l2,J[0],J[1],end[0],end[1],pB,.9*fade);
+    const ang=Math.atan2(end[1]-J[1],end[0]-J[0])*180/Math.PI,L2=Math.hypot(end[0]-J[0],end[1]-J[1]);
+    ovEls.ar.setAttribute("transform",`translate(${end[0]},${end[1]}) rotate(${ang})`);ovEls.ar.setAttribute("fill",col);ovEls.ar.setAttribute("opacity",pB>.97&&L2>12?fade:0);
+    const mx=(J[0]+end[0])/2,my=(J[1]+end[1])/2;
+    ovEls.yr.textContent=s.y;ovEls.yr.setAttribute("x",mx+(Math.abs(end[0]-J[0])<Math.abs(end[1]-J[1])?22:0));ovEls.yr.setAttribute("y",my-(Math.abs(end[0]-J[0])<Math.abs(end[1]-J[1])?-4:7));
+    ovEls.yr.setAttribute("fill",col);ovEls.yr.setAttribute("opacity",L2>20?pB*fade:0);
+    // Bindelinien Chip ↔ Ortspunkt
+    Object.entries(s.chip).forEach(([r,o],x)=>{
+      const le=ovEls.leaders[x],c=cen[r],e=clip(c,o.el.offsetWidth,o.el.offsetHeight,o.a,0);
+      le.setAttribute("x1",e[0]);le.setAttribute("y1",e[1]);le.setAttribute("x2",o.a[0]);le.setAttribute("y2",o.a[1]);le.setAttribute("opacity",o.op*.55);
+    });
+  }else{
+    Object.values(ovEls).forEach(e=>Array.isArray(e)?e.forEach(x=>x.setAttribute("opacity",0)):e.setAttribute("opacity",0));
+  }
+  // Ortsnamen und Orientierungsstädte (ohne Überlappung)
+  const boxes=rects.map(r=>[r[0]-4,r[1]-4,r[2]+4,r[3]+4]);
   const place=(el,pp,txt,fs,op,dx)=>{
-    const sx=pp[0]*k+tx,sy=pp[1]*k+ty,w=txt.length*fs*.56+10,h=fs+4;
-    const bx=[sx+dx,sy-4,sx+dx+w,sy-4+h];
+    const sx=pp[0]*k+tx,sy=pp[1]*k+ty,w=txt.length*fs*.56+10,h=fs+4,bx=[sx+dx,sy-4,sx+dx+w,sy-4+h];
     if(sx<-40||sx>W+40||sy<40||sy>H-110)return false;
     if(boxes.some(b=>bx[0]<b[2]&&bx[2]>b[0]&&bx[1]<b[3]&&bx[3]>b[1]))return false;
-    boxes.push(bx);
-    el.setAttribute("x",pp[0]+dx/k);el.setAttribute("y",pp[1]+(fs-2)/k);el.setAttribute("font-size",fs/k);el.setAttribute("stroke-width",3.6/k);el.setAttribute("opacity",op);return true;
+    boxes.push(bx);el.setAttribute("x",pp[0]+dx/k);el.setAttribute("y",pp[1]+(fs-2)/k);el.setAttribute("font-size",fs/k);el.setAttribute("stroke-width",3.6/k);el.setAttribute("opacity",op);return true;
   };
   Object.values(placeEls).forEach(el=>el.setAttribute("opacity",0));
-  const cl=e=>Object.keys(used).sort((a,b)=>used[b]-used[a]);
-  cl().forEach(pl=>{const el=placeEls[pl];el.classList.toggle("act",used[pl]>=1000);place(el,pt(pl),PL[pl][0],used[pl]>=1000?15:12,used[pl]>=1000?1:.8,9)});
+  if(!all)s.via.forEach(pl=>place(placeEls[pl],pt(pl),PL[pl][0],13,1,9));
+  else ["muenchen","burglengenfeld","dresden","oberndorf","pechbrunn","landsberg"].forEach(pl=>place(placeEls[pl],pt(pl),PL[pl][0],13,1,9));
   refEls.forEach(r=>{
-    r.c.setAttribute("r",2.2/k);r.c.setAttribute("opacity",k>=2?.55:.0);r.t.setAttribute("opacity",0);
-    if(k>=2&&place(r.t,r.p,r.n,11,.6,7))r.t.setAttribute("opacity",.6);
+    r.c.setAttribute("r",2.2/k);r.c.setAttribute("opacity",k>=2?.5:0);r.t.setAttribute("opacity",0);
+    if(k>=2&&place(r.t,r.p,r.n,11,.55,7))r.t.setAttribute("opacity",.55);
   });
-  // Namensschild
-  const ce=E[all?N-1:Math.min(n,N-1)];
-  const chip=$("chip");
-  if(ci_changed(ce)){
-    chip.innerHTML=ce.ppl.map(q=>`<div class="pp"><b></b>${q.b?`<span></span>`:""}</div>`).join("");
-    chip.style.setProperty("--c",LINES[ce.ln].c);
-    chip.querySelectorAll(".pp").forEach((d,x)=>{d.querySelector("b").textContent=ce.ppl[x].n;if(ce.ppl[x].b)d.querySelector("span").textContent=ce.ppl[x].b});
-  }
-  const anchor=scr(ce.legs.length?ce.legs[ce.legs.length-1][1]:ce.starts[ce.starts.length-1]);
-  const cw=chip.offsetWidth||200,chh=chip.offsetHeight||50;
-  const show=all||(ce.legs.length?(frac>.62||j_done(n,all)):frac>.12);
-  let cx=Math.min(W-cw-12,Math.max(12,anchor[0]+16)),cy=Math.min(H-chh-250,Math.max(110,anchor[1]-chh-16));
-  chip.style.transform=`translate(${cx}px,${cy}px)`;chip.style.opacity=show&&!all?1:0;
   // Anzeige
-  $("yr").textContent=String(ce.y);
-  $("gen").textContent=genName(ce.g)+(ce.g?" · "+ce.g+". Generation":"");
+  const ce=PERS[s.ch];
+  $("yr").textContent=all?"Heute":s.y;$("yr").style.fontSize=(all?"Heute":s.y).length>5?"clamp(26px,5vw,48px)":"";
+  $("gen").textContent=all?"Alle Linien in München":(LINES[s.br].side?LINES[s.br].side+" · "+LINES[s.br].n+" · ":"")+genName(ce.g);
   $("slider").value=Math.min(i,N);
-  const ci=Math.min(cur,N-1);
-  document.querySelectorAll("#logList button").forEach((b,j)=>b.classList.toggle("on",j===ci));
-  if(ci!==shown){shown=ci;card(ce)}
-  // Übersicht
   const a=proj.invert([(0-tx)/k,(0-ty)/k]),b=proj.invert([(W-tx)/k,(H-110-ty)/k]);
   const pa=projI(a),pb=projI(b),iw=+insetS.attr("width"),ih=+insetS.attr("height");
   const rx=Math.max(0,pa[0]),ry=Math.max(0,pa[1]),rx2=Math.min(iw,pb[0]),ry2=Math.min(ih,pb[1]);
   insetRect.setAttribute("x",rx);insetRect.setAttribute("y",ry);insetRect.setAttribute("width",Math.max(3,rx2-rx));insetRect.setAttribute("height",Math.max(3,ry2-ry));
 }
-let lastChip=-1;
-function ci_changed(ce){if(ce.i!==lastChip){lastChip=ce.i;return true}return false}
-function j_done(){return false}
-function card(e){
-  const c=LINES[e.ln].c;
-  const routes=e.legs.map(l=>`${PL[l[0]][0]} → ${PL[l[1]][0]}`);
-  if(!routes.length)routes.push(e.starts.map(s=>PL[s][0]).join(" · "));
-  $("card").style.setProperty("--c",c);
-  $("card").innerHTML=`<div class="tag"><b style="background:${c}">${e.yl||e.y}</b><span>${genName(e.g)}${e.g?" · "+e.g+". Generation":""}</span></div><div class="who"></div><div class="route"></div><p></p>${e.u?'<span class="warn">⚠ unsicher bzw. zeitlich offen</span>':""}`;
-  const who=$("card").querySelector(".who");
-  e.ppl.forEach(q=>{const d=document.createElement("div");d.className="person";
-    const n=document.createElement("strong");n.textContent=q.n;d.appendChild(n);
-    const t=[q.b,q.r].filter(Boolean).join(" · ");if(t){const sp=document.createElement("span");sp.textContent=t;d.appendChild(sp)}
-    who.appendChild(d)});
-  $("card").querySelector(".route").textContent=routes.join("   ·   ");
-  $("card").querySelector("p").textContent=e.txt;
+function showCard(s){
+  const card=$("card");
+  if(!s){card.style.setProperty("--c","#ff7a90");card.innerHTML=`<div class="tag"><b style="background:#ff7a90">heute</b><span>Alle Linien</span></div><div class="ttl">Und alle Wege führen nach München.</div><p>Die feinen Linien auf der Karte zeigen, woher die Familien meiner vier Großeltern kamen: aus der Oberpfalz, aus Sachsen, aus dem Stiftland, aus Böhmen und aus dem Salzburger Land.</p>`;return}
+  const c=LINES[s.br].c;card.style.setProperty("--c",c);
+  card.innerHTML=`<div class="tag"><b style="background:${c}"></b><span></span></div><div class="ttl"></div><p></p>${s.u?'<span class="warn">⚠ unsicher bzw. zeitlich offen</span>':""}`;
+  card.querySelector(".tag b").textContent=s.y;
+  card.querySelector(".tag span").textContent=(LINES[s.br].side?LINES[s.br].side+" · ":"")+LINES[s.br].n;
+  card.querySelector(".ttl").textContent=s.title||s.par.map(p=>PERS[p].n).join(" & ")+" → "+PERS[s.ch].n;
+  card.querySelector("p").textContent=s.txt;
 }
 /* ---------- Wiedergabe ---------- */
 let playing=false,last=0;
-const SEC=4.2; // Sekunden je Ereignis bei Tempo 1
+const SEC=7.5; // Sekunden je Szene bei Tempo 1
 function tick(ts){
   if(!playing)return;
   const dt=Math.min(.1,(ts-last)/1000);last=ts;
-  const sp=+$("speed").value;
-  let i=pos+dt*sp/SEC;
+  let i=pos+dt*(+$("speed").value)/SEC;
   if(i>=N){i=N;playing=false;$("play").textContent="↻ Nochmal"}
   render(i);
   if(playing)requestAnimationFrame(tick);
@@ -417,27 +576,29 @@ function play(){
   playing=true;$("play").textContent="❚❚ Pause";last=performance.now();$("intro").style.display="none";requestAnimationFrame(tick);
 }
 function pause(){playing=false;$("play").textContent="▶ Weiter"}
+const go=j=>{pause();render(Math.max(0,Math.min(N,j))+(j<N?.8:0))};
 $("play").onclick=()=>playing?pause():play();
 $("go").onclick=play;
 $("restart").onclick=()=>{pos=0;shown=-2;render(0);if(!playing)$("play").textContent="▶ Start"};
-$("prev").onclick=()=>{pause();render(Math.max(0,Math.floor(pos-.01)))};
-$("next").onclick=()=>{pause();render(Math.min(N,Math.floor(pos)+1+.85))};
+$("prev").onclick=()=>go(Math.floor(Math.min(pos,N-.01))-1);
+$("next").onclick=()=>go(Math.floor(Math.min(pos,N-.01))+1);
 $("slider").max=N;
 $("slider").oninput=e=>{pause();render(+e.target.value)};
 $("zoom").onclick=()=>{const b=$("zoom");b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")==="true"?"false":"true");render(pos)};
 $("logBtn").onclick=()=>$("log").classList.toggle("open");
 $("logClose").onclick=()=>$("log").classList.remove("open");
 addEventListener("keydown",e=>{if(e.key===" "&&e.target.tagName!=="BUTTON"&&e.target.tagName!=="SELECT"){e.preventDefault();$("play").click()}if(e.key==="ArrowRight")$("next").click();if(e.key==="ArrowLeft")$("prev").click()});
-/* Legende, Ticks, Chronik */
-$("legend").innerHTML=Object.entries(LINES).filter(([a])=>a!=="M").map(([a,l])=>`<span><i style="background:${l.c}"></i>${l.n}</span>`).join("");
+/* Legende, Abschnitte, Chronik */
+$("legend").innerHTML=Object.entries(LINES).filter(([a])=>a!=="M").map(([a,l])=>`<span data-br="${a}"><i style="background:${l.c}"></i>${l.side}: ${l.n}</span>`).join("");
 (function(){
-  const t=$("ticks");let html="";const seen=new Set();
-  [1743,1800,1850,1900,1950,2000].forEach(y=>{const idx=E.findIndex(e=>e.y>=y);if(idx<0||seen.has(idx))return;seen.add(idx);html+=`<span style="left:${(idx+.5)/N*100}%">${y}</span>`});
-  t.innerHTML=html;
-  $("logList").innerHTML=E.map((e,j)=>`<li><button type="button" data-i="${j}"><i style="background:${LINES[e.ln].c}"></i><b>${e.yl||e.y}</b></button></li>`).join("");
+  let html="",prev="";
+  SC.forEach((s,i)=>{if(s.br!==prev){prev=s.br;html+=`<span style="left:${i/N*100}%;color:${LINES[s.br].c}${i===0?';transform:none':''}">${LINES[s.br].n}</span>`}});
+  $("ticks").innerHTML=html;
+  $("logList").innerHTML=SC.map((s,j)=>`<li><button type="button"><i style="background:${LINES[s.br].c}"></i><b></b><span></span></button></li>`).join("");
   document.querySelectorAll("#logList button").forEach((b,j)=>{
-    const e=E[j];b.innerHTML+=`<span></span>`;b.querySelector("span").textContent=e.ppl.map(q=>q.n).join(" & ")+" · "+(e.legs.length?e.legs.map(l=>PL[l[1]][0]).filter((v,x,a)=>a.indexOf(v)===x).join(", "):e.starts.map(x=>PL[x][0]).join(", "));
-    b.onclick=()=>{pause();render(j+.9);if(innerWidth<700)$("log").classList.remove("open")};
+    const s=SC[j];b.querySelector("b").textContent=s.y;
+    b.querySelector("span").textContent=PERS[s.ch].n+" ← "+s.par.map(p=>PERS[p].n).join(" & ");
+    b.onclick=()=>{go(j);if(innerWidth<700)$("log").classList.remove("open")};
   });
 })();
 let rz;addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>{if(world){const p=pos;build();shown=-2;render(p)}},150)});
