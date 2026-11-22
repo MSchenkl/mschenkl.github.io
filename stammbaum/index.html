@@ -106,6 +106,21 @@ select.btn{padding:0 8px}
 #intro h2{font-size:24px;font-weight:800;margin-bottom:10px}
 #intro p{color:#cfdbee;line-height:1.55;font-size:15px;margin-bottom:10px}
 #intro small{color:var(--muted);display:block;margin-top:12px;line-height:1.5}
+#nameBtn{font-size:12px;color:var(--muted);text-decoration:underline;text-decoration-color:#4a5d80;text-underline-offset:3px;margin-top:3px;display:inline-block}
+#nameBtn:hover{color:var(--text)}
+#nameBox{position:fixed;inset:0;display:grid;place-items:center;z-index:10;background:#0b1220c8;backdrop-filter:blur(3px)}
+#nameBox[hidden]{display:none}
+#nameBox .box{position:relative;max-width:620px;max-height:calc(100vh - 40px);overflow:auto;margin:20px;background:#13213b;border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:18px;padding:24px 26px}
+#nameBox h2{font-size:22px;font-weight:800;margin:0 30px 4px 0}
+#nameBox h3{font-size:11px;letter-spacing:.07em;text-transform:uppercase;font-weight:700;color:var(--blue);margin:16px 0 4px}
+#nameBox p,#nameBox li{color:#cfdbee;line-height:1.55;font-size:14px}
+#nameBox ol{list-style:none;margin-top:2px}
+#nameBox li{padding:3px 0 3px 12px;border-left:2px solid var(--line)}
+#nameBox li b{color:#fff;font-weight:650}
+#nameBox .tag{font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;font-weight:700;margin-left:6px;white-space:nowrap}
+#nameBox .ok{color:var(--teal)}#nameBox .maybe{color:var(--amber)}
+#nameBox .x{position:absolute;right:10px;top:8px;width:34px;height:34px;font-size:20px;color:var(--muted)}
+#nameBox small{display:block;color:var(--muted);font-size:12px;line-height:1.5;margin-top:14px}
 @media (max-width:900px){
   #app{grid-template-columns:1fr;grid-template-rows:auto auto minmax(0,1fr) 150px auto;grid-template-areas:"head" "left" "map" "lupes" "bar";gap:8px;padding:8px 8px 8px}
   #lupes{grid-template-rows:1fr;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
@@ -130,6 +145,7 @@ select.btn{padding:0 8px}
     <div class="brand">
       <a href="/">← mschenkl.github.io</a>
       <h1>Wege meiner <span>Vorfahren</span></h1>
+      <button id="nameBtn" type="button">Woher kommt der Name Schenkl?</button>
     </div>
     <div id="now" aria-live="polite"><small id="nowK">Generation</small><b id="nowG"></b><span id="nowY"></span></div>
   </header>
@@ -164,6 +180,30 @@ select.btn{padding:0 8px}
       <select class="btn" id="speed" aria-label="Tempo"><option value="0.6">Langsam</option><option value="1" selected>Normal</option><option value="1.8">Schnell</option></select>
       <button class="btn" id="namesBtn" type="button">Namen</button>
     </div>
+  </div>
+</div>
+
+<div id="nameBox" hidden role="dialog" aria-modal="true" aria-labelledby="nameTitle">
+  <div class="box">
+    <button class="x" id="nameClose" type="button" aria-label="Schließen">×</button>
+    <h2 id="nameTitle">Der Name Schenkl</h2>
+    <h3>Bedeutung <span class="tag maybe">Deutung der Namenkunde</span></h3>
+    <p>Am nächsten liegt die Herleitung von „Schenk“, mittelhochdeutsch <i>schenke</i>: der Einschenkende, also ein Mundschenk an einem Hof oder ein Schankwirt. Die Endung -l ist die bairische Verkleinerungsform, „der kleine Schenk“ oder „Sohn des Schenk“. Namenbücher nennen als zweite Möglichkeit einen Übernamen zu „Schenkel“. Aus den Kirchenbüchern lässt sich das nicht entscheiden: Der Name war schon fertig, als die Ebnather Bücher 1664 einsetzen.</p>
+    <h3>Schreibweisen <span class="tag ok">belegt, Pfarrei Ebnath</span></h3>
+    <p>Schengl (1684, am Rand „Schenckl“), Schencke (1686), Schenckl (1717 bis 1778), Schönckl (1786), Schenkl (1756, 1818), Schenkel (1878). Eine feste Schreibung gab es vor dem 19. Jahrhundert nicht, im Bairischen klingen g und k hier fast gleich. Die heutige Form setzt sich erst im 19. Jahrhundert durch.</p>
+    <h3>Die Namenslinie in Ebnath</h3>
+    <ol>
+      <li><b>Georg Schengl</b>, † vor 1684. Bei der Trauung seines Sohnes als verstorben genannt.<span class="tag ok">belegt</span></li>
+      <li><b>Johann Schengl</b>, ∞ 18.1.1684 Barbara Schreier, Tochter des Hammermeisters im Oberen Hammer zu Ebnath. Wohl derselbe wie der 1717 genannte „Müller, Baumeister und Hammerherr in Ebnath“.<span class="tag maybe">wahrscheinlich</span></li>
+      <li><b>Joseph Schenkl</b>, Zimmermann in Ebnath, ∞ 23.11.1717 Barbara Gebhard.<span class="tag ok">belegt</span> Taufe 3.8.1686.<span class="tag maybe">wahrscheinlich</span></li>
+      <li><b>Johann Adam Schenkl</b>, getauft 24.9.1725, Zimmermann in Schwarzenreuth, ∞ 7.2.1752 Anna Ursula Philberth.<span class="tag ok">belegt</span></li>
+      <li><b>Caspar</b> (getauft 1756) oder sein Bruder <b>Matthias</b> (getauft 1762), beide Zimmerleute.<span class="tag maybe">welcher, ist offen</span></li>
+      <li><b>Johann Schenkl</b>, Zimmermann in Schwarzenreuth, geboren 1785 oder 1788.<span class="tag maybe">welcher, ist offen</span></li>
+    </ol>
+    <p style="margin-top:8px">Vier Generationen Zimmerleute, davor ein Müller und Hammerherr: Die Familie sitzt mindestens seit den 1680er Jahren in Ebnath im Stiftland. Im Ahnenbaum ist es die blaue Linie ganz oben.</p>
+    <h3>Wie der Name zu mir kam <span class="tag ok">belegt</span></h3>
+    <p>Im 19. Jahrhundert wurde der Name zweimal über die Mutter weitergegeben: von Maria Schenkl, Tochter des Zimmermanns Johann, an ihre Tochter Maria Magdalena (*1838) und von ihr an ihren Sohn Johann (*1860). Von ihm führt die Linie über Johann Friedrich und Karl Alfons Schenkl zu mir.</p>
+    <small>Quellen: Kirchenbücher der Pfarrei Ebnath (Matricula). Stand 22.11.2026.</small>
   </div>
 </div>
 
@@ -208,7 +248,7 @@ const PERS={};
 const per=(id,n,g,at,r,b,o={})=>{PERS[id]={id,n,g,at,r:r||"",b:b||"",...o}};
 /* Naab-Tal */
 per("pk","Paul Krempl",7,"burglengenfeld","um 1745 · † 1805 Burglengenfeld","Zimmermann");
-per("mk","Margaretha Kürner",7,"burglengenfeld","um 1743 · † 1800 Burglengenfeld");
+per("mk","Margaretha Kürner",7,"burglengenfeld","*1749 Burglengenfeld (wahrscheinlich) · † 1800 Burglengenfeld");
 per("mkr","Magdalena Krempl",6,"burglengenfeld","*1782 Burglengenfeld · † 1862 Burglengenfeld");
 per("gk","Georg Karl",6,"burglengenfeld","*1780 Burglengenfeld · † 1848 Burglengenfeld","Maurer");
 per("kk","Konrad Karl",5,"burglengenfeld","*1820 Burglengenfeld · † 1888 Burglengenfeld","Maurer");
@@ -670,8 +710,11 @@ $("prev").onclick=()=>go(Math.floor(Math.min(pos,NS-.01))-(pos>=NS?0:1));
 $("next").onclick=()=>go(Math.floor(pos)+1);
 $("slider").max=NS;
 $("slider").oninput=e=>{pause();render(+e.target.value)};
+$("nameBtn").onclick=()=>{pause();$("nameBox").hidden=false;$("nameClose").focus()};
+$("nameClose").onclick=()=>{$("nameBox").hidden=true;$("nameBtn").focus()};
+$("nameBox").onclick=e=>{if(e.target===$("nameBox"))$("nameBox").hidden=true};
 $("namesBtn").onclick=()=>$("list").classList.toggle("open");
-addEventListener("keydown",e=>{if(e.key===" "&&!/BUTTON|SELECT|INPUT/.test(e.target.tagName)){e.preventDefault();$("play").click()}if(e.key==="ArrowRight")$("next").click();if(e.key==="ArrowLeft")$("prev").click();if(e.key==="Escape")closeCard()});
+addEventListener("keydown",e=>{if(e.key===" "&&!/BUTTON|SELECT|INPUT/.test(e.target.tagName)){e.preventDefault();$("play").click()}if(e.key==="ArrowRight")$("next").click();if(e.key==="ArrowLeft")$("prev").click();if(e.key==="Escape"){if(!$("nameBox").hidden)$("nameBox").hidden=true;else closeCard()}});
 $("legend").innerHTML=ORDER.filter(l=>l!=="M").map(l=>`<span data-l="${l}"><i style="background:${LINES[l].c}"></i>${LINES[l].n}</span>`).join("");
 $("steps").innerHTML=STEPNAME.map(n=>`<button type="button">${n}</button>`).join("");
 document.querySelectorAll("#steps button").forEach((b,j)=>{b.onclick=()=>go(j)});
