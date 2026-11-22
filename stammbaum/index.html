@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Wege der Vorfahren</title>
+<meta name="description" content="Animierte Europakarte: Von wo aus die Vorfahren von Mark Schenkl nach München kamen, von den ältesten bekannten Ahnen (um 1743) bis heute.">
+<meta name="theme-color" content="#0b1220">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#0b1220;--sea:#0a111f;--land:#14223c;--border:#2a3d63;--card:#13213bee;--line:#26385c;
+  --text:#eaf1fb;--muted:#9db0cc;--blue:#4da3ff;--teal:#33e0c0;--amber:#ffb454;--violet:#c58cff;--rose:#ff7a90;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:6px}
+#stage{position:fixed;inset:0;background:radial-gradient(1200px 800px at 50% 40%,#0f1a2e,var(--sea))}
+svg{width:100%;height:100%;display:block}
+.land{fill:var(--land);stroke:none}
+.border{fill:none;stroke:var(--border);stroke-linejoin:round}
+.lbl{fill:var(--text);font-weight:600;paint-order:stroke;stroke:#0b1220;stroke-linejoin:round;pointer-events:none}
+.ylbl{font-weight:800;paint-order:stroke;stroke:#0b1220;stroke-linejoin:round;pointer-events:none}
+.ring{fill:none}
+/* Kopf */
+header{position:fixed;left:0;right:0;top:0;padding:14px var(--g,16px);display:flex;gap:12px;align-items:flex-start;justify-content:space-between;pointer-events:none;z-index:5}
+header>*{pointer-events:auto}
+.brand{min-width:0;flex:1}
+#yearBig{flex:none}
+.brand a{color:var(--muted);font-size:12px;letter-spacing:.04em}
+.brand a:hover{color:var(--text)}
+h1{font-size:clamp(18px,3.2vw,28px);font-weight:800;letter-spacing:-.01em;line-height:1.15;margin-top:2px}
+h1 span{background:linear-gradient(100deg,var(--blue),var(--teal));-webkit-background-clip:text;background-clip:text;color:transparent}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+#yearBig{font-size:clamp(40px,9vw,92px);font-weight:900;letter-spacing:-.03em;line-height:1;text-align:right;font-variant-numeric:tabular-nums;color:#ffffff;text-shadow:0 2px 30px #0b1220}
+#yearBig small{display:block;font-size:12px;letter-spacing:.06em;font-weight:600;color:var(--muted);margin-top:4px;text-transform:uppercase}
+/* Karte (Beschriftung) */
+#card{position:fixed;left:var(--g,16px);bottom:112px;width:min(420px,calc(100vw - 2*var(--g,16px)));background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;backdrop-filter:blur(10px);z-index:5;min-height:112px}
+#card .tag{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--muted);margin-bottom:6px}
+#card .tag b{display:inline-block;padding:2px 8px;border-radius:99px;font-weight:700;color:#0b1220}
+#card h2{font-size:17px;font-weight:700;line-height:1.25}
+#card .route{font-size:13px;color:var(--teal);margin:4px 0 6px;font-weight:600}
+#card p{font-size:13.5px;line-height:1.5;color:#cfdbee}
+#card .warn{display:inline-block;margin-top:6px;font-size:12px;color:var(--amber)}
+/* Steuerung */
+#bar{position:fixed;left:0;right:0;bottom:0;padding:10px var(--g,16px) 14px;background:linear-gradient(transparent,#0b1220ee 40%);z-index:6}
+.row{display:flex;gap:10px;align-items:center}
+.btn{height:40px;min-width:40px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:#13213b;font-weight:600;font-size:14px;white-space:nowrap}
+.btn:hover{border-color:var(--blue)}
+.btn.primary{background:linear-gradient(100deg,var(--blue),var(--teal));color:#06101f;border:0;min-width:96px}
+.btn[aria-pressed=true]{border-color:var(--teal);color:var(--teal)}
+#slider{flex:1;accent-color:var(--teal);height:28px;min-width:60px}
+#ticks{position:relative;height:16px;margin:2px 0 0;font-size:10.5px;color:var(--muted)}
+#ticks span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
+.ctl{margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+select.btn{padding:0 8px}
+/* Chronik */
+#log{position:fixed;top:0;right:0;bottom:0;width:min(380px,92vw);background:#0d1830f5;border-left:1px solid var(--line);z-index:8;transform:translateX(105%);transition:transform .25s;display:flex;flex-direction:column}
+#log.open{transform:none}
+#log header{position:static;padding:14px 16px;border-bottom:1px solid var(--line);align-items:center}
+#log ol{list-style:none;overflow:auto;padding:6px 8px 20px;flex:1}
+#log li button{display:block;width:100%;text-align:left;padding:8px 10px;border-radius:10px;font-size:13px;line-height:1.4;color:var(--muted)}
+#log li button:hover,#log li button.on{background:#17284a;color:var(--text)}
+#log li b{color:var(--text);margin-right:6px;font-variant-numeric:tabular-nums}
+#log li i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+#intro{position:fixed;inset:0;display:grid;place-items:center;z-index:9;background:#0b1220b8;backdrop-filter:blur(3px)}
+#intro .box{max-width:520px;margin:20px;background:#13213b;border:1px solid var(--line);border-radius:20px;padding:26px}
+#intro h2{font-size:24px;font-weight:800;margin-bottom:10px}
+#intro p{color:#cfdbee;line-height:1.55;font-size:15px;margin-bottom:10px}
+#intro small{color:var(--muted);display:block;margin-top:12px;line-height:1.5}
+@media (max-width:700px){
+  #card{bottom:150px}
+  #yearBig small{display:none}
+  .legend{display:none}
+}
+@media (prefers-reduced-motion:reduce){#log{transition:none}}
+</style>
+</head>
+<body>
+<div id="stage"><svg id="svg" role="img" aria-label="Europakarte mit den Wanderwegen der Vorfahren"></svg></div>
+
+<header>
+  <div class="brand">
+    <a href="/">← mschenkl.github.io</a>
+    <h1>Wege meiner <span>Vorfahren</span></h1>
+    <div class="legend" id="legend"></div>
+  </div>
+  <div id="yearBig" aria-live="off"><span id="yr">1743</span><small id="gen"></small></div>
+</header>
+
+<div id="card" aria-live="polite"></div>
+
+<div id="bar">
+  <div class="row">
+    <button class="btn primary" id="play" type="button">▶ Start</button>
+    <input id="slider" type="range" min="0" max="1" step="0.001" value="0" aria-label="Zeitleiste">
+  </div>
+  <div id="ticks"></div>
+  <div class="ctl">
+    <button class="btn" id="restart" type="button" title="Von vorn">⏮</button>
+    <button class="btn" id="prev" type="button" title="Voriger Schritt">◀</button>
+    <button class="btn" id="next" type="button" title="Nächster Schritt">▶</button>
+    <select class="btn" id="speed" aria-label="Tempo"><option value="0.6">Langsam</option><option value="1" selected>Normal</option><option value="1.8">Schnell</option></select>
+    <button class="btn" id="zoom" type="button" aria-pressed="true">Auto-Zoom</button>
+    <button class="btn" id="logBtn" type="button">Chronik</button>
+  </div>
+</div>
+
+<aside id="log" aria-label="Chronik">
+  <header><strong>Chronik</strong><button class="btn" id="logClose" type="button">Schließen</button></header>
+  <ol id="logList"></ol>
+</aside>
+
+<div id="intro">
+  <div class="box">
+    <h2>Wo kamen wir her?</h2>
+    <p>Die Karte beginnt bei den ältesten bekannten Vorfahren (um 1743, Burglengenfeld) und folgt ihren Wegen Generation für Generation – aus der Oberpfalz, dem Stiftland, Sachsen, Böhmen und dem Salzburger Land – bis nach München.</p>
+    <p>Jeder Pfeil trägt das Jahr, in dem der Ortswechsel belegt ist.</p>
+    <button class="btn primary" id="go" type="button">▶ Animation starten</button>
+    <small>Grundlage: Kirchenbücher, Urkunden und der Ancestry-Stammbaum (Stand 22.11.2026). Namentlich genannt sind nur verstorbene Vorfahren. Gestrichelte Pfeile sind unsicher oder zeitlich offen. Ortspunkte liegen auf Gemeindeebene.</small>
+  </div>
+</div>
+
+<script src="lib/d3.min.js"></script>
+<script src="lib/topojson-client.min.js"></script>
+<script>
+"use strict";
+/* ---------- Orte [Name, lon, lat] ---------- */
+const PL={
+ burglengenfeld:["Burglengenfeld",11.991,49.234],teublitz:["Teublitz",12.099,49.234],pirkensee:["Pirkensee",12.077,49.163],
+ ponholz:["Ponholz",12.100,49.167],oberschlag:["Oberschlag",12.17,49.17],buechelkuehn:["Büchelkühn",12.085,49.289],
+ ettmannsdorf:["Ettmannsdorf",12.082,49.328],meldau:["Meldau",12.212,49.291],fischbach:["Fischbach",11.984,49.172],schirndorf:["Schirndorf",11.990,49.179],
+ kleinsterz:["Kleinsterz",12.235,49.931],ebnath:["Ebnath",11.940,49.952],waldershof:["Waldershof",12.078,49.945],
+ groschlattengruen:["Groschlattengrün",12.149,49.975],pechbrunn:["Pechbrunn",12.175,49.972],helmbrechts:["Helmbrechts",11.686,50.240],
+ freiberg:["Freiberg",13.343,50.917],chemnitz:["Chemnitz",12.919,50.832],dresden:["Dresden",13.738,51.049],niedergorbitz:["Niedergorbitz",13.670,51.038],
+ weistropp:["Weistropp",13.586,51.086],deuben:["Deuben",13.646,50.996],
+ ustalec:["Ústaleč",13.511,49.317],hora:["Hora (Bez. Volyně)",13.887,49.166],cihost:["Číhošť",15.335,49.742],
+ daetzingen:["Dätzingen",8.887,48.717],stjohann:["St. Johann in Tirol",12.429,47.522],seeham:["Seeham",13.078,47.968],mondsee:["Mondsee",13.350,47.856],
+ oberndorf:["Oberndorf b. Salzburg",12.946,47.940],muenchen:["München",11.575,48.137],landsberg:["Landsberg am Lech",10.877,48.050]
+};
+const LINES={
+ S:{n:"Stiftland & Fichtelgebirge (Schenkl, Rosner)",c:"#4da3ff"},
+ L:{n:"Naab-Tal & Burglengenfeld (Liebl, Karl, Igl, Braun)",c:"#ffb454"},
+ D:{n:"Sachsen (Güttler, Fischer, Pätzold)",c:"#33e0c0"},
+ B:{n:"Böhmen & Salzburger Land (Přerost, Howorka)",c:"#c58cff"},
+ M:{n:"Ich",c:"#ff7a90"}
+};
+/* ---------- Ereignisse ----------
+ s = Startpunkt (Person erstmals fassbar), m = Ortswechsel (von → nach)
+ y Jahr · yl Anzeige · g Generation vor Mir · u = unsicher/gestrichelt */
+const E=[];
+const s=(y,pl,ln,g,who,txt,o={})=>E.push({k:"s",y,to:pl,ln,g,who,txt,...o});
+const m=(y,fr,pl,ln,g,who,txt,o={})=>E.push({k:"m",y,from:fr,to:pl,ln,g,who,txt,...o});
+s(1743,"burglengenfeld","L",7,"Margaretha Kürner","Um 1743 · † 28.11.1800 in Burglengenfeld, Geburtsort unbekannt. Älteste datierte Vorfahrin.",{yl:"um 1743"});
+s(1745,"burglengenfeld","L",7,"Paul Krempl","Um 1745 · † 23.1.1805 in Burglengenfeld, Geburtsort unbekannt; Zimmermann (laut Taufeintrag seiner Tochter).",{yl:"um 1745"});
+s(1769,"fischbach","L",7,"Joseph Igl","*18.1.1769 in Fischbach bei Kallmünz, † 1844 ebenda. Ältester Vorfahre mit Taufeintrag.");
+s(1772,"meldau","L",6,"Martin Hofer","Um 1772 · Bauer in Meldau, † 8.1.1851 ebenda (Geburtsort unbekannt).",{yl:"um 1772"});
+s(1775,"schirndorf","L",7,"Kunigunda Herrmann","*21.5.1775 in Schirndorf bei Kallmünz.");
+s(1780,"burglengenfeld","L",6,"Georg Karl","*22.9.1780 in Burglengenfeld, Maurer.");
+s(1782,"burglengenfeld","L",6,"Magdalena Krempl","*29.3.1782 in Burglengenfeld, Tochter des Zimmermanns Paul Krempl; ∞ Georg Karl.");
+s(1794,"ettmannsdorf","L",6,"Margaretha Eigl","*1794 in Ettmannsdorf bei Schwandorf.");
+s(1795,"buechelkuehn","L",6,"Joseph Liebl","*8.3.1795 in Büchelkühn, Bauer.");
+m(1806,"schirndorf","fischbach","L",7,"Kunigunda Herrmann","Zieht zu ihrem Mann Joseph Igl nach Fischbach; Sohn Johann *22.4.1806 dort.",{yl:"bis 1806"});
+s(1808,"kleinsterz","S",5,"Michael Rosner","*5.1.1808 in Kleinsterz, Bauer; † 29.11.1877.");
+s(1810,"teublitz","L",6,"Anna Feuerer","*23.6.1810 in Teublitz, † 3.3.1842.");
+s(1812,"waldershof","S",5,"Georgius Brucker","*10.9.1812 in Waldershof, Zeugmacher. Laut Taufbuch Vater von Johann Schenkl (wahrscheinlich, nicht bewiesen).");
+m(1829,"ettmannsdorf","buechelkuehn","L",6,"Margaretha Eigl","Heirat mit Joseph Liebl; Sohn Joseph *10.4.1829 in Büchelkühn.",{yl:"bis 1829"});
+s(1832,"chemnitz","D",4,"Friedrich Wilhelm Güttler","*15.5.1832 in Chemnitz, Zimmermann. Geburtsangabe nur aus Familienüberlieferung.",{u:1});
+s(1833,"freiberg","D",4,"Emilie Dorothea Braune","*2.8.1833 in Freiberg (Familienüberlieferung), † vor 1896 ebenda.",{u:1});
+m(1835,"fischbach","teublitz","L",6,"Johann Igl","Heirat mit Anna Feuerer aus Teublitz; Tochter Maria *9.2.1835 in Teublitz.",{yl:"bis 1835"});
+s(1838,"ebnath","S",7,"Johann Schenkl","1838 als Zimmermann in Ebnath belegt. Seine Enkelin Maria Magdalena wurde dort am 23.2.1838 geboren. Seine Identität ist noch offen.",{u:1});
+s(1840,"ustalec","B",4,"Wáclav Přerost","*18.10.1840 in Ústaleč (Austaletz) bei Klatovy, Böhmen; Taglöhner.");
+s(1841,"hora","B",4,"Rosalia Wazlawik","*1841 in Hora im Bezirk Volyně (Böhmen); † 7.4.1906 bei Seekirchen.");
+s(1843,"weistropp","D",4,"Anna Auguste Pätzold","*12.10.1843 in Weistropp bei Meißen, † 21.4.1898 in Löbtau.");
+m(1846,"meldau","burglengenfeld","L",5,"Maria Hofer","Tochter des Bauern Martin Hofer aus Meldau; Heirat 17.2.1846 mit dem Maurer Konrad Karl in Burglengenfeld.");
+m(1857,"buechelkuehn","burglengenfeld","L",5,"Joseph Liebl","Tagelöhner; Heirat 16.6.1857 in Burglengenfeld. Sohn Joseph *13.8.1859 dort.");
+m(1857,"teublitz","burglengenfeld","L",5,"Maria Igl","*9.2.1835 in Teublitz; Heirat 16.6.1857 in Burglengenfeld.");
+m(1860,"waldershof","ebnath","S",4,"Johann Schenkl","*9.1.1860 in Ebnath, unehelich, Tagarbeiter. Im Taufbuch genannter Vater: Georgius Brucker aus Waldershof.",{u:1});
+m(1861,"helmbrechts","groschlattengruen","S",5,"Maria Schraml","Tochter des Stephan Schraml aus Helmbrechts; Tochter Anna Margaretha Reindl *12.5.1861 in Groschlattengrün.",{yl:"bis 1861"});
+s(1861,"oberschlag","L",4,"Anna Maria Reil","*11.3.1861 in Oberschlag (Pfarrei Bubach am Forst), unehelich.");
+m(1869,"weistropp","deuben","D",4,"Anna Auguste Pätzold","Tochter Auguste Marie *5.12.1869 in Deuben bei Freital.");
+m(1870,"chemnitz","freiberg","D",4,"Friedrich Wilhelm Güttler","Sohn Oskar Bernhard *21.7.1870 in Freiberg.",{u:1,yl:"bis 1870"});
+m(1870,"ustalec","daetzingen","B",4,"Wáclav Přerost","Heirat 3.1.1870 in Dätzingen (Württemberg) mit Rosalia Wazlawik. Beleg: Heiratsindex.");
+m(1870,"hora","daetzingen","B",4,"Rosalia Wazlawik","Heirat 3.1.1870 in Dätzingen (Württemberg) mit Wáclav Přerost.");
+m(1875,"deuben","niedergorbitz","D",4,"Anna Auguste Pätzold","Tochter Ida Auguste *1.2.1875 in Niedergorbitz (Dresden-West).");
+s(1879,"kleinsterz","S",3,"Magdalena Rosner","*18.7.1879 in Kleinsterz, unehelich; † 15.8.1928.");
+m(1880,"daetzingen","stjohann","B",4,"Familie Přerost","Sohn Wenzel *19.5.1880 in St. Johann in Tirol. Der Vater arbeitet als Taglöhner.");
+m(1880,"cihost","mondsee","B",4,"Johann Hovorka & Anna Mareš","Trauschein aus Číhošť (28.9.1880); Tochter Josefa *26.11.1880 in Mondsee. Johann Hovorka war Maurer aus Böhmen.");
+m(1882,"ebnath","groschlattengruen","S",4,"Johann Schenkl","Heirat 26.11.1882 in Marktredwitz mit Anna Margaretha Reindl; Sohn Johann Friedrich *2.2.1884 in Groschlattengrün.");
+m(1884,"stjohann","seeham","B",4,"Familie Přerost","In Seeham (Matzing) bei Salzburg; Taufe der Tochter Justina 15.11.1884.");
+m(1891,"ponholz","pirkensee","L",4,"Johann Braun","Bergarbeiter in Ponholz; Heirat 7.1.1891 mit Anna Maria Reil. Tochter Maria *13.4.1891 in Pirkensee.");
+m(1891,"oberschlag","pirkensee","L",4,"Anna Maria Reil","Verwitwete Bizer; Heirat 7.1.1891 mit Johann Braun.");
+m(1896,"freiberg","dresden","D",3,"Oskar Bernhard Güttler","Fabrikarbeiter; Heirat 14.11.1896 in Löbtau (Dresden). Sohn *14.10.1914 in Dresden.");
+m(1896,"niedergorbitz","dresden","D",3,"Ida Auguste Fischer","*1.2.1875 in Niedergorbitz; Heirat 14.11.1896 in Löbtau (Dresden).");
+m(1908,"seeham","oberndorf","B",3,"Wenzel Přerost","*1880 in St. Johann in Tirol, Taglöhner und Pflasterer; Heirat 3.11.1908 in Oberndorf bei Salzburg.");
+m(1908,"mondsee","oberndorf","B",3,"Josefa Howorka","*26.11.1880 in Mondsee; Heirat 3.11.1908 in Oberndorf.");
+m(1914,"groschlattengruen","pechbrunn","S",3,"Johann Friedrich Schenkl","*2.2.1884 in Groschlattengrün, Steinbrucharbeiter (8 Kinder). Sohn Karl Alfons *23.5.1914 in Pechbrunn.");
+m(1914,"kleinsterz","pechbrunn","S",3,"Magdalena Rosner","Heirat mit Johann Friedrich Schenkl; Sohn Karl Alfons *23.5.1914 in Pechbrunn.");
+m(1920,"pirkensee","burglengenfeld","L",3,"Maria Braun","*13.4.1891 in Pirkensee; Heirat mit Johann Liebl aus Burglengenfeld; Tochter 1920 dort geboren.");
+m(1939,"pechbrunn","muenchen","S",2,"Karl Alfons Schenkl","*23.5.1914 in Pechbrunn; Heirat 29.4.1939 im Dom zu München; † 6.10.1982 in München.");
+m(1939,"oberndorf","muenchen","B",2,"Sabina Přerost","*17.10.1917 in Oberndorf bei Salzburg; Heirat 1939 in München; † 5.6.2001 in München.");
+m(0,"dresden","muenchen","D",2,"Großvater mütterlicherseits","*1914 in Dresden. Wann seine Linie nach Oberbayern kam, ist noch offen.",{u:1,yl:"Jahr offen"});
+m(0,"burglengenfeld","muenchen","L",2,"Großmutter mütterlicherseits","*1920 in Burglengenfeld. Wann ihre Linie nach Oberbayern kam, ist noch offen.",{u:1,yl:"Jahr offen"});
+s(0,"landsberg","M",0,"Mark Schenkl","geboren in Landsberg am Lech.");
+m(0,"landsberg","muenchen","M",0,"Mark Schenkl","Heute lebe ich hier: in München laufen alle Linien zusammen.",{yl:"heute"});
+const N=E.length;
+E.forEach((e,i)=>e.i=i);
+
+/* ---------- Aufbau ---------- */
+const svg=d3.select("#svg");
+let W=0,H=0,proj,gCam,k=1,world,pathGen,els=[],placeEls={},ph;
+const $=id=>document.getElementById(id);
+const genName=g=>g===0?"Ich":g===1?"Eltern":g===2?"Großeltern":g===3?"Urgroßeltern":g===4?"Ururgroßeltern":(g-2)+"× Urgroßeltern";
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+const lerp=(a,b,t)=>a+(b-a)*t;
+
+function pt(pl){return proj([PL[pl][1],PL[pl][2]])}
+function build(){
+  W=innerWidth;H=innerHeight;
+  svg.attr("viewBox",`0 0 ${W} ${H}`);svg.selectAll("*").remove();
+  const ext={type:"MultiPoint",coordinates:[[-11,36],[33,36],[33,61],[-11,61]]};
+  proj=d3.geoMercator().fitExtent([[0,H*.42-(H-190)/2],[W,H*.42+(H-190)/2]],ext);
+  pathGen=d3.geoPath(proj);
+  gCam=svg.append("g");
+  gCam.append("path").attr("class","land").attr("d",pathGen(topojson.feature(world,world.objects.land)));
+  gCam.append("path").attr("class","border").attr("d",pathGen(topojson.mesh(world,world.objects.countries,(a,b)=>a!==b)));
+  const gA=gCam.append("g"),gP=gCam.append("g"),gT=gCam.append("g");
+  els=E.map(e=>{
+    const c=LINES[e.ln].c,o={e,c};
+    const b=pt(e.to);o.b=b;
+    if(e.k==="m"){
+      const a=pt(e.from);o.a=a;
+      const dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy)||1;
+      const bend=.16,cx=(a[0]+b[0])/2-dy*bend,cy=(a[1]+b[1])/2+dx*bend;o.ctl=[cx,cy];
+      o.path=gA.append("path").attr("d",`M${a[0]},${a[1]} Q${cx},${cy} ${b[0]},${b[1]}`).attr("fill","none").attr("stroke",c).attr("stroke-linecap","round").node();
+      o.len=o.path.getTotalLength();
+      o.head=gA.append("path").attr("d","M0,0L-9,-4.5L-9,4.5Z").attr("fill",c).node();
+    }
+    o.dot=gP.append("circle").attr("fill",c).attr("stroke","#0b1220").node();
+    o.ring=gP.append("circle").attr("class","ring").attr("stroke",c).node();
+    o.yl=gT.append("text").attr("class","ylbl").attr("text-anchor","middle").attr("fill",c).text(e.yl||e.y).node();
+    return o;
+  });
+  placeEls={};
+  Object.keys(PL).forEach(p=>{placeEls[p]=gT.append("text").attr("class","lbl").text(PL[p][0]).node()});
+}
+/* Kamera */
+function camFor(i){
+  if(i<0){ // Gesamtansicht Mitteleuropa
+    return camBox(["burglengenfeld","dresden","muenchen","oberndorf","ustalec"].map(pt),1.15,1,6);
+  }
+  const e=E[i],pts=[pt(e.to)];if(e.k==="m")pts.push(pt(e.from));
+  return camBox(pts,1.0,2.2,e.k==="s"?5:30);
+}
+function camBox(pts,pad,kmin,kmax){
+  const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]);
+  const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
+  const dw=Math.max(x1-x0,1),dh=Math.max(y1-y0,1);
+  const avail=[W-80,H-300];
+  let kk=Math.min(avail[0]/(dw*1.35),avail[1]/(dh*1.35));
+  kk=Math.max(kmin,Math.min(kmax,kk));if(pts.length===1)kk=kmax;
+  return {x:(x0+x1)/2,y:(y0+y1)/2,k:kk};
+}
+const VC=()=>H*.42;
+const overview=()=>({x:W/2,y:VC(),k:1});
+let fixed=null;
+function camAt(n,frac,all){
+  if($("zoom").getAttribute("aria-pressed")==="false")return overview();
+  const sumCam=camFor(-1);
+  if(all)return sumCam;
+  const prev=n===0?overview():camFor(n-1),next=camFor(n);
+  const t=ease(Math.min(1,frac/.5));
+  return {x:lerp(prev.x,next.x,t),y:lerp(prev.y,next.y,t),k:Math.exp(lerp(Math.log(prev.k),Math.log(next.k),t))};
+}
+/* Zeichnen an Position i (0..N, Ereignis-Index mit Bruchteil) */
+let pos=0;
+function render(i){
+  pos=i;const all=i>=N,n=all?N:Math.floor(i),frac=all?0:i-n;
+  const cam=camAt(n>=N?N:n,frac,all);
+  k=cam.k;
+  const tx=W/2-cam.x*k,ty=VC()-cam.y*k;
+  gCam.select(".border").attr("stroke-width",.9/k);
+  gCam.attr("transform",`translate(${tx},${ty}) scale(${k})`);
+  const cur=all?N-1:n;
+  const used={};
+  els.forEach((o,j)=>{
+    const e=o.e,vis=j<n||(!all&&j===n)||all,cp=j===n&&!all;
+    const p=!vis?0:cp?Math.min(1,frac/.75):1;
+    const age=cur-j;
+    const op=!vis?0:cp?1:Math.max(.34,.9-age*.025);
+    if(o.path){
+      const sw=(cp?3:2.2)/k;
+      o.path.setAttribute("stroke-width",sw);o.path.setAttribute("opacity",op);
+      if(e.u){o.path.setAttribute("stroke-dasharray",`${7/k} ${6/k}`);o.path.setAttribute("opacity",p>0?op*Math.min(1,p*2):0)}
+      else o.path.setAttribute("stroke-dasharray",`${p*o.len} ${o.len+10}`);
+      // Pfeilspitze
+      const hp=Math.max(0,Math.min(1,p));
+      if(p>0.02){
+        const t=hp,a=o.a,c=o.ctl,b=o.b;
+        const X=(1-t)*(1-t)*a[0]+2*(1-t)*t*c[0]+t*t*b[0],Y=(1-t)*(1-t)*a[1]+2*(1-t)*t*c[1]+t*t*b[1];
+        const dX=2*(1-t)*(c[0]-a[0])+2*t*(b[0]-c[0]),dY=2*(1-t)*(c[1]-a[1])+2*t*(b[1]-c[1]);
+        o.head.setAttribute("transform",`translate(${X},${Y}) rotate(${Math.atan2(dY,dX)*180/Math.PI}) scale(${1/k*(cp?1.25:1)})`);
+        o.head.setAttribute("opacity",op);
+      }else o.head.setAttribute("opacity",0);
+    }
+    const arrived=vis&&(e.k==="s"||p>=.97);
+    o.dot.setAttribute("cx",o.b[0]);o.dot.setAttribute("cy",o.b[1]);
+    o.dot.setAttribute("r",(cp?5.5:3.6)/k);o.dot.setAttribute("stroke-width",1.2/k);
+    o.dot.setAttribute("opacity",arrived?(cp?1:Math.max(.45,op)):0);
+    o.ring.setAttribute("cx",o.b[0]);o.ring.setAttribute("cy",o.b[1]);
+    if(cp&&arrived){const t=Math.min(1,(frac-.75)/.25+0);o.ring.setAttribute("r",(6+16*Math.max(0,frac-.6)/.4)/k);o.ring.setAttribute("stroke-width",1.6/k);o.ring.setAttribute("opacity",Math.max(0,1-Math.max(0,frac-.6)/.4)*.9)}
+    else o.ring.setAttribute("opacity",0);
+    // Jahreszahl am Pfeil
+    let lx,ly;
+    if(o.path){lx=.25*o.b[0]+.5*o.ctl[0]+.25*o.a[0];ly=.25*o.b[1]+.5*o.ctl[1]+.25*o.a[1]}else{lx=o.b[0];ly=o.b[1]-10/k}
+    o.yl.setAttribute("x",lx);o.yl.setAttribute("y",ly-(o.path?5/k:0));
+    o.yl.setAttribute("font-size",(cp?13:10.5)/k);o.yl.setAttribute("stroke-width",3/k);
+    o.yl.setAttribute("opacity",!vis?0:cp?(p>.4?1:0):(age<3?.95:.0));
+    if(arrived){used[e.to]=Math.max(used[e.to]||-1,j)}
+    if(vis&&e.k==="m"&&e.from)used[e.from]=Math.max(used[e.from]??-1,j)
+  });
+  // Ortsnamen (Kollisionsfreie Auswahl, jüngste zuerst)
+  const keys=Object.keys(used).sort((a,b)=>used[b]-used[a]),boxes=[];
+  Object.keys(placeEls).forEach(p=>placeEls[p].setAttribute("opacity",0));
+  keys.forEach(p=>{
+    const el=placeEls[p],pp=pt(p),sx=pp[0]*k+(W/2-cam.x*k),sy=pp[1]*k+(VC()-cam.y*k);
+    const w=PL[p][0].length*6.6+8,h=15;const bx=[sx+7,sy-3,sx+7+w,sy-3+h];
+    if(boxes.some(b=>bx[0]<b[2]&&bx[2]>b[0]&&bx[1]<b[3]&&bx[3]>b[1]))return;
+    boxes.push(bx);
+    el.setAttribute("x",pp[0]+7/k);el.setAttribute("y",pp[1]+9/k);
+    el.setAttribute("font-size",12/k);el.setAttribute("stroke-width",3.4/k);el.setAttribute("opacity",.95);
+  });
+  // Anzeige
+  const ci=Math.min(cur,N-1);
+  const ce=E[all?N-1:Math.min(n,N-1)];
+  $("yr").textContent=ce.yl&&/^\d/.test(ce.yl)?String(ce.y):String(ce.y);
+  $("gen").textContent=genName(ce.g)+(ce.g?" · "+ce.g+". Generation":"");
+  $("slider").value=Math.min(i,N);
+  document.querySelectorAll("#logList button").forEach((b,j)=>b.classList.toggle("on",j===ci));
+  if(ci!==shown){shown=ci;card(ce)}
+}
+let shown=-2;
+function card(e){
+  const c=LINES[e.ln].c,route=e.k==="m"?`${PL[e.from][0]} → ${PL[e.to][0]}`:PL[e.to][0];
+  $("card").innerHTML=`<div class="tag"><b style="background:${c}">${e.yl||e.y}</b><span>${genName(e.g)}</span></div>
+  <h2></h2><div class="route"></div><p></p>${e.u?'<span class="warn">⚠ unsicher bzw. zeitlich offen</span>':""}`;
+  $("card").querySelector("h2").textContent=e.who;
+  $("card").querySelector(".route").textContent=route;
+  $("card").querySelector("p").textContent=e.txt;
+}
+/* ---------- Wiedergabe ---------- */
+let playing=false,last=0;
+const SEC=3.0; // Sekunden je Ereignis bei Tempo 1
+function tick(ts){
+  if(!playing)return;
+  const dt=Math.min(.1,(ts-last)/1000);last=ts;
+  const sp=+$("speed").value;
+  let i=pos+dt*sp/SEC;
+  if(i>=N){i=N;playing=false;$("play").textContent="↻ Nochmal"}
+  render(i);
+  if(playing)requestAnimationFrame(tick);
+}
+function play(){
+  if(pos>=N)pos=0;
+  playing=true;$("play").textContent="❚❚ Pause";last=performance.now();$("intro").style.display="none";requestAnimationFrame(tick);
+}
+function pause(){playing=false;$("play").textContent="▶ Weiter"}
+$("play").onclick=()=>playing?pause():play();
+$("go").onclick=play;
+$("restart").onclick=()=>{pos=0;shown=-2;render(0);if(!playing)$("play").textContent="▶ Start"};
+$("prev").onclick=()=>{pause();render(Math.max(0,Math.floor(pos-.01)))};
+$("next").onclick=()=>{pause();render(Math.min(N,Math.floor(pos)+1+.85))};
+$("slider").max=N;
+$("slider").oninput=e=>{pause();render(+e.target.value)};
+$("zoom").onclick=()=>{const b=$("zoom");b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")==="true"?"false":"true");render(pos)};
+$("logBtn").onclick=()=>$("log").classList.toggle("open");
+$("logClose").onclick=()=>$("log").classList.remove("open");
+addEventListener("keydown",e=>{if(e.key===" "&&e.target.tagName!=="BUTTON"&&e.target.tagName!=="SELECT"){e.preventDefault();$("play").click()}if(e.key==="ArrowRight")$("next").click();if(e.key==="ArrowLeft")$("prev").click()});
+/* Legende, Ticks, Chronik */
+$("legend").innerHTML=Object.entries(LINES).filter(([a])=>a!=="M").map(([a,l])=>`<span><i style="background:${l.c}"></i>${l.n}</span>`).join("");
+(function(){
+  const t=$("ticks");let html="";const seen=new Set();
+  [1743,1800,1850,1900,1950,2000].forEach(y=>{const idx=E.findIndex(e=>e.y>=y);if(idx<0||seen.has(idx))return;seen.add(idx);html+=`<span style="left:${(idx+.5)/N*100}%">${y}</span>`});
+  t.innerHTML=html;
+  $("logList").innerHTML=E.map((e,j)=>`<li><button type="button" data-i="${j}"><i style="background:${LINES[e.ln].c}"></i><b>${e.yl||e.y}</b></button></li>`).join("");
+  document.querySelectorAll("#logList button").forEach((b,j)=>{
+    const e=E[j];b.innerHTML+=`<span></span>`;b.querySelector("span").textContent=e.who+" · "+(e.k==="m"?`${PL[e.from][0]} → ${PL[e.to][0]}`:PL[e.to][0]);
+    b.onclick=()=>{pause();render(j+.9);if(innerWidth<700)$("log").classList.remove("open")};
+  });
+})();
+let rz;addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>{if(world){const p=pos;build();shown=-2;render(p)}},150)});
+/* Start */
+fetch("lib/countries-50m.json").then(r=>r.json()).then(w=>{
+  world=w;build();render(0);
+  const q=new URLSearchParams(location.search);
+  if(q.has("t")){$("intro").style.display="none";render(+q.get("t"))}
+}).catch(err=>{$("card").textContent="Karte konnte nicht geladen werden: "+err});
+</script>
+</body>
+</html>
