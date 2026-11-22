@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Wege der Vorfahren</title>
-<meta name="description" content="Animierte Europakarte: Von wo aus die Vorfahren von Mark Schenkl nach München kamen, von den ältesten bekannten Ahnen (um 1743) bis heute.">
+<meta name="description" content="Ahnenbaum und Karte: Von wo aus die Vorfahren von Mark Schenkl nach München kamen, von den ältesten bekannten Ahnen (um 1743) bis heute.">
 <meta name="theme-color" content="#0b1220">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <style>
 :root{
   color-scheme:dark;
-  --bg:#0b1220;--sea:#0a111f;--land:#14223c;--border:#2a3d63;--card:#13213bee;--line:#26385c;
+  --bg:#0b1220;--sea:#0a111f;--land:#17284a;--border:#2a3d63;--panel:#0f1b33;--line:#26385c;
   --text:#eaf1fb;--muted:#9db0cc;--blue:#4da3ff;--teal:#33e0c0;--amber:#ffb454;--violet:#c58cff;--rose:#ff7a90;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -19,146 +19,161 @@ html,body{height:100%}
 body{background:var(--bg);color:var(--text);font-family:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 :focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:6px}
-#stage{position:fixed;inset:0;background:radial-gradient(1200px 800px at 50% 40%,#0f1a2e,var(--sea))}
 svg{display:block}
-#svg{width:auto;height:auto}
-.land{fill:#17284a;stroke:none}
-.border{fill:none;stroke:var(--border);stroke-linejoin:round}
-.lbl{fill:var(--text);font-weight:600;paint-order:stroke;stroke:#0b1220;stroke-linejoin:round;pointer-events:none}
-.ylbl{font-weight:800;paint-order:stroke;stroke:#0b1220;stroke-linejoin:round;pointer-events:none}
-.ring{fill:none}
+#app{position:fixed;inset:0;display:grid;gap:10px;padding:12px 14px 10px;
+  grid-template-columns:minmax(320px,34%) 1fr minmax(210px,22%);grid-template-rows:auto minmax(0,1fr) auto;
+  grid-template-areas:"head head head" "left map lupes" "bar bar bar"}
 /* Kopf */
-header{position:fixed;left:0;right:0;top:0;padding:14px var(--g,16px);display:flex;gap:12px;align-items:flex-start;justify-content:space-between;pointer-events:none;z-index:5}
-header>*{pointer-events:auto}
-.brand{min-width:0;flex:1}
-#yearBig{flex:none}
+#head{grid-area:head;display:flex;gap:16px;align-items:flex-end;justify-content:space-between}
 .brand a{color:var(--muted);font-size:12px;letter-spacing:.04em}
 .brand a:hover{color:var(--text)}
-h1{font-size:clamp(18px,3.2vw,28px);font-weight:800;letter-spacing:-.01em;line-height:1.15;margin-top:2px}
+h1{font-size:clamp(18px,2.4vw,26px);font-weight:800;letter-spacing:-.01em;line-height:1.15;margin-top:2px}
 h1 span{background:linear-gradient(100deg,var(--blue),var(--teal));-webkit-background-clip:text;background-clip:text;color:transparent}
-.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted);margin-top:8px}
-.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
-#yearBig{font-size:clamp(40px,9vw,92px);font-weight:900;letter-spacing:-.03em;line-height:1;text-align:right;font-variant-numeric:tabular-nums;color:#ffffff;text-shadow:0 2px 30px #0b1220}
-#yearBig small{display:block;font-size:12px;letter-spacing:.06em;font-weight:600;color:var(--muted);margin-top:4px;text-transform:uppercase}
-/* Karte (Beschriftung) */
-#card{position:fixed;left:var(--g,16px);bottom:112px;width:min(460px,calc(100vw - 2*var(--g,16px)));background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;backdrop-filter:blur(10px);z-index:5;min-height:112px}
-#card .tag{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--muted);margin-bottom:6px}
-#card .tag b{display:inline-block;padding:2px 8px;border-radius:99px;font-weight:700;color:#0b1220}
-#card h2{display:none;font-size:17px;font-weight:700;line-height:1.25}
-#card .route{font-size:13px;color:var(--teal);margin:4px 0 6px;font-weight:600}
-#card p{font-size:13.5px;line-height:1.5;color:#cfdbee}
-#card .warn{display:inline-block;margin-top:6px;font-size:12px;color:var(--amber)}
+#now{text-align:right;min-width:0}
+#now small{display:block;min-height:14px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+#now b{display:block;min-height:1.1em;font-size:clamp(20px,3vw,34px);font-weight:900;letter-spacing:-.02em;line-height:1.1}
+#now span{display:block;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;min-height:17px}
+/* Flächen */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;position:relative;min-height:0;min-width:0}
+#left{grid-area:left;display:flex;flex-direction:column}
+#treeBox{flex:none;border-bottom:1px solid var(--line)}
+#tree .rowlbl{font-size:10.5px;font-weight:500;fill:#7f93b4}
+#tree .rowlbl.on{fill:#fff;font-weight:700}
+#tree .band{fill:#1a2c50}
+#tree circle{cursor:pointer}
+#list{flex:1;overflow:auto;padding:4px 10px 12px;min-height:0}
+#list h4{font-size:12px;font-weight:800;margin:14px 0 0;color:#fff;border-top:1px solid var(--line);padding-top:8px}
+#list h4:first-child{border:0;margin-top:4px}
+#list h3{font-size:11px;letter-spacing:.07em;text-transform:uppercase;font-weight:700;margin:10px 0 3px;display:flex;align-items:center;gap:6px;opacity:.45;transition:opacity .25s}
+#list h3 i{width:9px;height:9px;border-radius:50%;background:currentColor}
+#list h3.on{opacity:1}
+#list button{display:block;width:100%;text-align:left;padding:4px 8px;border-radius:8px;border-left:3px solid transparent;opacity:.3;transition:opacity .25s}
+#list button.on{opacity:1}
+#list button.act{background:#16264a;border-left-color:var(--c)}
+#list button:hover{background:#1a2c50}
+#list b{display:block;font-size:13px;font-weight:650;line-height:1.25}
+#list span{display:block;font-size:11.5px;color:var(--muted);line-height:1.3}
+#list b em{font-style:normal;font-weight:500;color:var(--c);font-size:12px}
+#card{position:absolute;left:8px;right:8px;bottom:8px;background:#13213bf8;border:1px solid var(--line);border-left:4px solid var(--c,#4da3ff);border-radius:12px;padding:12px 14px;box-shadow:0 8px 28px #000a;z-index:3;max-height:62%;overflow:auto}
+#card[hidden]{display:none}
+#card .x{position:absolute;right:6px;top:4px;width:30px;height:30px;font-size:18px;color:var(--muted)}
+#card small{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--c);font-weight:700}
+#card strong{display:block;font-size:17px;font-weight:750;line-height:1.25;margin:2px 26px 2px 0}
+#card .m{font-size:12.5px;color:var(--muted);line-height:1.45}
+#card p{font-size:13px;line-height:1.5;color:#cfdbee;margin-top:6px}
+#card ul{list-style:none;margin-top:6px;font-size:13px;line-height:1.5}
+#card ul span{color:var(--muted);font-size:11.5px}
+/* Karten */
+#mapcol{grid-area:map}
+#lupes{grid-area:lupes;display:grid;grid-template-rows:minmax(0,1fr) minmax(0,.8fr) minmax(0,1.5fr);gap:10px;min-height:0;min-width:0}
+.view svg{position:absolute;inset:0}
+.lupe{transition:border-color .25s,box-shadow .25s}
+.lupe.act{border-color:var(--c);box-shadow:0 0 0 1px var(--c)}
+.lupe h3{position:absolute;left:10px;top:7px;font-size:11px;letter-spacing:.07em;text-transform:uppercase;font-weight:700;color:var(--c);z-index:2;pointer-events:none}
+.lupe h3 small{color:var(--muted);font-weight:500;letter-spacing:.02em;text-transform:none;margin-left:6px}
+.land{fill:var(--land)}
+.sea{fill:var(--sea)}
+.border{fill:none;stroke:var(--border);stroke-linejoin:round;stroke-width:1}
+.lbl{font-size:11px;font-weight:300;fill:#b9c8e0;paint-order:stroke;stroke:#0f1b33;stroke-width:3px;stroke-linejoin:round;pointer-events:none}
+.lbl.on{font-weight:600;fill:#fff}
+.ref{font-size:10px;font-weight:300;fill:#6f84a8;pointer-events:none}
+.ylbl{font-size:11px;font-weight:800;paint-order:stroke;stroke:#0b1220;stroke-width:3.5px;stroke-linejoin:round;pointer-events:none;font-variant-numeric:tabular-nums}
+.frame{fill:none;stroke-width:1.2}
+.flbl{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;paint-order:stroke;stroke:#0f1b33;stroke-width:3px;pointer-events:none}
+.dot{cursor:pointer}
+.scale{stroke:#7f93b4;stroke-width:1}
+.scalet{font-size:9.5px;fill:#7f93b4}
+#cap{position:absolute;left:10px;right:10px;bottom:10px;background:#0b1220d9;border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13.5px;line-height:1.45;color:#dbe6f6;z-index:2}
+#legend{position:absolute;left:10px;top:8px;display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11.5px;color:var(--muted);z-index:2;pointer-events:none}
+#legend span{transition:opacity .25s;opacity:.55}
+#legend span.on{opacity:1;color:#fff}
+#legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
 /* Steuerung */
-#bar{position:fixed;left:0;right:0;bottom:0;padding:10px var(--g,16px) 14px;background:linear-gradient(transparent,#0b1220ee 40%);z-index:6}
+#bar{grid-area:bar}
 .row{display:flex;gap:10px;align-items:center}
-.btn{height:40px;min-width:40px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:#13213b;font-weight:600;font-size:14px;white-space:nowrap}
+.btn{height:38px;min-width:38px;padding:0 13px;border:1px solid var(--line);border-radius:11px;background:#13213b;font-weight:600;font-size:14px;white-space:nowrap}
 .btn:hover{border-color:var(--blue)}
-.btn.primary{background:linear-gradient(100deg,var(--blue),var(--teal));color:#06101f;border:0;min-width:96px}
-.btn[aria-pressed=true]{border-color:var(--teal);color:var(--teal)}
-#slider{flex:1;accent-color:var(--teal);height:28px;min-width:60px}
-#ticks{position:relative;height:16px;margin:2px 0 0;font-size:10.5px;color:var(--muted)}
-#ticks span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
-.ctl{margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn.primary{background:linear-gradient(100deg,var(--blue),var(--teal));color:#06101f;border:0;min-width:104px}
+#bar .grow{flex:1;min-width:0}
+#slider{flex:1;accent-color:var(--teal);height:26px;min-width:60px}
+#steps{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:2px;flex:1;margin-top:2px}
+#steps button{font-size:10.5px;font-weight:600;color:var(--muted);padding:3px 2px;border-radius:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#steps button.on{color:#fff;background:#1a2c50}
 select.btn{padding:0 8px}
-/* Chronik */
-#log{position:fixed;top:0;right:0;bottom:0;width:min(380px,92vw);background:#0d1830f5;border-left:1px solid var(--line);z-index:8;transform:translateX(105%);transition:transform .25s;display:flex;flex-direction:column}
-#log.open{transform:none}
-#log header{position:static;padding:14px 16px;border-bottom:1px solid var(--line);align-items:center}
-#log ol{list-style:none;overflow:auto;padding:6px 8px 20px;flex:1}
-#log li button{display:block;width:100%;text-align:left;padding:8px 10px;border-radius:10px;font-size:13px;line-height:1.4;color:var(--muted)}
-#log li button:hover,#log li button.on{background:#17284a;color:var(--text)}
-#log li b{color:var(--text);margin-right:6px;font-variant-numeric:tabular-nums}
-#log li i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
-#intro{position:fixed;inset:0;display:grid;place-items:center;z-index:9;background:#0b1220b8;backdrop-filter:blur(3px)}
-#intro .box{max-width:520px;margin:20px;background:#13213b;border:1px solid var(--line);border-radius:20px;padding:26px}
+#namesBtn{display:none}
+#intro{position:fixed;inset:0;display:grid;place-items:center;z-index:9;background:#0b1220c8;backdrop-filter:blur(3px)}
+#intro .box{max-width:540px;margin:20px;background:#13213b;border:1px solid var(--line);border-radius:20px;padding:26px}
 #intro h2{font-size:24px;font-weight:800;margin-bottom:10px}
 #intro p{color:#cfdbee;line-height:1.55;font-size:15px;margin-bottom:10px}
 #intro small{color:var(--muted);display:block;margin-top:12px;line-height:1.5}
-@media (max-width:700px){
-  #card{bottom:150px}
-  #yearBig small{display:none}
-  .legend{display:none}
+@media (max-width:900px){
+  #app{grid-template-columns:1fr;grid-template-rows:auto auto minmax(0,1fr) 118px auto;grid-template-areas:"head" "left" "map" "lupes" "bar";gap:8px;padding:8px 8px 8px}
+  #lupes{grid-template-rows:1fr;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  #list{display:none;position:fixed;left:8px;right:8px;bottom:96px;max-height:46vh;background:#13213bfa;border:1px solid var(--line);border-radius:14px;z-index:7;box-shadow:0 8px 28px #000a}
+  #list.open{display:block}
+  #treeBox{border-bottom:0}
+  #card{position:fixed;left:8px;right:8px;bottom:96px;max-height:50vh;z-index:8}
+  #namesBtn{display:inline-block}
+  #now small{display:none}
+  #cap{font-size:12px;padding:6px 9px}
+  .lupe h3{font-size:9.5px;left:6px;top:5px}.lupe h3 small{display:none}
+  #steps button{font-size:9px}
+  #bar .row{flex-wrap:wrap;gap:8px}
+  #bar .grow{order:-1;flex:0 0 100%}
+  .btn.primary{flex:1}
 }
-@media (prefers-reduced-motion:reduce){#log{transition:none}}
-
-#chip{position:fixed;left:0;top:0;z-index:4;pointer-events:none;background:#0b1220ee;border:1px solid var(--c,#4da3ff);border-left-width:4px;border-radius:12px;padding:8px 12px;max-width:min(300px,70vw);transition:opacity .3s;box-shadow:0 6px 24px #0008}
-#chip .pp+.pp{margin-top:6px}
-#chip b{display:block;font-size:14px;font-weight:700;line-height:1.25}
-#chip span{display:block;font-size:12px;color:var(--c);font-weight:600}
-#inset{width:auto;height:auto;position:fixed;right:var(--g,16px);bottom:150px;z-index:4;border:1px solid var(--line);border-radius:12px;background:#0a111fe0;box-shadow:0 6px 24px #0008}
-.ref{fill:#8fa3c4;font-weight:500;paint-order:stroke;stroke:#0b1220;stroke-linejoin:round;pointer-events:none}
-.lbl.act{fill:#fff}
-.lbl.thin{font-weight:300;fill:#b9c8e0}
-#card .who{margin:4px 0 6px}
-#card .person{margin-bottom:6px;padding-left:10px;border-left:3px solid var(--c,#4da3ff)}
-#card .person strong{display:block;font-size:17px;font-weight:700;line-height:1.25}
-#card .person span{display:block;font-size:12.5px;color:var(--muted);margin-top:1px}
-#card .route{font-size:12.5px;color:var(--c,#33e0c0);margin:2px 0 6px;font-weight:600}
-@media (max-width:700px){#inset{display:none}#chip{max-width:60vw}}
-
-#ovl{position:fixed;left:0;top:0;width:auto;height:auto;z-index:3;pointer-events:none}
-#ovl .conn{stroke-width:1.5;stroke-linecap:round}
-#ovl .leader{stroke:#9db0cc;stroke-width:1;stroke-dasharray:2 3}
-#ovl .cyr{font-size:12px;font-weight:800;paint-order:stroke;stroke:#0b1220;stroke-width:4px;stroke-linejoin:round}
-#chips{position:fixed;inset:0;z-index:4;pointer-events:none}
-.chip{position:absolute;left:0;top:0;display:none;opacity:0;background:#0e1a33f5;border:1px solid var(--line);border-left:4px solid var(--c);border-radius:10px;padding:6px 10px 7px;max-width:230px;box-shadow:0 6px 20px #0009}
-.chip.meas{display:block;visibility:hidden;opacity:1}
-.chip b{display:block;font-size:13.5px;font-weight:700;line-height:1.25}
-.chip em{display:block;font-style:normal;font-size:12px;font-weight:600;color:var(--c);line-height:1.3}
-.chip span{display:block;font-size:11.5px;color:var(--muted);line-height:1.3}
-.chip small{display:block;font-size:11px;color:#c9d6ea;line-height:1.3;margin-top:1px}
-.chip.u{border-style:dashed;border-left-style:solid}
-.legend span{transition:opacity .3s}
-.legend span.dim{opacity:.35}
-#card .ttl{font-size:16px;font-weight:700;line-height:1.3;margin:4px 0 6px}
-#ticks span{font-weight:600}
 </style>
 </head>
 <body>
-<div id="stage"><svg id="svg" role="img" aria-label="Europakarte mit den Wanderwegen der Vorfahren"></svg></div>
+<div id="app">
+  <header id="head">
+    <div class="brand">
+      <a href="/">← mschenkl.github.io</a>
+      <h1>Wege meiner <span>Vorfahren</span></h1>
+    </div>
+    <div id="now" aria-live="polite"><small id="nowK">Generation</small><b id="nowG"></b><span id="nowY"></span></div>
+  </header>
 
-<header>
-  <div class="brand">
-    <a href="/">← mschenkl.github.io</a>
-    <h1>Wege meiner <span>Vorfahren</span></h1>
-    <div class="legend" id="legend"></div>
-  </div>
-  <div id="yearBig" aria-live="off"><span id="yr">1743</span><small id="gen"></small></div>
-</header>
+  <section id="left" class="panel" aria-label="Ahnenbaum">
+    <div id="treeBox"><svg id="tree" role="img" aria-label="Ahnenbaum, älteste Generation oben"></svg></div>
+    <div id="list"></div>
+    <div id="card" hidden></div>
+  </section>
 
-<svg id="ovl" aria-hidden="true"></svg>
-<div id="chips"></div>
-<svg id="inset" role="img" aria-label="Übersichtskarte"></svg>
-<div id="card" aria-live="polite"></div>
+  <section id="mapcol" class="panel view" aria-label="Gesamtkarte">
+    <div id="v_main" style="position:absolute;inset:0"><svg role="img" aria-label="Karte von Süddeutschland, Sachsen, Böhmen und Salzburg"></svg></div>
+    <div id="legend"></div>
+    <div id="cap"></div>
+  </section>
 
-<div id="bar">
-  <div class="row">
-    <button class="btn primary" id="play" type="button">▶ Start</button>
-    <input id="slider" type="range" min="0" max="1" step="0.001" value="0" aria-label="Zeitleiste">
-  </div>
-  <div id="ticks"></div>
-  <div class="ctl">
-    <button class="btn" id="restart" type="button" title="Von vorn">⏮</button>
-    <button class="btn" id="prev" type="button" title="Voriger Schritt">◀</button>
-    <button class="btn" id="next" type="button" title="Nächster Schritt">▶</button>
-    <select class="btn" id="speed" aria-label="Tempo"><option value="0.6">Langsam</option><option value="1" selected>Normal</option><option value="1.8">Schnell</option></select>
-    <button class="btn" id="zoom" type="button" aria-pressed="true">Auto-Zoom</button>
-    <button class="btn" id="logBtn" type="button">Chronik</button>
+  <section id="lupes" aria-label="Detailkarten">
+    <div class="panel view lupe" id="v_dresden"><h3></h3><svg></svg></div>
+    <div class="panel view lupe" id="v_stift"><h3></h3><svg></svg></div>
+    <div class="panel view lupe" id="v_naab"><h3></h3><svg></svg></div>
+  </section>
+
+  <div id="bar">
+    <div class="row">
+      <button class="btn primary" id="play" type="button">▶ Start</button>
+      <button class="btn" id="prev" type="button" title="Vorige Generation">◀</button>
+      <button class="btn" id="next" type="button" title="Nächste Generation">▶</button>
+      <div class="grow">
+        <input id="slider" type="range" min="0" max="8" step="0.001" value="0" aria-label="Zeitleiste" style="width:100%">
+        <div id="steps"></div>
+      </div>
+      <select class="btn" id="speed" aria-label="Tempo"><option value="0.6">Langsam</option><option value="1" selected>Normal</option><option value="1.8">Schnell</option></select>
+      <button class="btn" id="namesBtn" type="button">Namen</button>
+    </div>
   </div>
 </div>
-
-<aside id="log" aria-label="Chronik">
-  <header><strong>Chronik</strong><button class="btn" id="logClose" type="button">Schließen</button></header>
-  <ol id="logList"></ol>
-</aside>
 
 <div id="intro">
   <div class="box">
     <h2>Wo kamen wir her?</h2>
-    <p>Die Animation folgt der Abstammung: Erst erscheinen die Eltern mit Namen, Beruf und Daten, dann führt eine dünne Linie zum Kind. Die Eltern blenden aus, das Kind bleibt, bis sein Partner dazukommt, und dann geht es eine Generation weiter.</p>
-    <p>Sie beginnt bei den ältesten bekannten Vorfahren in Burglengenfeld (um 1743). Zuerst kommt die Mutterseite (Naab-Tal, Sachsen), dann die Vaterseite (Stiftland, Böhmen und Salzburg), am Ende ich.</p>
+    <p>Links steht der Ahnenbaum, die älteste Generation oben, ich ganz unten. Rechts zeigt die Karte, wo jede Generation lebte. Die drei kleinen Karten sind Lupen für das Naab-Tal, das Stiftland und den Raum Dresden.</p>
+    <p>Die Animation geht Generation für Generation vor, immer in derselben Reihenfolge: Naab-Tal, Sachsen, Stiftland, Böhmen. Ein Pfeil mit Jahreszahl heißt: Das Kind kam an einem anderen Ort zur Welt als seine Eltern lebten.</p>
     <button class="btn primary" id="go" type="button">▶ Animation starten</button>
-    <small>Grundlage: Kirchenbücher, Urkunden und der Ancestry-Stammbaum (Stand 22.11.2026). Namentlich genannt sind nur verstorbene Vorfahren. Gestrichelte Pfeile sind unsicher oder zeitlich offen. Ortspunkte liegen auf Gemeindeebene.</small>
+    <small>Grundlage: Kirchenbücher, Urkunden und der Ancestry-Stammbaum (Stand 22.11.2026). Namentlich genannt sind nur verstorbene Vorfahren. Blassere Pfeile und gestrichelte Punkte sind unsicher oder nur aus der Familienüberlieferung bekannt. Ortspunkte liegen auf Gemeindeebene.</small>
   </div>
 </div>
 
@@ -337,327 +352,315 @@ sc("B",["kas","sp"],"va","Heirat 1939","Karl Alfons Schenkl und Sabina Přerost 
 /* Ich */
 sc("M",["mu","va"],"mark","","Meine Eltern bekommen mich in Landsberg am Lech.");
 sc("M",["mark"],"mark2","heute","Heute lebe ich in München. Hier laufen alle Linien zusammen.",{title:"Mark Schenkl lebt heute in München"});
-const N=SC.length;
-SC.forEach((s,i)=>{s.i=i;s.hold=[];s.keep=false});
-/* Kind bleibt stehen, bis sein Partner dazukommt (höchstens 5 Szenen) */
-SC.forEach((s,i)=>{for(let j=i+1;j<N&&j-i<=5;j++){if(SC[j].par.includes(s.ch)){s.keep=true;for(let k=i+1;k<j;k++)SC[k].hold.push(s.ch);break}}});
-SC.forEach(s=>{s.pids=[...s.par,s.ch];s.pts=[...new Set([...s.pids.map(p=>PERS[p].at),...s.via])];s.cpts=[...new Set([...s.pts,...s.hold.map(p=>PERS[p].at)])]});
 
-/* ---------- Aufbau ---------- */
-const svg=d3.select("#svg"),ovl=d3.select("#ovl");
-let W=0,H=0,proj,gCam,k=1,world,els=[],placeEls={},refEls=[],insetS,projI,insetRect,insetLegs=[],chipEls=[],ovEls={},camCache={};
+/* ---------- Ableitung: Baum, Generationen, Schritte ---------- */
 const $=id=>document.getElementById(id);
-const genName=g=>g===0?"Ich":g===1?"Eltern":g===2?"Großeltern":g===3?"Urgroßeltern":g===4?"Ururgroßeltern":(g-2)+"× Urgroßeltern";
 const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
 const lerp=(a,b,t)=>a+(b-a)*t;
 const sm=(f,a,b)=>f<=a?0:f>=b?1:ease((f-a)/(b-a));
-const SAFE_TOP=96,safeBot=()=>H-(innerWidth<700?350:305),VC=()=>(SAFE_TOP+safeBot())/2;
-const pt=pl=>proj([PL[pl][1],PL[pl][2]]);
-const clip=(c,w,h,to,pad)=>{const dx=to[0]-c[0],dy=to[1]-c[1];if(!dx&&!dy)return c;const t=Math.min((w/2+pad)/Math.abs(dx||1e-9),(h/2+pad)/Math.abs(dy||1e-9));return [c[0]+dx*t,c[1]+dy*t]};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const ORDER=["N","D","S","B","M"];
+const PAR={},CHILD={},SCOF={};
+SC.forEach(s=>{if(s.ch==="mark2")return;PAR[s.ch]=s.par;SCOF[s.ch]=s;s.par.forEach(p=>{CHILD[p]=s.ch})});
+const DEPTH={mark:0};(function walk(id){(PAR[id]||[]).forEach(p=>{DEPTH[p]=DEPTH[id]+1;walk(p)})})("mark");
+const IDS=Object.keys(DEPTH),MAXD=Math.max(...IDS.map(i=>DEPTH[i]));
+const NS=8,stepOf=d=>Math.max(0,7-d);
+const relName=d=>d===0?"Ich":d===1?"Eltern":d===2?"Großeltern":d===3?"Urgroßeltern":d===4?"Ururgroßeltern":(d-2)+"× Urgroßeltern";
+const STEPNAME=["Älteste Vorfahren","4× Urgroßeltern","3× Urgroßeltern","Ururgroßeltern","Urgroßeltern","Großeltern","Eltern","Ich"];
+const STEPTXT=[
+ "Um 1750: Die ältesten bekannten Vorfahren leben im Naab-Tal rund um Burglengenfeld. Im Stiftland ist ein Zimmermann Schenkl in Ebnath belegt.",
+ "Die Familien bleiben in ihren Dörfern. Im Stiftland kommen Kleinsterz und das oberfränkische Helmbrechts dazu.",
+ "Jetzt sind alle vier Herkunftsräume zu sehen: Naab-Tal, Sachsen, Stiftland und Böhmen.",
+ "Im Naab-Tal ziehen die Familien vom Dorf in die Stadt Burglengenfeld. In Sachsen leben sie in Freiberg und im Umland von Dresden.",
+ "Die böhmischen Familien wandern aus: über Dätzingen in Württemberg nach Tirol und von Číhošť nach Mondsee.",
+ "Die Großeltern kommen in Burglengenfeld, Dresden, Pechbrunn und Oberndorf bei Salzburg zur Welt.",
+ "Alle Linien laufen in München zusammen. Die Großeltern väterlicherseits heiraten 1939 im Münchner Dom, der Weg der Mutterseite ist noch offen.",
+ "In Landsberg am Lech geboren, heute in München."];
+const ENDTXT="Von 1743 bis heute: vier Herkunftsräume, ein Ziel. Punkt im Baum oder Ort auf der Karte antippen für Einzelheiten.";
+IDS.forEach(id=>{const P=PERS[id];P.d=DEPTH[id];P.step=stepOf(P.d);
+  P.line=P.d<=1?"M":(SCOF[id]?SCOF[id].br:SC.find(s=>s.par.includes(id)).br);
+  const m=/(?:\*|um )(\d{4})/.exec(P.r);P.by=m?+m[1]:null});
+PERS.mark.r="geboren in Landsberg am Lech · heute in München";
+/* Baumposition: Blätter der Reihe nach, Kind mittig unter den Eltern */
+const TX={};let leafN=0;
+(function lay(id){const p=PAR[id]||[];if(!p.length){TX[id]=leafN++;return}p.forEach(lay);TX[id]=p.reduce((a,b)=>a+TX[b],0)/p.length})("mark");
+const STEPS=[...Array(NS)].map((_,s)=>{
+  const ids=IDS.filter(i=>PERS[i].step===s).sort((a,b)=>ORDER.indexOf(PERS[a].line)-ORDER.indexOf(PERS[b].line)||TX[a]-TX[b]);
+  const lines=ORDER.filter(l=>ids.some(i=>PERS[i].line===l)),ys=ids.map(i=>PERS[i].by).filter(Boolean);
+  return {s,ids,lines,y0:ys.length?Math.min(...ys):null,y1:ys.length?Math.max(...ys):null}});
+/* Zeitfenster einer Linie innerhalb eines Schritts */
+const win=(s,line)=>{const L=STEPS[s].lines,w=.86/L.length,j=L.indexOf(line);return [.05+j*w,.05+(j+1)*w]};
+const app=(P,s,f)=>{if(P.step<s)return 1;if(P.step>s)return 0;const [a,b]=win(s,P.line);return sm(f,a,a+(b-a)*.3)};
+const activeLine=(s,f)=>s>=NS?null:STEPS[s].lines.find(l=>{const [a,b]=win(s,l);return f>=a&&f<b})||null;
+/* Wege: Ort der Eltern → Geburtsort des Kindes */
+const LEGS=[];
+IDS.forEach(id=>{const s=SCOF[id];if(!s)return;const to=PERS[id].at;
+  [...new Set(s.par.map(p=>PERS[p].at))].filter(a=>a!==to).forEach(a=>LEGS.push({id,from:a,to,via:s.via,y:s.y,u:!!s.u,line:PERS[id].line,step:PERS[id].step,t0:id==="mark"?.2:.3,t1:id==="mark"?.55:.92}))});
+LEGS.push({id:"mark",from:"landsberg",to:"muenchen",via:[],y:"heute",u:false,line:"M",step:7,t0:.6,t1:.95});
+const legT=(L,s,f)=>{if(L.step<s)return 1;if(L.step>s)return 0;const [a,b]=win(s,L.line),w=b-a;return sm(f,a+w*L.t0,a+w*L.t1)};
+/* Regionen (Lupen) */
+const REG={
+ dresden:{t:"Raum Dresden",line:"D",pl:["dresden","niedergorbitz","weistropp","deuben","freiberg"]},
+ stift:{t:"Stiftland",line:"S",pl:["kleinsterz","ebnath","waldershof","groschlattengruen","pechbrunn"]},
+ naab:{t:"Naab-Tal",line:"N",pl:["burglengenfeld","teublitz","pirkensee","ponholz","oberschlag","buechelkuehn","ettmannsdorf","meldau","fischbach","schirndorf"]}};
+const REGOF={};Object.entries(REG).forEach(([k,r])=>r.pl.forEach(p=>{REGOF[p]=k}));
+const USED=[...new Set([...IDS.map(i=>PERS[i].at),"muenchen",...SC.flatMap(s=>s.via)])];
+const AT={};USED.forEach(p=>{AT[p]=IDS.filter(i=>PERS[i].at===p)});
+const PLLINE={};USED.forEach(p=>{const ls=AT[p].map(i=>PERS[i].line);PLLINE[p]=REGOF[p]?REG[REGOF[p]].line:(ORDER.find(l=>ls.includes(l))||"B")});
+PLLINE.muenchen="M";
 
+/* ---------- Aufbau ---------- */
+let world,views=[],tree=null,pos=0,listStep=-1,listLine="",sel=null;
+const NSVG="http://www.w3.org/2000/svg";
+function clipTo(a,b,w,h){ // Punkt auf a→b, an dem die Strecke den Kartenrand verlässt
+  const dx=b[0]-a[0],dy=b[1]-a[1],m=4;let t=1;
+  if(dx>0)t=Math.min(t,(w-m-a[0])/dx);if(dx<0)t=Math.min(t,(m-a[0])/dx);
+  if(dy>0)t=Math.min(t,(h-m-a[1])/dy);if(dy<0)t=Math.min(t,(m-a[1])/dy);
+  return [a[0]+dx*t,a[1]+dy*t]}
+function buildView(key){
+  const box=$("v_"+key),w=box.clientWidth,h=box.clientHeight,R=REG[key];
+  const svg=d3.select(box).select("svg").attr("width",w).attr("height",h).attr("viewBox",`0 0 ${w} ${h}`);svg.selectAll("*").remove();
+  const v={key,R,w,h,legs:[],dots:[],boxes:[],frames:[]};
+  if(w<20||h<20)return v;
+  let proj;
+  if(R){const mx=Math.min(74,w*.3);proj=d3.geoMercator().fitExtent([[20,34],[w-mx,h-18]],{type:"MultiPoint",coordinates:R.pl.map(p=>[PL[p][1],PL[p][2]])});
+    if(proj.scale()>60000)proj.scale(60000)}
+  else proj=d3.geoMercator().fitExtent([[4,26],[w-4,h-58]],{type:"MultiPoint",coordinates:[[8.7,47.3],[15.5,47.3],[15.5,51.25],[8.7,51.25]]});
+  proj.clipExtent([[-2,-2],[w+2,h+2]]);
+  const path=d3.geoPath(proj),P=pl=>proj([PL[pl][1],PL[pl][2]]);
+  svg.append("rect").attr("class","sea").attr("width",w).attr("height",h);
+  svg.append("path").attr("class","land").attr("d",path(topojson.feature(world,world.objects.land)));
+  svg.append("path").attr("class","border").attr("d",path(topojson.mesh(world,world.objects.countries,(a,b)=>a!==b)));
+  const gF=svg.append("g"),gR=svg.append("g"),gL=svg.append("g"),gD=svg.append("g"),gT=svg.append("g"),gY=svg.append("g");
+  const places=R?R.pl:USED;
+  /* Wege */
+  const line=d3.line().curve(d3.curveCatmullRom.alpha(.5)),seen={};
+  LEGS.forEach((L,n)=>{
+    let a=P(L.from),b=P(L.to),inA=true,inB=true,d;
+    if(R){inA=R.pl.includes(L.from);inB=R.pl.includes(L.to);if(!inA&&!inB)return;
+      if(!inA)a=clipTo(b,a,w,h);if(!inB)b=clipTo(a,b,w,h)}
+    else if(!L.via.length&&Math.hypot(a[0]-b[0],a[1]-b[1])<14)return;
+    if(!R&&L.via.length)d=line([a,...L.via.map(P),b]);
+    else{const dx=b[0]-a[0],dy=b[1]-a[1],k=(inA&&inB?.18:0)*(n%2?1:-1);d=`M${a[0]},${a[1]} Q${(a[0]+b[0])/2-dy*k},${(a[1]+b[1])/2+dx*k} ${b[0]},${b[1]}`}
+    const c=LINES[L.line].c;
+    const pe=gL.append("path").attr("d",d).attr("fill","none").attr("stroke",c).attr("stroke-linecap","round").node(),len=pe.getTotalLength();
+    const e=pe.getPointAtLength(len),e0=pe.getPointAtLength(Math.max(0,len-3));
+    const head=gL.append("path").attr("d","M1,0L-7,-3.4L-7,3.4Z").attr("fill",c).attr("transform",`translate(${e.x},${e.y}) rotate(${Math.atan2(e.y-e0.y,e.x-e0.x)*180/Math.PI})`).node();
+    v.legs.push({L,pe,len,head,txt:null,c});
+  });
+  /* Rahmen der Lupenbereiche in der Gesamtkarte */
+  if(!R)Object.entries(REG).forEach(([k,r])=>{
+    const ps=r.pl.map(P),x0=Math.min(...ps.map(p=>p[0]))-6,x1=Math.max(...ps.map(p=>p[0]))+6,y0=Math.min(...ps.map(p=>p[1]))-6,y1=Math.max(...ps.map(p=>p[1]))+6,c=LINES[r.line].c;
+    const rect=gF.append("rect").attr("class","frame").attr("x",x0).attr("y",y0).attr("width",x1-x0).attr("height",y1-y0).attr("rx",3).attr("stroke",c).node();
+    const t=gT.append("text").attr("class","flbl").attr("fill",c).attr("text-anchor","end").attr("x",x0-5).attr("y",(y0+y1)/2+4).text(r.t).node();
+    const tw=t.getComputedTextLength();v.boxes.push([x0-5-tw,(y0+y1)/2-8,x0-5,(y0+y1)/2+6],[x0,y0,x1,y1]);
+    v.frames.push({k,rect,t,line:r.line});
+  });
+  /* Ortspunkte */
+  places.forEach(pl=>{const p=P(pl);if(p[0]<-5||p[0]>w+5||p[1]<-5||p[1]>h+5)return;
+    const c=LINES[PLLINE[pl]].c,small=!R&&REGOF[pl];
+    const halo=gD.append("circle").attr("cx",p[0]).attr("cy",p[1]).attr("fill","none").attr("stroke",c).attr("stroke-width",1.5).attr("opacity",0).node();
+    const dot=gD.append("circle").attr("class","dot").attr("cx",p[0]).attr("cy",p[1]).attr("stroke","#0b1220").attr("stroke-width",.8).node();
+    dot.addEventListener("click",()=>showPlace(pl));
+    d3.select(dot).append("title").text(PL[pl][0]);
+    v.dots.push({pl,p,c,small,halo,dot,lab:null});
+    if(!small)v.boxes.push([p[0]-8,p[1]-8,p[0]+8,p[1]+8]);
+  });
+  /* Ortsnamen: erste freie Lage rechts, links, oben, unten */
+  const free=b=>b[0]>=2&&b[2]<=w-2&&b[1]>=(R?24:2)&&b[3]<=h-2&&!v.boxes.some(o=>b[0]<o[2]&&b[2]>o[0]&&b[1]<o[3]&&b[3]>o[1]);
+  const put=(cls,name,p,r,must)=>{
+    const t=gT.append("text").attr("class",cls).text(name).node(),tw=t.getComputedTextLength()*(cls==="lbl"?1.14:1);
+    const cand=[["start",p[0]+r+4,p[1]+4,[p[0]+r+4,p[1]-7,p[0]+r+4+tw,p[1]+6]],["end",p[0]-r-4,p[1]+4,[p[0]-r-4-tw,p[1]-7,p[0]-r-4,p[1]+6]],
+      ["middle",p[0],p[1]-r-5,[p[0]-tw/2,p[1]-r-16,p[0]+tw/2,p[1]-r-3]],["middle",p[0],p[1]+r+13,[p[0]-tw/2,p[1]+r+3,p[0]+tw/2,p[1]+r+16]],
+      ["start",p[0]+r+2,p[1]-6,[p[0]+r+2,p[1]-17,p[0]+r+2+tw,p[1]-4]],["start",p[0]+r+2,p[1]+14,[p[0]+r+2,p[1]+3,p[0]+r+2+tw,p[1]+16]],
+      ["end",p[0]-r-2,p[1]-6,[p[0]-r-2-tw,p[1]-17,p[0]-r-2,p[1]-4]],["end",p[0]-r-2,p[1]+14,[p[0]-r-2-tw,p[1]+3,p[0]-r-2,p[1]+16]]];
+    const ok=cand.find(c=>free(c[3]))||(must?cand[0]:null);
+    if(!ok){t.remove();return null}
+    t.setAttribute("text-anchor",ok[0]);t.setAttribute("x",ok[1]);t.setAttribute("y",ok[2]);v.boxes.push(ok[3]);return t};
+  v.dots.filter(d=>!d.small).sort((a,b)=>AT[b.pl].length-AT[a.pl].length).forEach(d=>{d.lab=put("lbl",PL[d.pl][0],d.p,5,w>200)});
+  if(!R)REF.forEach(r=>{const p=proj([r[1],r[2]]);if(p[0]<8||p[0]>w-8||p[1]<30||p[1]>h-62)return;
+    if(v.boxes.some(o=>p[0]>o[0]-4&&p[0]<o[2]+4&&p[1]>o[1]-4&&p[1]<o[3]+4))return;
+    v.boxes.push([p[0]-3,p[1]-3,p[0]+3,p[1]+3]);
+    if(put("ref",r[0],p,2,false))gR.append("circle").attr("cx",p[0]).attr("cy",p[1]).attr("r",1.5).attr("fill","#55698c")});
+  /* Jahreszahlen an den Wegen: freie Stelle entlang des Pfeils suchen */
+  v.legs.slice().sort((a,b)=>b.L.step-a.L.step||b.len-a.len).forEach(o=>{
+    if(seen[o.L.id]||o.len<24)return;seen[o.L.id]=1;
+    const t=gY.append("text").attr("class","ylbl").attr("text-anchor","middle").attr("fill",o.c).text(o.L.y).node(),tw=t.getComputedTextLength();
+    let best=null;
+    search:for(const off of [10,19]){for(const fr of [.5,.36,.64,.24,.76,.14,.86]){for(const sg of [1,-1]){
+      const m=o.pe.getPointAtLength(o.len*fr),m0=o.pe.getPointAtLength(o.len*fr-1),ax=m.x-m0.x,ay=m.y-m0.y,q=Math.hypot(ax,ay)||1;
+      const cx=m.x-ay/q*off*sg,cy=m.y+ax/q*off*sg,b=[cx-tw/2-1,cy-7,cx+tw/2+1,cy+6];
+      if(!best)best=[cx,cy,b];
+      if(free(b)){best=[cx,cy,b];break search}}}}
+    if(w<200&&!free(best[2])){t.remove();return}
+    t.setAttribute("x",best[0]);t.setAttribute("y",best[1]+4);v.boxes.push(best[2]);o.txt=t;
+  });
+  /* Maßstab in den Lupen */
+  if(R){const c0=proj.invert([w/2,h/2]),p1=proj([c0[0]+.1,c0[1]]),kmPx=(p1[0]-w/2)/(.1*111.32*Math.cos(c0[1]*Math.PI/180));
+    const km=[1,2,5,10,20].find(k=>k*kmPx>=34)||20,L=km*kmPx;
+    svg.append("line").attr("class","scale").attr("x1",w-10-L).attr("x2",w-10).attr("y1",17).attr("y2",17);
+    svg.append("text").attr("class","scalet").attr("text-anchor","end").attr("x",w-10).attr("y",13).text(km+" km");
+    box.querySelector("h3").innerHTML=esc(R.t)+"<small>Lupe</small>";box.style.setProperty("--c",LINES[R.line].c)}
+  return v;
+}
+function buildTree(){
+  const box=$("treeBox"),w=box.clientWidth,narrow=innerWidth<=900,rh=narrow?17:Math.max(26,Math.min(38,Math.floor((innerHeight-400)/(MAXD+1)))),top=narrow?4:8,h=top*2+(MAXD+1)*rh;
+  const svg=d3.select("#tree").attr("width",w).attr("height",h).attr("viewBox",`0 0 ${w} ${h}`);svg.selectAll("*").remove();
+  const gut=104,x=id=>gut+(TX[id]+.5)*(w-gut-8)/leafN,y=d=>top+(MAXD-d)*rh+rh/2;
+  const t={bands:[],lbls:[],links:[],nodes:[],x,y};
+  for(let d=MAXD;d>=0;d--){
+    t.bands[d]=svg.append("rect").attr("class","band").attr("x",4).attr("y",top+(MAXD-d)*rh+1).attr("width",w-8).attr("height",rh-2).attr("rx",5).attr("opacity",0).node();
+    t.lbls[d]=svg.append("text").attr("class","rowlbl").attr("x",12).attr("y",y(d)+3.5).text(relName(d)).node();
+  }
+  const gL=svg.append("g"),gN=svg.append("g");
+  IDS.forEach(id=>{(PAR[id]||[]).forEach(p=>{
+    const x0=x(p),y0=y(PERS[p].d),x1=x(id),y1=y(PERS[id].d),ym=(y0+y1)/2;
+    t.links.push({p,ch:id,el:gL.append("path").attr("d",`M${x0},${y0} C${x0},${ym} ${x1},${ym} ${x1},${y1}`).attr("fill","none").attr("stroke",LINES[PERS[p].line].c).node()});
+  })});
+  IDS.forEach(id=>{const P=PERS[id],c=LINES[P.line].c;
+    const el=gN.append("circle").attr("cx",x(id)).attr("cy",y(P.d)).attr("stroke",c).node();
+    if(P.u||P.assumed)el.setAttribute("stroke-dasharray","1.6 1.4");
+    d3.select(el).append("title").text(P.n+" · "+relName(P.d));
+    el.addEventListener("click",()=>showPerson(id));
+    t.nodes.push({id,P,c,el});
+  });
+  return t;
+}
 function build(){
-  W=innerWidth;H=innerHeight;camCache={};
-  svg.attr("viewBox",`0 0 ${W} ${H}`).attr("width",W).attr("height",H);svg.selectAll("*").remove();
-  ovl.attr("viewBox",`0 0 ${W} ${H}`).attr("width",W).attr("height",H);ovl.selectAll("*").remove();
-  const ext={type:"MultiPoint",coordinates:[[-11,36],[33,36],[33,61],[-11,61]]};
-  proj=d3.geoMercator().fitExtent([[0,VC()-(H-190)/2],[W,VC()+(H-190)/2]],ext);
-  const pathGen=d3.geoPath(proj);
-  gCam=svg.append("g");
-  gCam.append("path").attr("class","land").attr("d",pathGen(topojson.feature(world,world.objects.land)));
-  gCam.append("path").attr("class","border").attr("d",pathGen(topojson.mesh(world,world.objects.countries,(a,b)=>a!==b)));
-  const gR=gCam.append("g"),gA=gCam.append("g"),gP=gCam.append("g"),gT=gCam.append("g");
-  refEls=REF.map(r=>{const p=proj([r[1],r[2]]);
-    const c=gR.append("circle").attr("cx",p[0]).attr("cy",p[1]).attr("fill","#6e82a6").node();
-    const t=gR.append("text").attr("class","ref").text(r[0]).node();return {c,t,p,n:r[0]}});
-  const line=d3.line().curve(d3.curveCatmullRom.alpha(.5));
-  els=SC.map(s=>{
-    const c=LINES[s.br].c,o={s,c,trails:[],dots:[]};
-    const cp=pt(PERS[s.ch].at);
-    s.par.forEach(pid=>{
-      const a=pt(PERS[pid].at),via=s.via.map(pt);
-      if(Math.hypot(a[0]-cp[0],a[1]-cp[1])<.4&&!via.length)return;
-      let d;
-      if(via.length)d=line([a,...via,cp]);
-      else{const dx=cp[0]-a[0],dy=cp[1]-a[1];d=`M${a[0]},${a[1]} Q${(a[0]+cp[0])/2-dy*.14},${(a[1]+cp[1])/2+dx*.14} ${cp[0]},${cp[1]}`}
-      const path=gA.append("path").attr("d",d).attr("fill","none").attr("stroke",c).attr("stroke-linecap","round").node();
-      o.trails.push({path,len:path.getTotalLength()});
-    });
-    s.pts.forEach(pl=>{const b=pt(pl);o.dots.push({pl,b,dot:gP.append("circle").attr("fill",c).attr("stroke","#fff").node()})});
-    return o;
+  views=["main","dresden","stift","naab"].map(buildView);tree=buildTree();listStep=-1;
+}
+
+/* ---------- Zustand zeichnen ---------- */
+const entry=(i,extra)=>{const P=PERS[i],L=LINES[P.line],pn=PL[P.at][0];
+  const sub=[P.r,P.r.includes(pn)?"":pn+(P.assumed?" (angenommen)":"")].filter(Boolean).join(" · ");
+  return `<button type="button" data-id="${i}" data-l="${P.line}" style="--c:${L.c}"><b>${esc(P.n)}${P.b?` <em>· ${esc(P.b)}</em>`:""}</b><span>${esc(sub)}${extra||""}</span></button>`};
+function buildList(s){
+  let h="";const el=$("list");
+  if(s>=NS){ // Schlussbild: alle Generationen
+    for(let d=MAXD;d>=0;d--){h+=`<h4>${esc(relName(d))}</h4>`;
+      IDS.filter(i=>PERS[i].d===d).sort((a,b)=>TX[a]-TX[b]).forEach(i=>{h+=entry(i)})}
+    el.innerHTML=h;el.scrollTop=0;el.querySelectorAll("button").forEach(b=>{b.onclick=()=>showPerson(b.dataset.id)});return}
+  const S=STEPS[s];
+  S.lines.forEach(l=>{const L=LINES[l];
+    h+=`<h3 data-l="${l}" style="color:${L.c}"><i></i>${esc(l==="M"?(s===7?"Ich":"Eltern"):L.side+" · "+L.n)}</h3>`;
+    S.ids.filter(i=>PERS[i].line===l).forEach(i=>{h+=entry(i,s===0&&PERS[i].d===8?" · 6× Urgroßeltern":"")});
   });
-  placeEls={};Object.keys(PL).forEach(p=>{placeEls[p]=gT.append("text").attr("class","lbl").text(PL[p][0]).node()});
-  // Überlagerung (Bildschirmkoordinaten)
-  ovEls={leaders:[0,1,2,3,4,5].map(()=>ovl.append("line").attr("class","leader").node()),
-    l1a:ovl.append("line").attr("class","conn").node(),l1b:ovl.append("line").attr("class","conn").node(),l2:ovl.append("line").attr("class","conn").node(),
-    jd:ovl.append("circle").attr("r",3.2).node(),ar:ovl.append("path").attr("d","M0,0L-9,-4.5L-9,4.5Z").node(),
-    yr:ovl.append("text").attr("class","cyr").attr("text-anchor","middle").node()};
-  buildChips();buildInset();layoutAll();
+  el.innerHTML=h;el.scrollTop=0;
+  el.querySelectorAll("button").forEach(b=>{b.onclick=()=>showPerson(b.dataset.id)});
 }
-function buildChips(){
-  const box=$("chips");box.innerHTML="";chipEls=[];
-  SC.forEach(s=>{
-    const roles=[["p0",s.par[0]],["p1",s.par[1]],["c",s.ch],...s.hold.map((pid,x)=>["h"+x,pid])].filter(r=>r[1]);
-    s.chip={};
-    roles.forEach(([r,pid])=>{
-      const P=PERS[pid],d=document.createElement("div");d.className="chip";d.style.setProperty("--c",LINES[s.br].c);
-      const a=document.createElement("b");a.textContent=P.n;d.appendChild(a);
-      if(P.b){const j=document.createElement("em");j.textContent=P.b;d.appendChild(j)}
-      if(P.r){const t=document.createElement("span");t.textContent=P.r;d.appendChild(t)}
-      const o=document.createElement("small");o.textContent="◉ "+PL[P.at][0]+(P.assumed?" (angenommen)":"");d.appendChild(o)
-      if(P.u||P.assumed)d.classList.add("u");
-      box.appendChild(d);s.chip[r]={el:d,pid};chipEls.push(d);
-    });
-  });
-}
-function buildInset(){
-  const w=Math.min(230,W*.42),h=w*.72;
-  insetS=d3.select("#inset").attr("width",w).attr("height",h).attr("viewBox",`0 0 ${w} ${h}`);insetS.selectAll("*").remove();
-  const ext={type:"MultiPoint",coordinates:[[7.6,46.6],[16.2,46.6],[16.2,51.6],[7.6,51.6]]};
-  projI=d3.geoMercator().fitExtent([[4,4],[w-4,h-4]],ext);
-  const pg=d3.geoPath(projI);
-  insetS.append("path").attr("d",pg(topojson.feature(world,world.objects.land))).attr("fill","#18294b");
-  insetS.append("path").attr("d",pg(topojson.mesh(world,world.objects.countries,(a,b)=>a!==b))).attr("fill","none").attr("stroke","#34496f").attr("stroke-width",.6);
-  const P=pl=>projI([PL[pl][1],PL[pl][2]]);
-  insetLegs=SC.map(s=>{
-    const g=insetS.append("g").attr("opacity",0),c=LINES[s.br].c,cp=P(PERS[s.ch].at);
-    s.par.forEach(pid=>{const a=P(PERS[pid].at);g.append("line").attr("x1",a[0]).attr("y1",a[1]).attr("x2",cp[0]).attr("y2",cp[1]).attr("stroke",c).attr("stroke-width",1.1)});
-    g.append("circle").attr("cx",cp[0]).attr("cy",cp[1]).attr("r",1.8).attr("fill",c);
-    return g.node();
-  });
-  const m=P("muenchen");
-  insetS.append("circle").attr("cx",m[0]).attr("cy",m[1]).attr("r",3.2).attr("fill","none").attr("stroke","#ff7a90").attr("stroke-width",1.4);
-  insetRect=insetS.append("rect").attr("fill","none").attr("stroke","#fff").attr("stroke-width",1.2).attr("rx",2).node();
-}
-/* Kamera */
-function camBox(pts,kmin,kmax){
-  const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]);
-  const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
-  const dw=Math.max(x1-x0,.5),dh=Math.max(y1-y0,.5);
-  let kk=Math.min((W-440)/dw,(safeBot()-SAFE_TOP-150)/dh);
-  kk=Math.max(kmin,Math.min(kmax,kk));
-  if(x1-x0<.8&&y1-y0<.8)kk=Math.min(kmax,8);
-  return {x:(x0+x1)/2,y:(y0+y1)/2,k:kk};
-}
-const overview=()=>({x:W/2,y:VC(),k:1});
-function camFor(i){
-  if(camCache[i])return camCache[i];
-  let c;
-  if(i<0)c=camBox(["burglengenfeld","dresden","muenchen","oberndorf","ustalec","daetzingen"].map(pt),1,6);
-  else c=camBox(SC[i].cpts.map(pt),1.6,40);
-  return camCache[i]=c;
-}
-function camAt(n,f){
-  if($("zoom").getAttribute("aria-pressed")==="false")return overview();
-  const prev=n===0?overview():camFor(n-1),next=camFor(n),t=ease(Math.min(1,f/.34));
-  return {x:lerp(prev.x,next.x,t),y:lerp(prev.y,next.y,t),k:Math.exp(lerp(Math.log(prev.k),Math.log(next.k),t))};
-}
-/* Chip-Anordnung je Szene (feste Versätze zum Ortspunkt, Eltern oben, Kind unten) */
-function layoutAll(){
-  chipEls.forEach(el=>{el.classList.add("meas")});
-  const safe=[8,SAFE_TOP,W-8,safeBot()],lastOff={};
-  const ov=(a,b)=>Math.max(0,Math.min(a[2],b[2])-Math.max(a[0],b[0]))*Math.max(0,Math.min(a[3],b[3])-Math.max(a[1],b[1]));
-  SC.forEach((s,i)=>{
-    const cf=camFor(i);
-    const A=pid=>{const p=pt(PERS[pid].at);return [(p[0]-cf.x)*cf.k+W/2,(p[1]-cf.y)*cf.k+VC()]};
-    s.off={};const placed=[];
-    const roles=Object.entries(s.chip);
-    roles.forEach(([r,o])=>{o.w=o.el.offsetWidth;o.h=o.el.offsetHeight});
-    // weitergereichte und gehaltene Personen behalten ihren Versatz
-    roles.forEach(([r,o])=>{
-      const held=r[0]==="h",carried=r[0]==="p"&&i>0&&((SC[i-1].ch===o.pid&&SC[i-1].keep)||SC[i-1].hold.includes(o.pid));
-      o.carry=held||carried;
-      if(o.carry&&lastOff[o.pid]){
-        s.off[r]=lastOff[o.pid];const a=A(o.pid),f=s.off[r];placed.push([a[0]+f[0],a[1]+f[1],a[0]+f[0]+o.w,a[1]+f[1]+o.h]);
-      }
-    });
-    const order=[...roles.filter(([r])=>r!=="c"),...roles.filter(([r])=>r==="c")];
-    order.forEach(([r,o])=>{
-      if(s.off[r])return;
-      const a=A(o.pid),w=o.w,h=o.h,g=r==='c'?30:26;
-      const cand=r==="c"?[[g,g],[-w/2,g+4],[-w-g,g],[g,-h-g],[g+4,-h/2],[-w-g,-h-g],[-w/2,-h-g-4],[-w-g-4,-h/2]]
-                         :[[-w-g,-h-g],[g,-h-g],[-w/2,-h-g-4],[-w-g,g],[g,g],[-w-g-4,-h/2],[g+4,-h/2],[-w/2,g+4]];
-      let best=null,bs=1e18;
-      cand.forEach(f=>{
-        const rc=[a[0]+f[0],a[1]+f[1],a[0]+f[0]+w,a[1]+f[1]+h];
-        let sc=0;placed.forEach(q=>{sc+=ov([rc[0]-24,rc[1]-26,rc[2]+24,rc[3]+26],q)});
-        sc+=(Math.max(0,safe[0]-rc[0])+Math.max(0,rc[2]-safe[2])+Math.max(0,safe[1]-rc[1])+Math.max(0,rc[3]-safe[3]))*400;
-        if(sc<bs){bs=sc;best=f}
-      });
-      s.off[r]=best;const rc=[a[0]+best[0],a[1]+best[1],a[0]+best[0]+w,a[1]+best[1]+h];placed.push(rc);
-    });
-    roles.forEach(([r,o])=>{lastOff[o.pid]=s.off[r]});
-  });
-  chipEls.forEach(el=>el.classList.remove("meas"));
-}
-/* Zeichnen an Position i = Szene + Bruchteil */
-let pos=0,shown=-2;
+function lineOfSel(){const set=new Set();if(sel&&PERS[sel]){let i=sel;while(i){set.add(i);i=CHILD[i]}}return set}
 function render(i){
-  pos=i;const all=i>=N,n=all?N-1:Math.floor(i),f=all?1:i-n;
-  const cam=all?camFor(-1):camAt(n,f);k=cam.k;
-  const tx=W/2-cam.x*k,ty=VC()-cam.y*k;
-  gCam.select(".border").attr("stroke-width",.9/k);
-  gCam.attr("transform",`translate(${tx},${ty}) scale(${k})`);
-  const s=SC[n],col=LINES[s.br].c;
-  const scr=pl=>{const p=pt(pl);return [p[0]*k+tx,p[1]*k+ty]};
-  // Spuren und Punkte
-  els.forEach((o,j)=>{
-    const done=all||j<n,cur=!all&&j===n;
-    const tp=cur?sm(f,.36,.64):1;
-    o.trails.forEach(t=>{
-      t.path.setAttribute("stroke-width",(cur?2.6:all?2:1.5)/k);
-      t.path.setAttribute("stroke-dasharray",`${tp*t.len} ${t.len+10}`);
-      t.path.setAttribute("opacity",done?(all?.9:(o.s.br===s.br?.3:.12)):cur?.95:0);
-    });
-    o.dots.forEach(d=>{
-      const isCur=cur&&s.pts.includes(d.pl);
-      d.dot.setAttribute("cx",d.b[0]);d.dot.setAttribute("cy",d.b[1]);
-      d.dot.setAttribute("r",(cur?5.5:2.6)/k);d.dot.setAttribute("stroke-width",(cur?1.5:.6)/k);
-      d.dot.setAttribute("opacity",cur?1:done?(all?.8:(o.s.br===s.br?.3:.1)):0);
-    });
-    insetLegs[j].setAttribute("opacity",done?.8:cur&&f>.35?1:0);
+  pos=Math.max(0,Math.min(NS,i));
+  const fin=pos>=NS,s=fin?NS:Math.floor(pos),f=fin?1:pos-s,ls=s,al=activeLine(s,f),selSet=lineOfSel();
+  /* Kopf */
+  $("nowK").textContent=fin?"Schlussbild":"Generation "+(s+1)+" von "+NS;
+  $("nowG").textContent=fin?"Alle Wege":STEPNAME[s];
+  const S=STEPS[Math.min(ls,NS-1)];$("nowY").textContent=fin?"1743 bis heute":S.y0?(S.y0===S.y1?"geboren "+S.y0:"geboren ca. "+S.y0+"–"+S.y1):"";
+  $("cap").textContent=fin?ENDTXT:STEPTXT[s];
+  document.querySelectorAll("#legend span").forEach(e=>e.classList.toggle("on",fin||e.dataset.l===al));
+  document.querySelectorAll("#steps button").forEach((e,j)=>e.classList.toggle("on",!fin&&j===s));
+  $("slider").value=pos;
+  /* Liste */
+  if(listStep!==ls){listStep=ls;listLine="";buildList(ls)}
+  const lst=$("list");
+  lst.querySelectorAll("button").forEach(b=>{const P=PERS[b.dataset.id];b.classList.toggle("on",app(P,s,f)>.3);b.classList.toggle("act",!fin&&P.line===al||b.dataset.id===sel)});
+  lst.querySelectorAll("h3").forEach(e=>{const [a]=fin?[0]:win(s,e.dataset.l);e.classList.toggle("on",fin||f>=a)});
+  if(al&&al!==listLine){listLine=al;const hd=lst.querySelector(`h3[data-l="${al}"]`);if(hd)lst.scrollTop=Math.max(0,hd.offsetTop-lst.offsetTop-4)}
+  /* Baum */
+  const T=tree;
+  for(let d=MAXD;d>=0;d--){const on=!fin&&stepOf(d)===s;T.bands[d].setAttribute("opacity",on?1:0);T.lbls[d].classList.toggle("on",on)}
+  T.nodes.forEach(o=>{const a=app(o.P,s,f),cur=!fin&&o.P.step===s,act=cur&&o.P.line===al,inSel=selSet.has(o.id);
+    o.el.setAttribute("r",inSel?5:act?lerp(3,4.6,a):cur&&a>0?3.8:3.1);
+    o.el.setAttribute("fill",a>.02?o.c:"#0f1b33");
+    o.el.setAttribute("fill-opacity",a>.02?(fin||cur?lerp(.2,1,a):.5):1);
+    o.el.setAttribute("stroke",inSel?"#fff":o.c);o.el.setAttribute("stroke-width",inSel?1.8:1);
+    o.el.setAttribute("stroke-opacity",inSel?1:a>.02?(fin||cur?1:.6):.4)});
+  T.links.forEach(o=>{const a=app(PERS[o.ch],s,f),cur=!fin&&PERS[o.ch].step===s,inSel=selSet.has(o.p)&&selSet.has(o.ch);
+    o.el.setAttribute("stroke",inSel?"#fff":LINES[PERS[o.p].line].c);
+    o.el.setAttribute("stroke-width",inSel?1.8:cur?1.3:1);
+    o.el.setAttribute("opacity",inSel?1:a*(fin?.6:cur?.95:.3))});
+  /* Karten */
+  const arrived=p=>p==="muenchen"&&legT(LEGS[LEGS.length-1],s,f)>.98;
+  views.forEach(v=>{
+    if(v.R)$("v_"+v.key).classList.toggle("act",!fin&&al===v.R.line);
+    v.frames.forEach(fr=>{const on=!fin&&al===fr.line;fr.rect.setAttribute("stroke-opacity",on?1:.55);fr.rect.setAttribute("stroke-width",on?2:1.2);fr.t.setAttribute("opacity",on?1:.75)});
+    v.legs.forEach(o=>{const L=o.L,t=legT(L,s,f),cur=!fin&&L.step===s,un=L.u?.6:1;
+      o.pe.setAttribute("stroke-dasharray",`${o.len*t} ${o.len+2}`);
+      o.pe.setAttribute("stroke-width",cur?2.2:1.3);o.pe.setAttribute("opacity",t<=0?0:(cur?1:fin?.8:.42)*un);
+      o.head.setAttribute("opacity",sm(t,.9,1)*(cur?1:fin?.8:.42)*un);
+      if(o.txt)o.txt.setAttribute("opacity",sm(t,.45,.75)*(cur?1:fin?.9:0))});
+    v.dots.forEach(o=>{let n=0,curN=0,pulse=0;
+      AT[o.pl].forEach(id=>{const P=PERS[id],a=app(P,s,f);n+=a;
+        if(!fin&&P.step===s){curN+=a;const [wa,wb]=win(s,P.line),t=(f-wa)/((wb-wa)*.5);if(t>0&&t<1)pulse=Math.max(pulse,t)}});
+      if(arrived(o.pl)){n+=1;curN+=1}
+      const r=(n>0?2.6+1.5*Math.sqrt(n):2)*(o.small?.55:1);
+      o.dot.setAttribute("r",r);o.dot.setAttribute("fill",n>.02?o.c:"#4a5d80");
+      o.dot.setAttribute("fill-opacity",n>.02?(curN>.02||fin?1:.6):.8);
+      o.halo.setAttribute("r",r+(o.small?10:16)*pulse);o.halo.setAttribute("opacity",pulse?(1-pulse)*.9:0);
+      if(o.lab){o.lab.classList.toggle("on",curN>.3||fin&&o.pl==="muenchen");o.lab.setAttribute("opacity",n>.02?1:.6)}});
   });
-  // Chips
-  const key=all?-9:n;
-  if(shown!==key){ // Szenenwechsel
-    chipEls.forEach(el=>el.style.display="none");
-    if(!all)Object.values(s.chip).forEach(o=>o.el.style.display="block");
-    shown=key;showCard(all?null:s);
-    document.querySelectorAll("#logList button").forEach((b,j)=>b.classList.toggle("on",j===n));
-    document.querySelectorAll(".legend span").forEach(e=>e.classList.toggle("dim",!all&&e.dataset.br!==s.br));
-  }
-  const rects=[],cen={};
-  if(!all){
-    Object.entries(s.chip).forEach(([r,o])=>{
-      const a=scr(PERS[o.pid].at),of=s.off[r],x=a[0]+of[0],y=a[1]+of[1];
-      o.el.style.transform=`translate(${x}px,${y}px)`;
-      const carried=r[0]==="p"&&n>0&&((SC[n-1].ch===o.pid&&SC[n-1].keep)||SC[n-1].hold.includes(o.pid));
-      let op;
-      if(r==="c"){op=sm(f,.58,.74);if(!s.keep)op*=1-sm(f,.9,1)}
-      else if(r[0]==="h")op=1;
-      else{op=carried?1:sm(f,.04,.2);op*=1-sm(f,.9,1)}
-      o.el.style.opacity=op;
-      o.rect=[x,y,x+o.el.offsetWidth,y+o.el.offsetHeight];o.a=a;o.op=op;rects.push(o.rect);
-      cen[r]=[x+o.el.offsetWidth/2,y+o.el.offsetHeight/2];
-    });
-    // Verbindungslinien (Eltern → Kind)
-    const par=["p0","p1"].filter(r=>s.chip[r]),ch=s.chip.c;
-    const fade=1-sm(f,.9,1);
-    const set=(el,x1,y1,x2,y2,p,op)=>{const L=Math.hypot(x2-x1,y2-y1);el.setAttribute("x1",x1);el.setAttribute("y1",y1);el.setAttribute("x2",x2);el.setAttribute("y2",y2);el.setAttribute("stroke",col);el.setAttribute("stroke-dasharray",`${p*L} ${L+4}`);el.setAttribute("opacity",op)};
-    const hide=el=>el.setAttribute("opacity",0);
-    const pA=sm(f,.2,.4),pB=sm(f,.4,.62);
-    let J;
-    if(par.length===2){
-      const M=[(cen.p0[0]+cen.p1[0])/2,(cen.p0[1]+cen.p1[1])/2];
-      J=[M[0]+(cen.c[0]-M[0])*.42,M[1]+(cen.c[1]-M[1])*.42];
-      [["l1a","p0"],["l1b","p1"]].forEach(([e,r])=>{const o=s.chip[r],st=clip(cen[r],o.el.offsetWidth,o.el.offsetHeight,J,1);set(ovEls[e],st[0],st[1],J[0],J[1],pA,.8*fade)});
-      ovEls.jd.setAttribute("cx",J[0]);ovEls.jd.setAttribute("cy",J[1]);ovEls.jd.setAttribute("fill",col);ovEls.jd.setAttribute("opacity",pA>.95?fade:0);
-    }else{
-      const o=s.chip.p0;J=clip(cen.p0,o.el.offsetWidth,o.el.offsetHeight,cen.c,1);hide(ovEls.l1a);hide(ovEls.l1b);ovEls.jd.setAttribute("opacity",0);
-    }
-    const o2=ch,end=clip(cen.c,o2.el.offsetWidth,o2.el.offsetHeight,J,5);
-    set(ovEls.l2,J[0],J[1],end[0],end[1],pB,.9*fade);
-    const ang=Math.atan2(end[1]-J[1],end[0]-J[0])*180/Math.PI,L2=Math.hypot(end[0]-J[0],end[1]-J[1]);
-    ovEls.ar.setAttribute("transform",`translate(${end[0]},${end[1]}) rotate(${ang})`);ovEls.ar.setAttribute("fill",col);ovEls.ar.setAttribute("opacity",pB>.97&&L2>12?fade:0);
-    const mx=(J[0]+end[0])/2,my=(J[1]+end[1])/2;
-    ovEls.yr.textContent=s.y;ovEls.yr.setAttribute("x",mx+(Math.abs(end[0]-J[0])<Math.abs(end[1]-J[1])?22:0));ovEls.yr.setAttribute("y",my-(Math.abs(end[0]-J[0])<Math.abs(end[1]-J[1])?-4:7));
-    ovEls.yr.setAttribute("fill",col);ovEls.yr.setAttribute("opacity",L2>20?pB*fade:0);
-    // Bindelinien Chip ↔ Ortspunkt
-    ovEls.leaders.forEach(le=>le.setAttribute("opacity",0));
-    Object.entries(s.chip).forEach(([r,o],x)=>{
-      const le=ovEls.leaders[x],c=cen[r],e=clip(c,o.el.offsetWidth,o.el.offsetHeight,o.a,0);
-      le.setAttribute("x1",e[0]);le.setAttribute("y1",e[1]);le.setAttribute("x2",o.a[0]);le.setAttribute("y2",o.a[1]);le.setAttribute("opacity",o.op*.55);
-    });
-  }else{
-    Object.values(ovEls).forEach(e=>Array.isArray(e)?e.forEach(x=>x.setAttribute("opacity",0)):e.setAttribute("opacity",0));
-  }
-  // Ortsnamen und Orientierungsstädte (ohne Überlappung)
-  const boxes=rects.map(r=>[r[0]-4,r[1]-4,r[2]+4,r[3]+4]);
-  const place=(el,pp,txt,fs,op,dx)=>{
-    const sx=pp[0]*k+tx,sy=pp[1]*k+ty,w=txt.length*fs*.56+10,h=fs+4,bx=[sx+dx,sy-4,sx+dx+w,sy-4+h];
-    if(sx<-40||sx>W+40||sy<40||sy>H-110)return false;
-    if(boxes.some(b=>bx[0]<b[2]&&bx[2]>b[0]&&bx[1]<b[3]&&bx[3]>b[1]))return false;
-    boxes.push(bx);el.setAttribute("x",pp[0]+dx/k);el.setAttribute("y",pp[1]+(fs-2)/k);el.setAttribute("font-size",fs/k);el.setAttribute("stroke-width",3.6/k);el.setAttribute("opacity",op);return true;
-  };
-  Object.values(placeEls).forEach(el=>el.setAttribute("opacity",0));
-  const curPts=all?[]:s.pts;
-  const order=[...curPts,...Object.keys(PL).filter(pl=>!curPts.includes(pl))];
-  order.forEach(pl=>{
-    const isCur=curPts.includes(pl),el=placeEls[pl];
-    el.classList.toggle("thin",!isCur);
-    place(el,pt(pl),PL[pl][0],isCur?13:11,isCur?1:.72,9);
-  });
-  refEls.forEach(r=>{
-    r.c.setAttribute("r",2.2/k);r.c.setAttribute("opacity",k>=2?.5:0);r.t.setAttribute("opacity",0);
-    if(k>=2&&place(r.t,r.p,r.n,11,.5,7))r.t.setAttribute("opacity",.5);
-  });
-  // Anzeige
-  const ce=PERS[s.ch];
-  $("yr").textContent=all?"Heute":s.y;$("yr").style.fontSize=(all?"Heute":s.y).length>5?"clamp(26px,5vw,48px)":"";
-  $("gen").textContent=all?"Alle Linien in München":(LINES[s.br].side?LINES[s.br].side+" · "+LINES[s.br].n+" · ":"")+genName(ce.g);
-  $("slider").value=Math.min(i,N);
-  const a=proj.invert([(0-tx)/k,(0-ty)/k]),b=proj.invert([(W-tx)/k,(H-110-ty)/k]);
-  const pa=projI(a),pb=projI(b),iw=+insetS.attr("width"),ih=+insetS.attr("height");
-  const rx=Math.max(0,pa[0]),ry=Math.max(0,pa[1]),rx2=Math.min(iw,pb[0]),ry2=Math.min(ih,pb[1]);
-  insetRect.setAttribute("x",rx);insetRect.setAttribute("y",ry);insetRect.setAttribute("width",Math.max(3,rx2-rx));insetRect.setAttribute("height",Math.max(3,ry2-ry));
 }
-function showCard(s){
-  const card=$("card");
-  if(!s){card.style.setProperty("--c","#ff7a90");card.innerHTML=`<div class="tag"><b style="background:#ff7a90">heute</b><span>Alle Linien</span></div><div class="ttl">Und alle Wege führen nach München.</div><p>Die feinen Linien auf der Karte zeigen, woher die Familien meiner vier Großeltern kamen: aus der Oberpfalz, aus Sachsen, aus dem Stiftland, aus Böhmen und aus dem Salzburger Land.</p>`;return}
-  const c=LINES[s.br].c;card.style.setProperty("--c",c);
-  card.innerHTML=`<div class="tag"><b style="background:${c}"></b><span></span></div><div class="ttl"></div><p></p>${s.u?'<span class="warn">⚠ unsicher bzw. zeitlich offen</span>':""}`;
-  card.querySelector(".tag b").textContent=s.y;
-  card.querySelector(".tag span").textContent=(LINES[s.br].side?LINES[s.br].side+" · ":"")+LINES[s.br].n;
-  card.querySelector(".ttl").textContent=s.title||s.par.map(p=>PERS[p].n).join(" & ")+" → "+PERS[s.ch].n;
-  card.querySelector("p").textContent=s.txt;
+
+/* ---------- Einzelheiten ---------- */
+function closeCard(){sel=null;$("card").hidden=true;render(pos)}
+function cardHtml(h,c){const el=$("card");el.style.setProperty("--c",c);el.innerHTML=`<button class="x" type="button" aria-label="Schließen">×</button>`+h;el.hidden=false;el.querySelector(".x").onclick=closeCard;$("list").classList.remove("open")}
+function showPerson(id){
+  pause();sel=id;const P=PERS[id],L=LINES[P.line],s=SCOF[id];
+  let h=`<small>${esc(relName(P.d))}${L.side?" · "+esc(L.side)+" · "+esc(L.n):""}</small><strong>${esc(P.n)}</strong>`;
+  h+=`<div class="m">${[P.b,P.r,PL[P.at][0]+(P.assumed?" (Ort angenommen)":"")].filter(Boolean).map(esc).join(" · ")}</div>`;
+  if(PAR[id])h+=`<div class="m">Eltern: ${PAR[id].map(p=>esc(PERS[p].n)).join(" und ")}</div>`;
+  if(CHILD[id])h+=`<div class="m">Kind in direkter Linie: ${esc(PERS[CHILD[id]].n)}</div>`;
+  if(s)h+=`<p>${esc(s.txt)}</p>`;
+  if(P.u)h+=`<p style="color:var(--amber)">Angaben unsicher oder unvollständig.</p>`;
+  cardHtml(h,L.c);render(Math.max(pos,P.step+.97));
 }
+function showPlace(pl){
+  pause();sel=null;const ids=AT[pl].slice().sort((a,b)=>PERS[b].d-PERS[a].d);
+  let h=`<small>Ort</small><strong>${esc(PL[pl][0])}</strong><ul>`;
+  ids.forEach(i=>{h+=`<li>${esc(PERS[i].n)} <span>${esc(relName(PERS[i].d))}${PERS[i].r?" · "+esc(PERS[i].r):""}</span></li>`});
+  if(pl==="muenchen")h+=`<li>Mark Schenkl <span>heute</span></li>`;
+  if(!ids.length&&pl!=="muenchen")h+=`<li><span>Zwischenstation (Heirat 1870)</span></li>`;
+  cardHtml(h+"</ul>",LINES[PLLINE[pl]].c);render(pos);
+}
+
 /* ---------- Wiedergabe ---------- */
 let playing=false,last=0;
-const SEC=6.5; // Sekunden je Szene bei Tempo 1
+const SEC=8; // Sekunden je Generation bei Tempo 1
 function tick(ts){
   if(!playing)return;
   const dt=Math.min(.1,(ts-last)/1000);last=ts;
   let i=pos+dt*(+$("speed").value)/SEC;
-  if(i>=N){i=N;playing=false;$("play").textContent="↻ Nochmal"}
+  if(i>=NS){i=NS;playing=false;$("play").textContent="↻ Nochmal"}
   render(i);
   if(playing)requestAnimationFrame(tick);
 }
 function play(){
-  if(pos>=N)pos=0;
+  if(pos>=NS)pos=0;
+  sel=null;$("card").hidden=true;
   playing=true;$("play").textContent="❚❚ Pause";last=performance.now();$("intro").style.display="none";requestAnimationFrame(tick);
 }
-function pause(){playing=false;$("play").textContent="▶ Weiter"}
-const go=j=>{pause();render(Math.max(0,Math.min(N,j))+(j<N?.8:0))};
+function pause(){if(playing){playing=false;$("play").textContent="▶ Weiter"}}
+const go=j=>{pause();render(j>=NS?NS:Math.max(0,j)+.97)};
 $("play").onclick=()=>playing?pause():play();
 $("go").onclick=play;
-$("restart").onclick=()=>{pos=0;shown=-2;render(0);if(!playing)$("play").textContent="▶ Start"};
-$("prev").onclick=()=>go(Math.floor(Math.min(pos,N-.01))-1);
-$("next").onclick=()=>go(Math.floor(Math.min(pos,N-.01))+1);
-$("slider").max=N;
+$("prev").onclick=()=>go(Math.floor(Math.min(pos,NS-.01))-(pos>=NS?0:1));
+$("next").onclick=()=>go(Math.floor(pos)+1);
+$("slider").max=NS;
 $("slider").oninput=e=>{pause();render(+e.target.value)};
-$("zoom").onclick=()=>{const b=$("zoom");b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")==="true"?"false":"true");render(pos)};
-$("logBtn").onclick=()=>$("log").classList.toggle("open");
-$("logClose").onclick=()=>$("log").classList.remove("open");
-addEventListener("keydown",e=>{if(e.key===" "&&e.target.tagName!=="BUTTON"&&e.target.tagName!=="SELECT"){e.preventDefault();$("play").click()}if(e.key==="ArrowRight")$("next").click();if(e.key==="ArrowLeft")$("prev").click()});
-/* Legende, Abschnitte, Chronik */
-$("legend").innerHTML=Object.entries(LINES).filter(([a])=>a!=="M").map(([a,l])=>`<span data-br="${a}"><i style="background:${l.c}"></i>${l.side}: ${l.n}</span>`).join("");
-(function(){
-  let html="",prev="";
-  SC.forEach((s,i)=>{if(s.br!==prev){prev=s.br;html+=`<span style="left:${i/N*100}%;color:${LINES[s.br].c}${i===0?';transform:none':''}">${LINES[s.br].n}</span>`}});
-  $("ticks").innerHTML=html;
-  $("logList").innerHTML=SC.map((s,j)=>`<li><button type="button"><i style="background:${LINES[s.br].c}"></i><b></b><span></span></button></li>`).join("");
-  document.querySelectorAll("#logList button").forEach((b,j)=>{
-    const s=SC[j];b.querySelector("b").textContent=s.y;
-    b.querySelector("span").textContent=PERS[s.ch].n+" ← "+s.par.map(p=>PERS[p].n).join(" & ");
-    b.onclick=()=>{go(j);if(innerWidth<700)$("log").classList.remove("open")};
-  });
-})();
-let rz;addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>{if(world){const p=pos;build();shown=-2;render(p)}},150)});
+$("namesBtn").onclick=()=>$("list").classList.toggle("open");
+addEventListener("keydown",e=>{if(e.key===" "&&!/BUTTON|SELECT|INPUT/.test(e.target.tagName)){e.preventDefault();$("play").click()}if(e.key==="ArrowRight")$("next").click();if(e.key==="ArrowLeft")$("prev").click();if(e.key==="Escape")closeCard()});
+$("legend").innerHTML=ORDER.filter(l=>l!=="M").map(l=>`<span data-l="${l}"><i style="background:${LINES[l].c}"></i>${LINES[l].n}</span>`).join("");
+$("steps").innerHTML=STEPNAME.map(n=>`<button type="button">${n}</button>`).join("");
+document.querySelectorAll("#steps button").forEach((b,j)=>{b.onclick=()=>go(j)});
+let rz,lastSz="";const rebuild=()=>{const m=$("mapcol"),k=m.clientWidth+"x"+m.clientHeight+"x"+innerWidth;if(!world||k===lastSz)return;lastSz=k;build();render(pos)};
+addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(rebuild,150)});
+if(window.ResizeObserver)new ResizeObserver(()=>{clearTimeout(rz);rz=setTimeout(rebuild,60)}).observe($("mapcol"));
 /* Start */
 try{
-  world=window.WORLD;build();render(0);
+  world=window.WORLD;build();
   const q=new URLSearchParams(location.search);
-  if(q.has("t")){$("intro").style.display="none";render(+q.get("t"))}
-}catch(err){$("card").textContent="Karte konnte nicht geladen werden: "+err}
+  if(q.has("t")){$("intro").style.display="none";render(+q.get("t"))}else render(NS);
+}catch(err){$("cap").textContent="Karte konnte nicht geladen werden: "+err}
 </script>
 </body>
 </html>
