@@ -108,6 +108,7 @@ select.btn{padding:0 8px}
 #intro small{color:var(--muted);display:block;margin-top:12px;line-height:1.5}
 #nameBtn{font-size:12px;color:var(--muted);text-decoration:underline;text-decoration-color:#4a5d80;text-underline-offset:3px;margin-top:3px;display:inline-block}
 #nameBtn:hover{color:var(--text)}
+#cntH{font-size:12px;color:var(--muted);margin-left:10px;white-space:nowrap}
 #nameBox{position:fixed;inset:0;display:grid;place-items:center;z-index:10;background:#0b1220c8;backdrop-filter:blur(3px)}
 #nameBox[hidden]{display:none}
 #nameBox .box{position:relative;max-width:620px;max-height:calc(100vh - 40px);overflow:auto;margin:20px;background:#13213b;border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:18px;padding:24px 26px}
@@ -145,7 +146,7 @@ select.btn{padding:0 8px}
     <div class="brand">
       <a href="/">← mschenkl.github.io</a>
       <h1>Wege meiner <span>Vorfahren</span></h1>
-      <button id="nameBtn" type="button">Woher kommt der Name Schenkl?</button>
+      <button id="nameBtn" type="button">Woher kommt der Name Schenkl?</button> <span id="cntH"></span>
     </div>
     <div id="now" aria-live="polite"><small id="nowK">Generation</small><b id="nowG"></b><span id="nowY"></span></div>
   </header>
@@ -210,7 +211,7 @@ select.btn{padding:0 8px}
 <div id="intro">
   <div class="box">
     <h2>Wo kamen wir her?</h2>
-    <p>Links steht der Ahnenbaum, die älteste Generation oben, ich ganz unten. Rechts zeigt die Karte, wo jede Generation lebte. Die drei kleinen Karten sind Lupen für das Naab-Tal, das Stiftland und den Raum Dresden.</p>
+    <p>Links steht der Ahnenbaum, die älteste Generation oben, ich ganz unten. Rechts zeigt die Karte, wo jede Generation lebte. Die drei kleinen Karten sind Lupen für das Naab-Tal, das Stiftland und den Raum Dresden. Der Stammbaum zeigt <b id="cntP"></b> direkte Vorfahren in <span id="cntG"></span> Generationen.</p>
     <p>Die Animation geht Generation für Generation vor, immer in derselben Reihenfolge: Naab-Tal, Sachsen, Stiftland, Böhmen. Ein Pfeil mit Jahreszahl heißt: Das Kind kam an einem anderen Ort zur Welt als seine Eltern lebten.</p>
     <button class="btn primary" id="go" type="button">▶ Animation starten</button>
     <small>Grundlage: Kirchenbücher, Urkunden und der Ancestry-Stammbaum (Stand 23.11.2026). Namentlich genannt sind nur verstorbene Vorfahren. Blassere Pfeile und gestrichelte Punkte sind unsicher oder nur aus der Familienüberlieferung bekannt. Ortspunkte liegen auf Gemeindeebene.</small>
@@ -445,6 +446,7 @@ const PAR={},CHILD={},SCOF={};
 SC.forEach(s=>{if(s.ch==="mark2")return;PAR[s.ch]=s.par;SCOF[s.ch]=s;s.par.forEach(p=>{CHILD[p]=s.ch})});
 const DEPTH={mark:0};(function walk(id){(PAR[id]||[]).forEach(p=>{DEPTH[p]=DEPTH[id]+1;walk(p)})})("mark");
 const IDS=Object.keys(DEPTH),MAXD=Math.max(...IDS.map(i=>DEPTH[i]));
+document.getElementById("cntP").textContent=IDS.length-1;document.getElementById("cntG").textContent=MAXD+1;document.getElementById("cntH").textContent=(IDS.length-1)+" Vorfahren · "+(MAXD+1)+" Generationen"; // gezählt, nicht hinterlegt
 const NS=9,stepOf=d=>Math.max(0,8-d);
 const relName=d=>d===0?"Ich":d===1?"Eltern":d===2?"Großeltern":d===3?"Urgroßeltern":d===4?"Ururgroßeltern":(d-2)+"× Urgroßeltern";
 const STEPNAME=["Älteste Vorfahren","5× Urgroßeltern","4× Urgroßeltern","3× Urgroßeltern","Ururgroßeltern","Urgroßeltern","Großeltern","Eltern","Ich"];
@@ -458,7 +460,8 @@ const STEPTXT=[
  "Die Großeltern kommen in Burglengenfeld, Dresden, Pechbrunn und Oberndorf bei Salzburg zur Welt.",
  "Alle Linien laufen in München zusammen. Die Großeltern väterlicherseits heiraten 1939 im Münchner Dom, der Weg der Mutterseite ist noch offen.",
  "In Landsberg am Lech geboren, heute in München."];
-const ENDTXT="Vom 17. Jahrhundert bis heute: vier Herkunftsräume, ein Ziel. Punkt im Baum oder Ort auf der Karte antippen für Einzelheiten.";
+const CENT=Math.floor((Math.min(...IDS.map(i=>{const m=/(?:\*|um )(\d{4})/.exec(PERS[i].r);return m?+m[1]:9999}))-1)/100)+1; // Jahrhundert des ältesten Geburtsjahrs
+const ENDTXT="Vom "+CENT+". Jahrhundert bis heute: vier Herkunftsräume, ein Ziel. Punkt im Baum oder Ort auf der Karte antippen für Einzelheiten.";
 IDS.forEach(id=>{const P=PERS[id];P.d=DEPTH[id];P.step=stepOf(P.d);
   P.line=P.d<=1?"M":(SCOF[id]?SCOF[id].br:SC.find(s=>s.par.includes(id)).br);
   const m=/(?:\*|um )(\d{4})/.exec(P.r);P.by=m?+m[1]:null});
@@ -646,9 +649,10 @@ function render(i){
   pos=Math.max(0,Math.min(NS,i));
   const fin=pos>=NS,s=fin?NS:Math.floor(pos),f=fin?1:pos-s,ls=s,al=activeLine(s,f),selSet=lineOfSel();
   /* Kopf */
-  $("nowK").textContent=fin?"Schlussbild":"Generation "+(s+1)+" von "+NS;
+  {const g=fin?[]:STEPS[s].ids.map(i=>MAXD-PERS[i].d+1),g0=Math.min(...g),g1=Math.max(...g);
+  $("nowK").textContent=fin?"Schlussbild":"Generation "+(g0===g1?g0:g0+"–"+g1)+" von "+(MAXD+1);}
   $("nowG").textContent=fin?"Alle Wege":STEPNAME[s];
-  const S=STEPS[Math.min(ls,NS-1)];$("nowY").textContent=fin?"17. Jahrhundert bis heute":S.y0?(S.y0===S.y1?"geboren "+S.y0:"geboren ca. "+S.y0+"–"+S.y1):"";
+  const S=STEPS[Math.min(ls,NS-1)];$("nowY").textContent=fin?CENT+". Jahrhundert bis heute":S.y0?(S.y0===S.y1?"geboren "+S.y0:"geboren ca. "+S.y0+"–"+S.y1):"";
   $("cap").textContent=fin?ENDTXT:STEPTXT[s];
   document.querySelectorAll("#legend span").forEach(e=>e.classList.toggle("on",fin||e.dataset.l===al));
   document.querySelectorAll("#steps button").forEach((e,j)=>e.classList.toggle("on",!fin&&j===s));
