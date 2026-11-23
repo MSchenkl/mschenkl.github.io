@@ -213,7 +213,7 @@ select.btn{padding:0 8px}
     <p>Links steht der Ahnenbaum, die älteste Generation oben, ich ganz unten. Rechts zeigt die Karte, wo jede Generation lebte. Die drei kleinen Karten sind Lupen für das Naab-Tal, das Stiftland und den Raum Dresden.</p>
     <p>Die Animation geht Generation für Generation vor, immer in derselben Reihenfolge: Naab-Tal, Sachsen, Stiftland, Böhmen. Ein Pfeil mit Jahreszahl heißt: Das Kind kam an einem anderen Ort zur Welt als seine Eltern lebten.</p>
     <button class="btn primary" id="go" type="button">▶ Animation starten</button>
-    <small>Grundlage: Kirchenbücher, Urkunden und der Ancestry-Stammbaum (Stand 22.11.2026). Namentlich genannt sind nur verstorbene Vorfahren. Blassere Pfeile und gestrichelte Punkte sind unsicher oder nur aus der Familienüberlieferung bekannt. Ortspunkte liegen auf Gemeindeebene.</small>
+    <small>Grundlage: Kirchenbücher, Urkunden und der Ancestry-Stammbaum (Stand 23.11.2026). Namentlich genannt sind nur verstorbene Vorfahren. Blassere Pfeile und gestrichelte Punkte sind unsicher oder nur aus der Familienüberlieferung bekannt. Ortspunkte liegen auf Gemeindeebene.</small>
   </div>
 </div>
 
@@ -272,7 +272,7 @@ per("mb","Maria Braun",3,"pirkensee","*1891 Pirkensee");
 per("gm","Brigitta Liebl",2,"burglengenfeld","*1920 Burglengenfeld · † 2012");
 /* Sachsen */
 per("fwg","Friedrich Wilhelm Güttler",4,"chemnitz","*1832 Chemnitz (Familienüberlieferung)","Zimmermann",{u:1});
-per("edb","Emilie Dorothea Braune",4,"freiberg","*1833 Freiberg (Familienüberlieferung)","",{u:1});
+per("edb","Emilie Dorothea Braune",4,"freiberg","*1833 Freiberg");
 per("obg","Oskar Bernhard Güttler",3,"freiberg","*1870 Freiberg · † 1928 Dresden","Fabrikarbeiter, Schiffsheizer");
 per("jkp","Johann Karl Gottlob Pätzold",5,"deuben","† 1898–1906","Berginvalide");
 per("jcm","Johanne Christiane Müller",5,"deuben","† vor 1889 Deuben");
@@ -308,8 +308,17 @@ per("mgr","Margaretha Rosner",4,"kleinsterz","*1860 Kleinsterz · † 1944 Markt
 per("mar","Magdalena Rosner",3,"kleinsterz","*1879 Kleinsterz · † 1928");
 per("kas","Karl Alfons Schenkl",2,"pechbrunn","*1914 Pechbrunn · † 1982 München");
 /* Böhmen / Salzburg */
-per("mp","Matěj Přerost",5,"ustalec","");
-per("ma","Marie",5,"ustalec","");
+per("mp","Matěj Přerost",5,"ustalec","*1799 Ústaleč");
+per("ma","Marie Šrámek",5,"ustalec","um 1802 · Ústaleč · Familienname wahrscheinlich","",{u:1});
+per("jip","Jiří Přerost",6,"ustalec","*1774 Ústaleč","Häusler, später Bauer");
+per("evj","Eva Jirovec",6,"ustalec","*1773 Ústaleč");
+per("osr","Ondřej Šrámek",6,"ustalec","Ústaleč · Familienname wahrscheinlich","Bauer",{u:1});
+per("mpa","Markéta Pawlik",6,"ustalec","aus Novákovice (wahrscheinlich)","",{u:1});
+per("anp","Antonín Přerost",7,"ustalec","Ústaleč · ∞ 1773","Bauer");
+per("dor","Dorothea, verh. Přerost",7,"ustalec","Ústaleč");
+per("anj","Antonín Jirovec",7,"ustalec","Ústaleč","Bauer");
+per("kat","Kateřina, verh. Jirovec",7,"ustalec","Ústaleč");
+per("jap","Jakub Přerost",8,"ustalec","Ústaleč","Bauer");
 per("wp","Wáclav Přerost",4,"ustalec","*1840 Ústaleč","Taglöhner");
 per("mw","Martin Wazlawik",5,"hora","","Häusler");
 per("awi","Anna Wilček",5,"hora","");
@@ -345,8 +354,9 @@ per("gli","Georg Liebl",9,"buechelkuehn","Altenricht, Pfarrei Wiefelsdorf","Baue
 per("anl","Anna, verh. Liebl",9,"buechelkuehn","","",{u:1,assumed:1});
 per("lei","Lorenz Eigl",7,"ettmannsdorf","","",{u:1,assumed:1});
 per("ezi","Elisabeth Zitzler",7,"ettmannsdorf","","",{u:1,assumed:1});
-per("jgo","Johann Gottlieb",5,"freiberg","","",{u:1,assumed:1});
-per("jsch","Johanna Schulze",5,"freiberg","","",{u:1,assumed:1});
+per("jgo","Johann Gottlieb Braune",5,"freiberg","um 1795 · † 1833 Freiberg","Zimmergeselle");
+per("jsch","Johanne Beate Schulze",5,"freiberg","aus Lichtenberg (wahrscheinlich)","",{u:1});
+per("fag","Friedrich August Güttler",5,"chemnitz","in Chemnitz","Kattundrucker (wahrscheinlich)");
 per("cff","Christian Friedrich Fischer",5,"niedergorbitz","","",{u:1,assumed:1});
 per("hrb","Hanna Rosina Berger",5,"niedergorbitz","","",{u:1,assumed:1});
 per("ssc","Stephan Schraml",6,"helmbrechts","aus Helmbrechts");
@@ -382,8 +392,9 @@ sc("N",["mr"],"amr","1861","Unehelich geboren in Oberschlag bei Bubach am Forst.
 sc("N",["jb","amr"],"mb","1891","Johann Braun heiratet am 7.1.1891 die verwitwete Anna Maria Bizer, geborene Reil. Tochter Maria wird in Pirkensee geboren.");
 sc("N",["jol","mb"],"gm","1920","Johann Liebl und Maria Braun leben in Burglengenfeld. Dort wird am 8.10.1920 Tochter Brigitta geboren, meine Großmutter.");
 /* Mutterseite · Sachsen */
-sc("D",["jgo","jsch"],"edb","1833","Emilie Dorothea Braune wird laut Familienüberlieferung 1833 in Freiberg geboren. Ihre Eltern: Johann Gottlieb und Johanna Schulze.",{u:1});
-sc("D",["fwg","edb"],"obg","1870","Der Zimmermann Güttler lebt in Freiberg. Beide Geburtsangaben stammen nur aus der Familienüberlieferung. Sohn Oskar Bernhard wird 1870 geboren.",{u:1});
+sc("D",["jgo","jsch"],"edb","1833","Emilie Dorothea Braune wird am 2.8.1833 in Freiberg geboren, gut drei Monate nach dem Tod ihres Vaters, des Zimmergesellen Johann Gottlieb Braune. Ihre Mutter Johanne Beate Schulze stammt wahrscheinlich aus Lichtenberg.");
+sc("D",["fag"],"fwg","1832","Friedrich Wilhelm Güttler ist der zweite Sohn des Friedrich August Güttler in Chemnitz, der wahrscheinlich Kattundrucker war. So steht es im Aufgebot von 1854. Das Geburtsdatum 1832 stammt nur aus der Familienüberlieferung.",{u:1});
+sc("D",["fwg","edb"],"obg","1870","Friedrich Wilhelm Güttler, Zimmermann in Chemnitz, und Emilie Dorothea Braune werden im September 1854 aufgeboten und in Chemnitz getraut. Später lebt die Familie in Freiberg. Dort wird am 21.7.1870 Sohn Oskar Bernhard geboren, ihr elftes Kind.");
 sc("D",["jkp","jcm"],"aap","1843","Der Berginvalide Pätzold und seine Frau lebten in Deuben bei Freital. Tochter Anna Auguste wird 1843 in Weistropp bei Meißen geboren.");
 sc("D",["cff","hrb"],"ejf","1845","Ernst Julius Fischer wird laut Familienüberlieferung am 22.11.1845 geboren. Seine Eltern: Christian Friedrich Fischer und Hanna Rosina Berger.",{u:1});
 sc("D",["ejf","aap"],"iaf","1875","Ernst Julius Fischer, Handarbeiter, und Anna Auguste Pätzold leben in Niedergorbitz im Dresdner Westen. Tochter Ida wird 1875 geboren.");
@@ -407,7 +418,12 @@ sc("S",["mro","jro"],"mgr","1860","Michael Rosner, Bauer in Kleinsterz bei Mitte
 sc("S",["mgr"],"mar","1879","Magdalena wird unehelich in Kleinsterz geboren.");
 sc("S",["jfs","mar"],"kas","1914","Der Steinbrucharbeiter Johann Friedrich Schenkl und Magdalena Rosner haben 8 Kinder. Sohn Karl Alfons wird 1914 in Pechbrunn geboren.");
 /* Vaterseite · Böhmen & Salzburg */
-sc("B",["mp","ma"],"wp","1840","Matěj Přerost und Marie leben in Ústaleč im Böhmerwald-Vorland. Sohn Wáclav wird 1840 geboren.");
+sc("B",["jap"],"anp","","Antonín Přerost ist der Sohn des Bauern Jakub Přerost in Ústaleč. So steht es in seinem Traueintrag von 1773.");
+sc("B",["anp","dor"],"jip","1774","Antonín Přerost, Bauer in Ústaleč, heiratet im November 1773 in Zavlekov die Witwe Dorothea. Sohn Jiří wird am 24.4.1774 getauft.");
+sc("B",["anj","kat"],"evj","1773","Eva wird am 17.10.1773 in Ústaleč getauft, Tochter des Bauern Antonín Jirovec und seiner Frau Kateřina. Der Familienname wird später Girý geschrieben.");
+sc("B",["jip","evj"],"mp","1799","Jiří Přerost und Eva Jirovec heiraten am 16.10.1796 in Zavlekov. Sohn Matěj wird am 1.1.1799 in Ústaleč geboren.");
+sc("B",["osr","mpa"],"ma","1802","Marie ist die Tochter des Bauern Ondřej und der Markéta Pawlik, die wahrscheinlich aus Novákovice stammt. Der Familienname Šrámek ist wahrscheinlich, aber nicht gesichert. Maries Taufe um 1802 ist nicht gefunden.",{u:1});
+sc("B",["mp","ma"],"wp","1840","Matěj Přerost und Marie heiraten im Februar 1827 in Zavlekov und leben in Ústaleč im Böhmerwald-Vorland. Sohn Wáclav wird am 18.10.1840 geboren.");
 sc("B",["mw","awi"],"rw","1841","Der Häusler Martin Wazlawik und Anna Wilček aus dem Bezirk Volyně. Tochter Rosalia wird 1841 in Hora geboren.");
 sc("B",["wp","rw"],"wen","1880","Wáclav Přerost und Rosalia Wazlawik heiraten am 3.1.1870 im württembergischen Dätzingen und ziehen später nach Tirol. Sohn Wenzel wird 1880 in St. Johann in Tirol geboren.",{via:["daetzingen"]});
 sc("B",["jm","ml"],"amj","vor 1880","Josef Mareš, Gemeindehirt, und Maria Lebeda aus Číhošť in Böhmen. Ihre Tochter Anna Mareš heiratet dort 1880.");
@@ -433,10 +449,10 @@ const NS=9,stepOf=d=>Math.max(0,8-d);
 const relName=d=>d===0?"Ich":d===1?"Eltern":d===2?"Großeltern":d===3?"Urgroßeltern":d===4?"Ururgroßeltern":(d-2)+"× Urgroßeltern";
 const STEPNAME=["Älteste Vorfahren","5× Urgroßeltern","4× Urgroßeltern","3× Urgroßeltern","Ururgroßeltern","Urgroßeltern","Großeltern","Eltern","Ich"];
 const STEPTXT=[
- "Die ältesten bekannten Vorfahren: im Stiftland die Familie Schenkl in Ebnath, zurück bis zum Hüttenmeister Georg Schenkl um 1587. Im Naab-Tal reichen die Familien bis um 1700 zurück.",
- "Im Naab-Tal leben die Familien als Bauern und Handwerker in den Dörfern rund um Burglengenfeld, im Stiftland die Schenkl in der Pfarrei Ebnath.",
+ "Die ältesten bekannten Vorfahren: im Stiftland die Familie Schenkl in Ebnath, zurück bis zum Hüttenmeister Georg Schenkl um 1587. Im Naab-Tal reichen die Familien bis um 1700 zurück, in Böhmen bis zum Bauern Jakub Přerost in Ústaleč.",
+ "Im Naab-Tal leben die Familien als Bauern und Handwerker in den Dörfern rund um Burglengenfeld, im Stiftland die Schenkl in der Pfarrei Ebnath, in Böhmen die Přerost und Jirovec in Ústaleč.",
  "Die Familien bleiben in ihren Dörfern. Im Stiftland kommen Kleinsterz und das oberfränkische Helmbrechts dazu.",
- "Jetzt sind alle vier Herkunftsräume zu sehen: Naab-Tal, Sachsen, Stiftland und Böhmen.",
+ "Mit Sachsen sind jetzt alle vier Herkunftsräume zu sehen: Naab-Tal, Sachsen, Stiftland und Böhmen.",
  "Im Naab-Tal ziehen die Familien vom Dorf in die Stadt Burglengenfeld. In Sachsen leben sie in Freiberg und im Umland von Dresden.",
  "Die böhmischen Familien wandern aus: über Dätzingen in Württemberg nach Tirol und von Číhošť nach Mondsee.",
  "Die Großeltern kommen in Burglengenfeld, Dresden, Pechbrunn und Oberndorf bei Salzburg zur Welt.",
