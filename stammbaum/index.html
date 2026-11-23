@@ -429,11 +429,12 @@ const PAR={},CHILD={},SCOF={};
 SC.forEach(s=>{if(s.ch==="mark2")return;PAR[s.ch]=s.par;SCOF[s.ch]=s;s.par.forEach(p=>{CHILD[p]=s.ch})});
 const DEPTH={mark:0};(function walk(id){(PAR[id]||[]).forEach(p=>{DEPTH[p]=DEPTH[id]+1;walk(p)})})("mark");
 const IDS=Object.keys(DEPTH),MAXD=Math.max(...IDS.map(i=>DEPTH[i]));
-const NS=8,stepOf=d=>Math.max(0,7-d);
+const NS=9,stepOf=d=>Math.max(0,8-d);
 const relName=d=>d===0?"Ich":d===1?"Eltern":d===2?"Großeltern":d===3?"Urgroßeltern":d===4?"Ururgroßeltern":(d-2)+"× Urgroßeltern";
-const STEPNAME=["Älteste Vorfahren","4× Urgroßeltern","3× Urgroßeltern","Ururgroßeltern","Urgroßeltern","Großeltern","Eltern","Ich"];
+const STEPNAME=["Älteste Vorfahren","5× Urgroßeltern","4× Urgroßeltern","3× Urgroßeltern","Ururgroßeltern","Urgroßeltern","Großeltern","Eltern","Ich"];
 const STEPTXT=[
- "Die ältesten bekannten Vorfahren: im Naab-Tal die Familien rund um Burglengenfeld, im Stiftland die Zimmerleute Schenkl in Ebnath, zurück bis ins 17. Jahrhundert.",
+ "Die ältesten bekannten Vorfahren: im Stiftland die Familie Schenkl in Ebnath, zurück bis zum Hüttenmeister Georg Schenkl um 1587. Im Naab-Tal reichen die Familien bis um 1700 zurück.",
+ "Im Naab-Tal leben die Familien als Bauern und Handwerker in den Dörfern rund um Burglengenfeld, im Stiftland die Schenkl in der Pfarrei Ebnath.",
  "Die Familien bleiben in ihren Dörfern. Im Stiftland kommen Kleinsterz und das oberfränkische Helmbrechts dazu.",
  "Jetzt sind alle vier Herkunftsräume zu sehen: Naab-Tal, Sachsen, Stiftland und Böhmen.",
  "Im Naab-Tal ziehen die Familien vom Dorf in die Stadt Burglengenfeld. In Sachsen leben sie in Freiberg und im Umland von Dresden.",
@@ -452,16 +453,21 @@ const TX={};let leafN=0;
 const STEPS=[...Array(NS)].map((_,s)=>{
   const ids=IDS.filter(i=>PERS[i].step===s).sort((a,b)=>ORDER.indexOf(PERS[a].line)-ORDER.indexOf(PERS[b].line)||PERS[b].d-PERS[a].d||TX[a]-TX[b]);
   const lines=ORDER.filter(l=>ids.some(i=>PERS[i].line===l)),ys=ids.map(i=>PERS[i].by).filter(Boolean);
-  return {s,ids,lines,y0:ys.length?Math.min(...ys):null,y1:ys.length?Math.max(...ys):null}});
+  const lv={};lines.forEach(l=>{const ds=ids.filter(i=>PERS[i].line===l).map(i=>PERS[i].d),hi=Math.max(...ds);lv[l]={hi,n:s===0?hi-Math.min(...ds)+1:1}});
+  if(s===0){ // älteste Generation zuerst: Linie mit den ältesten Vorfahren voran
+    lines.sort((a,b)=>lv[b].hi-lv[a].hi);ids.sort((a,b)=>lines.indexOf(PERS[a].line)-lines.indexOf(PERS[b].line)||PERS[b].d-PERS[a].d||TX[a]-TX[b])}
+  return {s,ids,lines,lv,y0:ys.length?Math.min(...ys):null,y1:ys.length?Math.max(...ys):null}});
 /* Zeitfenster einer Linie innerhalb eines Schritts */
-const win=(s,line)=>{const L=STEPS[s].lines,w=.86/L.length,j=L.indexOf(line);return [.05+j*w,.05+(j+1)*w]};
-const app=(P,s,f)=>{if(P.step<s)return 1;if(P.step>s)return 0;const [a,b]=win(s,P.line);return sm(f,a,a+(b-a)*.3)};
+const win=(s,line)=>{const S=STEPS[s],L=S.lines,tot=L.reduce((x,l)=>x+S.lv[l].n,0),j=L.indexOf(line),o=L.slice(0,j).reduce((x,l)=>x+S.lv[l].n,0);return [.05+.86*o/tot,.05+.86*(o+S.lv[line].n)/tot]};
+const app=(P,s,f)=>{if(P.step<s)return 1;if(P.step>s)return 0;const [a,b]=win(s,P.line),v=STEPS[s].lv[P.line];
+  if(v.n>1){const u=(b-a)/v.n,t0=a+u*(v.hi-P.d);return sm(f,t0,t0+u*.6)} // Generation für Generation
+  return sm(f,a,a+(b-a)*.3)};
 const activeLine=(s,f)=>s>=NS?null:STEPS[s].lines.find(l=>{const [a,b]=win(s,l);return f>=a&&f<b})||null;
 /* Wege: Ort der Eltern → Geburtsort des Kindes */
 const LEGS=[];
 IDS.forEach(id=>{const s=SCOF[id];if(!s)return;const to=PERS[id].at;
   [...new Set(s.par.map(p=>PERS[p].at))].filter(a=>a!==to).forEach(a=>LEGS.push({id,from:a,to,via:s.via,y:s.y,u:!!s.u,line:PERS[id].line,step:PERS[id].step,t0:id==="mark"?.2:.3,t1:id==="mark"?.55:.92}))});
-LEGS.push({id:"mark",from:"landsberg",to:"muenchen",via:[],y:"heute",u:false,line:"M",step:7,t0:.6,t1:.95});
+LEGS.push({id:"mark",from:"landsberg",to:"muenchen",via:[],y:"heute",u:false,line:"M",step:NS-1,t0:.6,t1:.95});
 const legT=(L,s,f)=>{if(L.step<s)return 1;if(L.step>s)return 0;const [a,b]=win(s,L.line),w=b-a;return sm(f,a+w*L.t0,a+w*L.t1)};
 /* Regionen (Lupen) */
 const REG={
@@ -511,7 +517,9 @@ function buildView(key){
     else{const dx=b[0]-a[0],dy=b[1]-a[1],k=(inA&&inB?.18:0)*(n%2?1:-1);d=`M${a[0]},${a[1]} Q${(a[0]+b[0])/2-dy*k},${(a[1]+b[1])/2+dx*k} ${b[0]},${b[1]}`}
     const c=LINES[L.line].c;
     const pe=gL.append("path").attr("d",d).attr("fill","none").attr("stroke",c).attr("stroke-linecap","round").node(),len=pe.getTotalLength();
-    const e=pe.getPointAtLength(len),e0=pe.getPointAtLength(Math.max(0,len-3));
+    /* Pfeilspitze vor dem Ortspunkt enden lassen, sonst verdeckt ihn ein großer Punkt */
+    const rE=inB?(2.6+1.5*Math.sqrt((AT[L.to]||[]).length+(L.to==="muenchen"?1:0)))*(!R&&REGOF[L.to]?.55:1):0,off=Math.min(rE,Math.max(0,len-9));
+    const e=pe.getPointAtLength(len-off),e0=pe.getPointAtLength(Math.max(0,len-off-3));
     const head=gL.append("path").attr("d","M1,0L-7,-3.4L-7,3.4Z").attr("fill",c).attr("transform",`translate(${e.x},${e.y}) rotate(${Math.atan2(e.y-e0.y,e.x-e0.x)*180/Math.PI})`).node();
     v.legs.push({L,pe,len,head,txt:null,c});
   });
@@ -611,7 +619,7 @@ function buildList(s){
     el.innerHTML=h;el.scrollTop=0;el.querySelectorAll("button").forEach(b=>{b.onclick=()=>showPerson(b.dataset.id)});return}
   const S=STEPS[s];
   S.lines.forEach(l=>{const L=LINES[l];
-    h+=`<h3 data-l="${l}" style="color:${L.c}"><i></i>${esc(l==="M"?(s===7?"Ich":"Eltern"):L.side+" · "+L.n)}</h3>`;
+    h+=`<h3 data-l="${l}" style="color:${L.c}"><i></i>${esc(l==="M"?(s===NS-1?"Ich":"Eltern"):L.side+" · "+L.n)}</h3>`;
     S.ids.filter(i=>PERS[i].line===l).forEach(i=>{h+=entry(i,s===0?" · "+relName(PERS[i].d):"")});
   });
   el.innerHTML=h;el.scrollTop=0;
