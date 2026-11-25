@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Wege der Vorfahren</title>
-<meta name="description" content="Ahnenbaum und Karte: Von wo aus die Vorfahren von Mark Schenkl nach München kamen, von den ältesten bekannten Ahnen im 17. Jahrhundert bis heute.">
+<meta name="description" content="Ahnenbaum und Karte: Von wo aus die Vorfahren von Mark Schenkl nach München kamen, von den ältesten bekannten Ahnen im 16. Jahrhundert bis heute.">
 <meta name="theme-color" content="#0b1220">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <style>
@@ -108,7 +108,38 @@ select.btn{padding:0 8px}
 #intro small{color:var(--muted);display:block;margin-top:12px;line-height:1.5}
 #nameBtn{font-size:12px;color:var(--muted);text-decoration:underline;text-decoration-color:#4a5d80;text-underline-offset:3px;margin-top:3px;display:inline-block}
 #nameBtn:hover{color:var(--text)}
-#cntH{font-size:12px;color:var(--muted);margin-left:10px;white-space:nowrap}
+#cntH{font-size:12px;color:var(--muted);margin-left:10px;white-space:nowrap;text-decoration:underline;text-decoration-color:#4a5d80;text-underline-offset:3px}
+#cntH:hover{color:var(--text)}
+#statBox{position:fixed;inset:0;display:grid;place-items:center;z-index:10;background:#0b1220c8;backdrop-filter:blur(3px)}
+#statBox[hidden]{display:none}
+#statBox .box{position:relative;width:min(940px,calc(100vw - 24px));max-height:calc(100vh - 32px);overflow:auto;background:#13213b;border:1px solid var(--line);border-left:4px solid var(--teal);border-radius:18px;padding:22px 24px}
+#statBox h2{font-size:22px;font-weight:800;margin:0 30px 2px 0}
+#statBox .lead{color:var(--muted);font-size:13px;line-height:1.5;margin-bottom:12px}
+#statBox .x{position:absolute;right:10px;top:8px;width:34px;height:34px;font-size:20px;color:var(--muted)}
+#statBox h3{font-size:11px;letter-spacing:.07em;text-transform:uppercase;font-weight:700;color:var(--teal);margin:0 0 8px}
+#statBox h4{font-size:12px;font-weight:650;color:#cfdbee;margin:12px 0 5px}
+#statBox small,#statBox .note{display:block;color:var(--muted);font-size:12px;line-height:1.5;margin-top:8px}
+.stTiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.stTile{background:#0f1b33;border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0}
+.stTile b{display:block;font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.1;font-variant-numeric:tabular-nums}
+.stTile span{display:block;font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.3}
+.stGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.stSec{background:#0f1b33;border:1px solid var(--line);border-radius:12px;padding:14px 14px 12px;min-width:0}
+.stSec.wide{grid-column:1/-1}
+.stRow{display:grid;grid-template-columns:minmax(92px,34%) 1fr auto;gap:8px;align-items:center;font-size:12.5px;padding:2px 0;color:#cfdbee}
+.stRow .l{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stRow .l i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.stRow .v{font-variant-numeric:tabular-nums;color:var(--text);white-space:nowrap;text-align:right;min-width:64px}
+.stBar{height:10px;border-radius:0 4px 4px 0;background:#1c2e52;position:relative;overflow:hidden}
+.stBar u{position:absolute;left:0;top:0;bottom:0;border-radius:0 4px 4px 0;background:var(--teal);min-width:2px}
+.stList{list-style:none;font-size:12.5px;color:#cfdbee;line-height:1.5}
+.stList li{padding:2px 0 2px 10px;border-left:2px solid var(--line);margin-bottom:3px}
+.stList b{color:#fff;font-weight:650}
+.stTab{width:100%;border-collapse:collapse;font-size:12.5px;color:#cfdbee}
+.stTab th{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;font-weight:650;color:var(--muted);text-align:right;padding:3px 6px;border-bottom:1px solid var(--line)}
+.stTab td{padding:4px 6px;text-align:right;font-variant-numeric:tabular-nums;border-bottom:1px solid #1c2c4b}
+.stTab th:first-child,.stTab td:first-child{text-align:left;white-space:nowrap}
+.stTab td i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
 #nameBox{position:fixed;inset:0;display:grid;place-items:center;z-index:10;background:#0b1220c8;backdrop-filter:blur(3px)}
 #nameBox[hidden]{display:none}
 #nameBox .box{position:relative;max-width:620px;max-height:calc(100vh - 40px);overflow:auto;margin:20px;background:#13213b;border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:18px;padding:24px 26px}
@@ -131,6 +162,9 @@ select.btn{padding:0 8px}
   #card{position:fixed;left:8px;right:8px;bottom:96px;max-height:50vh;z-index:8}
   #namesBtn{display:inline-block}
   #now small{display:none}
+  .stTiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stGrid{grid-template-columns:1fr}
+  #statBox .box{padding:18px 14px}
   #cap{font-size:12px;padding:6px 9px}
   .lupe h3{font-size:9.5px;left:6px;top:5px}.lupe h3 small{display:none}
   #steps button{font-size:9px}
@@ -146,7 +180,7 @@ select.btn{padding:0 8px}
     <div class="brand">
       <a href="/">← mschenkl.github.io</a>
       <h1>Wege meiner <span>Vorfahren</span></h1>
-      <button id="nameBtn" type="button">Woher kommt der Name Schenkl?</button> <span id="cntH"></span>
+      <button id="nameBtn" type="button">Woher kommt der Name Schenkl?</button> <button id="cntH" type="button"></button>
     </div>
     <div id="now" aria-live="polite"><small id="nowK">Generation</small><b id="nowG"></b><span id="nowY"></span></div>
   </header>
@@ -208,13 +242,21 @@ select.btn{padding:0 8px}
   </div>
 </div>
 
+<div id="statBox" hidden role="dialog" aria-modal="true" aria-labelledby="statTitle">
+  <div class="box">
+    <button class="x" id="statClose" type="button" aria-label="Schließen">×</button>
+    <h2 id="statTitle">Der Stammbaum in Zahlen</h2>
+    <div id="statBody"></div>
+  </div>
+</div>
+
 <div id="intro">
   <div class="box">
     <h2>Wo kamen wir her?</h2>
     <p>Links steht der Ahnenbaum, die älteste Generation oben, ich ganz unten. Rechts zeigt die Karte, wo jede Generation lebte. Die drei kleinen Karten sind Lupen für das Naab-Tal, das Stiftland und den Raum Dresden. Der Stammbaum zeigt <b id="cntP"></b> direkte Vorfahren in <span id="cntG"></span> Generationen.</p>
     <p>Die Animation geht Generation für Generation vor, immer in derselben Reihenfolge: Naab-Tal, Sachsen, Stiftland, Böhmen. Ein Pfeil mit Jahreszahl heißt: Das Kind kam an einem anderen Ort zur Welt als seine Eltern lebten.</p>
     <button class="btn primary" id="go" type="button">▶ Animation starten</button>
-    <small>Grundlage: Kirchenbücher, Urkunden und der Ancestry-Stammbaum (Stand 23.11.2026). Namentlich genannt sind nur verstorbene Vorfahren. Blassere Pfeile und gestrichelte Punkte sind unsicher oder nur aus der Familienüberlieferung bekannt. Ortspunkte liegen auf Gemeindeebene.</small>
+    <small>Grundlage: Kirchenbücher, Urkunden und der Ancestry-Stammbaum (Stand 24.11.2026). Namentlich genannt sind nur verstorbene Vorfahren. Blassere Pfeile und gestrichelte Punkte sind unsicher oder nur aus der Familienüberlieferung bekannt. Ortspunkte liegen auf Gemeindeebene.</small>
   </div>
 </div>
 
@@ -351,8 +393,27 @@ per("mli","Johann Martin Liebl",8,"buechelkuehn","*1712 Altenricht (wahrscheinli
 per("aml","Anna Maria, verh. Liebl",8,"buechelkuehn","um 1717 · † 1777 Büchelkühn");
 per("apa","Andreas Päiml",8,"buechelkuehn","","",{u:1,assumed:1});
 per("ukr","Ursula Krauthofer",8,"buechelkuehn","","",{u:1,assumed:1});
-per("gli","Georg Liebl",9,"buechelkuehn","Altenricht, Pfarrei Wiefelsdorf","Bauer",{assumed:1});
-per("anl","Anna, verh. Liebl",9,"buechelkuehn","","",{u:1,assumed:1});
+per("gli","Georg Liebl",9,"buechelkuehn","*1669 Altenricht · † 1744 Altenricht","Bauer",{assumed:1});
+per("anl","Anna Catharina Beer",9,"buechelkuehn","∞ 1700 Wiefelsdorf","",{assumed:1});
+per("eli","Erhard Liebl",10,"buechelkuehn","† 1702 Altenricht","Bauer",{assumed:1});
+per("ael","Anna, verh. Liebl",10,"buechelkuehn","† 1690 Altenricht","",{assumed:1});
+per("jbe","Johann Beer",10,"buechelkuehn","","",{u:1,assumed:1});
+per("ube","Ursula, verh. Beer",10,"buechelkuehn","","",{u:1,assumed:1});
+per("gka","Georg Karl",8,"burglengenfeld","","Bürger in Burglengenfeld",{u:1});
+per("aka","Anna, verh. Karl",8,"burglengenfeld","","",{u:1});
+per("gsi","Georg Silbereisen",8,"burglengenfeld","","Bauer",{u:1,assumed:1});
+per("csv","Catharina, verh. Silbereisen",8,"burglengenfeld","","",{u:1,assumed:1});
+per("ffe","Friedrich Feuerer",8,"teublitz","Frauenhof","Bauer",{u:1,assumed:1});
+per("afe","Anna, verh. Feuerer",8,"teublitz","aus Kirchenödenhart","",{u:1,assumed:1});
+per("jko","Jakob Koller",8,"teublitz","Premberg","Häusler",{u:1,assumed:1});
+per("cko","Catharina, verh. Koller",8,"teublitz","","",{u:1,assumed:1});
+per("gho","Georg Hofer",7,"meldau","","Bauer",{u:1});
+per("bho","Barbara, verh. Hofer",7,"meldau","","",{u:1});
+per("sai","Stephan Aichinger",7,"meldau","Warmersdorf","Bauer",{u:1,assumed:1});
+per("eai","Elisabeth, verh. Aichinger",7,"meldau","","",{u:1,assumed:1});
+per("jsn","Johann Schneider",5,"oberschlag","aus Hohenwart","",{u:1,assumed:1});
+per("cwb","Catharina, geb. Wegman oder Burger",8,"ebnath","Schwarzenreuth, Pfarrei Ebnath","",{u:1});
+per("mmr","Maria Mareš",5,"cihost","ledig");
 per("lei","Lorenz Eigl",7,"ettmannsdorf","","",{u:1,assumed:1});
 per("ezi","Elisabeth Zitzler",7,"ettmannsdorf","","",{u:1,assumed:1});
 per("jgo","Johann Gottlieb Braune",5,"freiberg","um 1795 · † 1833 Freiberg","Zimmergeselle");
@@ -377,15 +438,23 @@ const sc=(br,par,ch,y,txt,o={})=>SC.push({br,par,ch,y,txt,via:[],...o});
 sc("N",["jgk","mkm"],"mk","1749","Am 10.10.1749 wird in Burglengenfeld Anna Margaretha getauft, Tochter des Maurers Johann Georg Kürner aus der Vorstadt und seiner Frau Margaretha. Sie ist wahrscheinlich die spätere Frau Krempl. Das Sterbebuch von 1800 nennt allerdings 57 Jahre, das ergäbe ein Geburtsjahr um 1743. Der Geburtsname der Mutter ist unbekannt.",{u:1});
 sc("N",["pk","mk"],"mkr","1782","Paul Krempl, Zimmermann, und Margaretha Kürner. Beide starben in Burglengenfeld, Pauls Geburtsort ist unbekannt.");
 sc("N",["gks","csi"],"gk","1780","Georg Karl, der spätere Maurer, ist der Sohn von Georg Karl und Catharina Silbereisen († 1832 in Burglengenfeld).",{u:1});
+sc("N",["gka","aka"],"gks","vor 1780","Der Traueintrag von 1780 nennt als Eltern des Bräutigams den Burglengenfelder Bürger Georg Karl und seine Frau Anna. Mehr ist von ihnen nicht bekannt.",{u:1});
+sc("N",["gsi","csv"],"csi","vor 1780","Catharina ist laut Traueintrag von 1780 die Tochter des Bauern Georg Silbereisen und seiner Frau Catharina. Der Name des Hofes ist nicht sicher lesbar. Ein Taufeintrag aus demselben Jahr nennt den Vater Johann.",{u:1});
 sc("N",["mkr","gk"],"kk","1820","Georg Karl, Maurer in Burglengenfeld, und Magdalena Krempl bekommen ihren Sohn Konrad.");
 sc("N",["mhs","mei"],"mh","1817","Maria Hofer ist die Tochter des Bauern Martin Hofer und der Magdalena Eichinger aus Meldau bei Wackersdorf. Ihr eigener Geburtsort ist nicht bekannt.",{u:1});
+sc("N",["gho","bho"],"mhs","um 1772","Martin Hofer ist laut Traueintrag von 1800 der Sohn des Bauern Georg Hofer in Meldau und seiner Frau Barbara. Beide Eltern sind 1800 schon verstorben.",{u:1});
+sc("N",["sai","eai"],"mei","um 1778","Magdalena ist laut Traueintrag von 1800 die Tochter des Bauern Stephan Aichinger in Warmersdorf und seiner Frau Elisabeth. Ihr Familienname wird später Eichinger geschrieben.",{u:1});
 sc("N",["kk","mh"],"wk","1860","Konrad Karl heiratet 1846 die Bauerntochter Maria Hofer. Ihr Vater Martin Hofer war Bauer in Meldau. Tochter Walburga wird 1860 geboren.");
 sc("N",["abi","ani"],"ji","1769","Joseph Igl wird am 18.1.1769 in Fischbach bei Kallmünz getauft. Von seinen Eltern Abraham Igl und Anna sind nur die Namen bekannt.",{u:1});
 sc("N",["woh","bpl"],"kh","1775","Kunigunda Herrmann wird am 21.5.1775 in Schirndorf geboren. Von ihren Eltern Wolfgang Herrmann und Barbara Pleicher sind nur die Namen bekannt.",{u:1});
 sc("N",["ji","kh"],"jig","1806","Joseph Igl ist der älteste Vorfahre mit Taufeintrag. Kunigunda Herrmann kommt aus Schirndorf. Ihr Sohn Johann wird 1806 in Fischbach bei Kallmünz geboren.");
-sc("N",["jfe","mko"],"af","1810","Anna Feuerer wird am 23.6.1810 in Teublitz geboren. Von ihren Eltern Johann Feuerer und Margaretha Koller sind nur die Namen bekannt.",{u:1});
+sc("N",["jfe","mko"],"af","1810","Anna Feuerer wird am 23.6.1810 in Teublitz geboren. Ihre Eltern Johann Feuerer und Margaretha Koller heiraten am 10.2.1806 in Teublitz.",{u:1});
+sc("N",["ffe","afe"],"jfe","vor 1806","Johann Feuerer ist laut Traueintrag von 1806 der Sohn des Bauern Friedrich Feuerer in Frauenhof und seiner Frau Anna aus Kirchenödenhart. Beide Eltern leben 1806 noch.",{u:1});
+sc("N",["jko","cko"],"mko","vor 1806","Der Traueintrag von 1806 nennt als Eltern der Braut den Häusler Jakob Koller in Premberg und seine Frau Catharina, beide verstorben. Der Taufeintrag der Tochter von 1810 nennt den Großvater dagegen Georg Koller. Der Widerspruch ist offen.",{u:1});
 sc("N",["jig","af"],"mi","1835","Johann Igl wird Bauer in Teublitz und heiratet Anna Feuerer. Tochter Maria wird dort 1835 geboren.");
-sc("N",["gli","anl"],"mli","1712","Johann Martin Liebl ist der Sohn des Bauern Georg Liebl in Altenricht und seiner Frau Anna. So steht es in seinem Traueintrag von 1744. Wahrscheinlich ist er der am 13.11.1712 getaufte Johann Martin. Dieser Taufeintrag nennt die Mutter allerdings Catharina, und das Sterbealter von 72 Jahren ergäbe ein Geburtsjahr um 1705.",{u:1});
+sc("N",["gli","anl"],"mli","1712","Johann Martin Liebl ist der Sohn des Bauern Georg Liebl in Altenricht und seiner Frau Anna. So steht es in seinem Traueintrag von 1744. Wahrscheinlich ist er der am 13.11.1712 getaufte Johann Martin. Dieser Taufeintrag nennt die Mutter Catharina. Beide Namen meinen dieselbe Frau, Anna Catharina Beer. Das Sterbealter von 72 Jahren ergäbe allerdings ein Geburtsjahr um 1705.",{u:1});
+sc("N",["eli","ael"],"gli","1669","Georg Liebl wird am 16.3.1669 getauft, Sohn der Bauersleute Erhard und Anna Liebl in Altenricht, Pfarrei Wiefelsdorf. Die Mutter stirbt 1690, der Vater 1702. Georg stirbt 1744 mit 75 Jahren. Erhard ist der älteste bekannte Liebl.");
+sc("N",["jbe","ube"],"anl","vor 1700","Anna Catharina heiratet am 31.8.1700 in Wiefelsdorf Georg Liebl. Der Traueintrag nennt als ihre Eltern Johann Beer und Ursula. Welche Familie Beer das ist, ist nicht gesichert.",{u:1});
 sc("N",["mli","aml"],"cli","1749","Johann Martin Liebl heiratet am 14.7.1744 nach Büchelkühn. Seine Frau Anna Maria ist die Witwe eines Bauern aus Striessendorf, ihr Geburtsname ist unbekannt. Sohn Caspar wird am 13.3.1749 getauft. Beide Eltern sterben im Oktober 1777 kurz nacheinander.");
 sc("N",["apa","ukr"],"bbe","1754","Barbara ist unehelich geboren. Der Traueintrag von 1777 nennt als ihre Eltern Andreas Päiml und Ursula Krauthofer. Der Familienname wird später Beimel geschrieben. Woher die Eltern kamen, ist offen.",{u:1});
 sc("N",["cli","bbe"],"jl1","1795","Caspar Liebl, Bauer in Büchelkühn, heiratet am 21.1.1777 Barbara Päiml. Ihr Sohn Joseph wird am 8.3.1795 geboren.");
@@ -394,7 +463,7 @@ sc("N",["jl1","me"],"jl2","1829","Zwei Dörfer bei Schwandorf: Margaretha Eigl k
 sc("N",["jl2","mi"],"jl3","1859","Joseph Liebl, Tagelöhner, und Maria Igl heiraten am 16.6.1857 in Burglengenfeld. Beide ziehen vom Land in die Stadt.");
 sc("N",["jl3","wk"],"jol","1882","Joseph Liebl heiratet 1882 Walburga Karl. Ihr Sohn Johann wird Fabrikarbeiter in Burglengenfeld.");
 sc("N",["bb"],"jb","nach 1860","Johann Braun ist Bergarbeiter in Ponholz. Seine Geburt ist nicht gefunden, sein Vater ist unbekannt.",{u:1});
-sc("N",["mr"],"amr","1861","Unehelich geboren in Oberschlag bei Bubach am Forst.");
+sc("N",["jsn","mr"],"amr","1861","Unehelich geboren in Oberschlag bei Bubach am Forst. Als Vater gibt das Taufbuch Johann Schneider aus Hohenwart an.");
 sc("N",["jb","amr"],"mb","1891","Johann Braun heiratet am 7.1.1891 die verwitwete Anna Maria Bizer, geborene Reil. Tochter Maria wird in Pirkensee geboren.");
 sc("N",["jol","mb"],"gm","1920","Johann Liebl und Maria Braun leben in Burglengenfeld. Dort wird am 8.10.1920 Tochter Brigitta geboren, meine Großmutter.");
 /* Mutterseite · Sachsen */
@@ -416,7 +485,7 @@ sc("S",["gsc"],"jsm","vor 1672","Georg Schenkl, im Kirchenbuch „Schenckhl“, 
 sc("S",["jsm","bsr"],"jos","1686","Johann Schenkl, Müller, Baumeister und Hammerherr in Ebnath, ist 1717 als Vater des Joseph belegt. Wahrscheinlich ist er der Johann Schengl, der am 18.1.1684 Barbara Schreier heiratet, Tochter des Hammermeisters im Oberen Hammer zu Ebnath. Joseph ist dann wahrscheinlich der am 3.8.1686 getaufte Sohn. Am 24.5.1732 stirbt in Ebnath ein Witwer Johann Schenkl, einst Herr des Eisenwerks, mit 84 Jahren; wahrscheinlich ist er derselbe.",{u:1});
 sc("S",["jos","bge"],"jas","1725","Joseph Schenkl, Zimmermann in Ebnath, heiratet am 23.11.1717 Barbara Gebhard, Tochter des Wirts und Bäckers Christoph Gebhard. Sohn Johann Adam wird am 24.9.1725 in Ebnath getauft. Belegt. Wahrscheinlich ist er der Zimmermann und Schmied Joseph Schenkl, der am 27.2.1739 in Ebnath stirbt; das dort genannte Alter von etwa 40 Jahren passt allerdings nicht zur Taufe 1686.");
 sc("S",["jas","aup"],"cms","1756/1762","Johann Adam Schenkl, Zimmermann in Schwarzenreuth, heiratet am 7.2.1752 Anna Ursula Philberth, Tochter des Bauern Michael Philberth. Ihre Söhne Caspar (getauft 27.1.1756) und Matthias (getauft 10.1.1762) werden beide Zimmerleute. Belegt.");
-sc("S",["cms"],"jsz","1785/1788","Zwei Vettern heißen Johann Schenkl und sind Zimmerleute in Schwarzenreuth: der Sohn von Caspar (*1785, † 1857) und der Sohn von Matthias (*1788). Welcher von beiden der Vater der Maria ist, ist noch offen. Johann Adam Schenkl ist in beiden Fällen der Großvater.",{u:1});
+sc("S",["cms","cwb"],"jsz","1785/1788","Zwei Vettern heißen Johann Schenkl und sind Zimmerleute in Schwarzenreuth: der Sohn von Caspar (*1785, † 1857) und der Sohn von Matthias (*1788). Welcher von beiden der Vater der Maria ist, ist noch offen. Johann Adam Schenkl ist in beiden Fällen der Großvater. Die Mutter heißt in beiden Fällen Catharina: Caspar heiratet 1778 Catharina Wegman aus Rodenzenreuth, Matthias 1786 Catharina Burger aus Neusorg.",{u:1});
 sc("S",["jsz"],"ms2","vor 1838","Zimmermann in Schwarzenreuth bei Ebnath. Es gab zwei gleichnamige Vettern, welcher es ist, ist noch offen.",{u:1});
 sc("S",["ms2","gg"],"mms","1838","Maria Schenkl bekommt unehelich Tochter Maria Magdalena. Im Taufbuch genannter Vater: Georg Gillich, Schmiedegeselle in Kleinsterz.");
 sc("S",["mms","gb"],"js","1860","Maria Magdalena Schenkl bekommt unehelich Sohn Johann. Im Taufbuch genannter Vater: Georgius Brucker, Zeugmacher in Waldershof. Die Gleichsetzung ist wahrscheinlich, aber nicht bewiesen.",{u:1});
@@ -435,7 +504,8 @@ sc("B",["osr","mpa"],"ma","1802","Marie ist die Tochter des Bauern Ondřej und d
 sc("B",["mp","ma"],"wp","1840","Matěj Přerost und Marie heiraten im Februar 1827 in Zavlekov und leben in Ústaleč im Böhmerwald-Vorland. Sohn Wáclav wird am 18.10.1840 geboren.");
 sc("B",["mw","awi"],"rw","1841","Der Häusler Martin Wazlawik und Anna Wilček aus dem Bezirk Volyně. Tochter Rosalia wird 1841 in Hora geboren.");
 sc("B",["wp","rw"],"wen","1880","Wáclav Přerost und Rosalia Wazlawik heiraten am 3.1.1870 im württembergischen Dätzingen und ziehen später nach Tirol. Sohn Wenzel wird 1880 in St. Johann in Tirol geboren.",{via:["daetzingen"]});
-sc("B",["jm","ml"],"amj","vor 1880","Josef Mareš, Gemeindehirt, und Maria Lebeda aus Číhošť in Böhmen. Ihre Tochter Anna Mareš heiratet dort 1880.");
+sc("B",["jm","ml"],"mmr","vor 1860","Josef Mareš, Gemeindehirt, und Maria Lebeda aus Číhošť in Böhmen sind die Eltern der Maria Mareš.");
+sc("B",["mmr"],"amj","vor 1880","Anna Mareš ist die Tochter der ledigen Maria Mareš, also unehelich geboren. Sie heiratet 1880 in Číhošť.");
 sc("B",["jh","amj"],"jho","1880","Der Maurer Johann Hovorka und Anna Mareš ziehen nach Mondsee. Dort wird am 26.11.1880 Tochter Josefa geboren.");
 sc("B",["wen","jho"],"sp","1917","Wenzel Přerost, Taglöhner und Pflasterer, und Josefa Howorka heiraten am 3.11.1908 in Oberndorf bei Salzburg. Tochter Sabine wird dort am 17.10.1917 geboren, meine Großmutter.");
 sc("B",["kas","sp"],"va","Heirat 1939","Karl Alfons Schenkl und Sabine Prerost heiraten am 29.4.1939 im Dom zu München. Die Linien aus dem Stiftland und dem Salzburger Land sind vereint.");
@@ -454,12 +524,12 @@ const PAR={},CHILD={},SCOF={};
 SC.forEach(s=>{if(s.ch==="mark2")return;PAR[s.ch]=s.par;SCOF[s.ch]=s;s.par.forEach(p=>{CHILD[p]=s.ch})});
 const DEPTH={mark:0};(function walk(id){(PAR[id]||[]).forEach(p=>{DEPTH[p]=DEPTH[id]+1;walk(p)})})("mark");
 const IDS=Object.keys(DEPTH),MAXD=Math.max(...IDS.map(i=>DEPTH[i]));
-document.getElementById("cntP").textContent=IDS.length-1;document.getElementById("cntG").textContent=MAXD+1;document.getElementById("cntH").textContent=(IDS.length-1)+" Vorfahren · "+(MAXD+1)+" Generationen"; // gezählt, nicht hinterlegt
+document.getElementById("cntP").textContent=IDS.length-1;document.getElementById("cntG").textContent=MAXD+1;document.getElementById("cntH").textContent="Statistik: "+(IDS.length-1)+" Vorfahren · "+(MAXD+1)+" Generationen"; // gezählt, nicht hinterlegt
 const NS=9,stepOf=d=>Math.max(0,8-d);
 const relName=d=>d===0?"Ich":d===1?"Eltern":d===2?"Großeltern":d===3?"Urgroßeltern":d===4?"Ururgroßeltern":(d-2)+"× Urgroßeltern";
 const STEPNAME=["Älteste Vorfahren","5× Urgroßeltern","4× Urgroßeltern","3× Urgroßeltern","Ururgroßeltern","Urgroßeltern","Großeltern","Eltern","Ich"];
 const STEPTXT=[
- "Die ältesten bekannten Vorfahren: im Stiftland die Familie Schenkl in Ebnath, zurück bis zum Hüttenmeister Georg Schenkl um 1587. Im Naab-Tal reichen die Familien bis um 1700 zurück, in Böhmen bis zum Bauern Jakub Přerost in Ústaleč.",
+ "Die ältesten bekannten Vorfahren: im Stiftland die Familie Schenkl in Ebnath, zurück bis zum Hüttenmeister Georg Schenkl um 1587. Im Naab-Tal reichen die Familien bis in die Mitte des 17. Jahrhunderts zurück, zu Erhard Liebl in Altenricht, in Böhmen bis zum Bauern Jakub Přerost in Ústaleč.",
  "Im Naab-Tal leben die Familien als Bauern und Handwerker in den Dörfern rund um Burglengenfeld, im Stiftland die Schenkl in der Pfarrei Ebnath, in Böhmen die Přerost und Jirovec in Ústaleč. Aus Sachsen ist als Erster Gottlieb Jäckel in Tharandt bekannt.",
  "Die Familien bleiben in ihren Dörfern. Im Stiftland kommen Kleinsterz und das oberfränkische Helmbrechts dazu. In Sachsen arbeitet Christian Friedrich Fischer als Schmied auf der Bergschmiede bei Pesterwitz.",
  "In Sachsen kommen Freiberg, Chemnitz und weitere Dörfer westlich von Dresden dazu. Damit sind alle vier Herkunftsräume breit vertreten: Naab-Tal, Sachsen, Stiftland und Böhmen.",
@@ -758,8 +828,84 @@ $("slider").oninput=e=>{pause();render(+e.target.value)};
 $("nameBtn").onclick=()=>{pause();$("nameBox").hidden=false;$("nameClose").focus()};
 $("nameClose").onclick=()=>{$("nameBox").hidden=true;$("nameBtn").focus()};
 $("nameBox").onclick=e=>{if(e.target===$("nameBox"))$("nameBox").hidden=true};
+/* ---------- Statistik: alles wird aus den Personendaten dieser Seite gezählt, nichts ist hinterlegt ---------- */
+function statData(){
+  const LN=["N","D","S","B"],Q=IDS.map(i=>PERS[i]).filter(P=>P.d>=2); // namentlich erst ab den Großeltern
+  const years=P=>{const o={};P.r.split("·").forEach(g=>{if(/wahrscheinlich|oder|bzw|vor |nach |–|belegt|überlieferung/i.test(g))return;
+    let m=/^\s*\*\s*(\d{4})/.exec(g);if(m)o.b=+m[1];else if((m=/^\s*um (\d{4})/.exec(g))){o.b=+m[1];o.ca=1}
+    m=/†\s*(?:\d{1,2}\.\d{1,2}\.)?(\d{4})/.exec(g);if(m)o.d=+m[1]});return o};
+  Q.forEach(P=>{P.yr=years(P)});
+  const ages=Q.filter(P=>P.yr.b&&P.yr.d&&P.yr.d>P.yr.b).map(P=>({P,a:P.yr.d-P.yr.b,ca:!!P.yr.ca}));
+  const mean=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null,
+        med=a=>{if(!a.length)return null;const b=[...a].sort((x,y)=>x-y),h=b.length>>1;return b.length%2?b[h]:(b[h-1]+b[h])/2};
+  const top=(arr,n)=>{const c={};arr.forEach(k=>{if(k)c[k]=(c[k]||0)+1});return Object.entries(c).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],"de")).slice(0,n)};
+  const real=P=>!P.assumed&&PL[P.at];
+  const km=(a,b)=>d3.geoDistance([PL[a][1],PL[a][2]],[PL[b][1],PL[b][2]])*6371;
+  /* Wege und Ortstreue: Elternteil -> Kind, beide mit gesichertem Kartenort */
+  const pairs=[];Q.forEach(C=>(PAR[C.id]||[]).forEach(p=>{const E=PERS[p];if(real(C)&&real(E))pairs.push({E,C,km:E.at===C.at?0:km(E.at,C.at)})}));
+  /* Sesshaftigkeit: längste Kette aufeinanderfolgender Generationen am selben Kartenort */
+  const chain=id=>{const P=PERS[id];let best=[P];(PAR[id]||[]).forEach(p=>{const E=PERS[p];if(real(E)&&E.at===P.at){const c=[P,...chain(p)];if(c.length>best.length)best=c}});return best};
+  const stay={};Q.filter(real).forEach(P=>{const c=chain(P.id);if(c.length>1&&(!stay[P.at]||c.length>stay[P.at].length))stay[P.at]=c});
+  const fam=P=>/verh\.|geb\. .* oder |^Mein/.test(P.n)?null:(w=>w.length>1?w[w.length-1]:null)(P.n.replace(/\(.*?\)/g,"").trim().split(/\s+/));
+  const job=P=>P.b?P.b.replace(/\(.*?\)/g,"").split(/,| und | in | auf | bei /)[0].trim():null;
+  return {LN,Q,ages,mean,med,top,pairs,real,
+    gens:[...Array(MAXD)].map((_,i)=>({g:i+1,n:IDS.filter(x=>DEPTH[x]===i+1).length,max:2**(i+1)})),
+    stay:Object.values(stay).sort((a,b)=>b.length-a.length||a[0].n.localeCompare(b[0].n)).slice(0,4),
+    ways:pairs.filter(x=>x.km>0).sort((a,b)=>b.km-a.km).filter((x,i,a)=>a.findIndex(y=>y.C===x.C&&y.E.at===x.E.at)===i).slice(0,5),
+    places:top(Q.filter(real).map(P=>PL[P.at][0]),8),
+    first:top(Q.map(P=>P.n.split(/[\s,]+/)[0]),8),
+    fams:top(Q.map(fam),200),
+    jobs:top(Q.map(job),8),nJob:Q.filter(P=>P.b).length};
+}
+function buildStats(){
+  const D=statData(),{LN,Q,ages}=D,esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const f1=x=>x==null?"–":x.toFixed(1).replace(".",","),f0=x=>Math.round(x).toLocaleString("de-DE");
+  const row=(l,frac,v,c,tip)=>`<div class="stRow" title="${esc(tip||l+": "+v)}"><span class="l">${c?`<i style="background:${c}"></i>`:""}${esc(l)}</span><span class="stBar"><u style="width:${Math.max(0,Math.min(1,frac))*100}%${c?";background:"+c:""}"></u></span><span class="v">${esc(v)}</span></div>`;
+  const tile=(b,t)=>`<div class="stTile"><b>${esc(b)}</b><span>${esc(t)}</span></div>`;
+  const by=Q.map(P=>P.yr.b).filter(Boolean),eqg=D.gens.reduce((x,g)=>x+g.n/g.max,0);
+  const usedPl=new Set(Q.filter(D.real).map(P=>P.at));
+  let h=`<p class="lead">Alles hier wird beim Öffnen aus den ${IDS.length-1} Vorfahren auf dieser Seite gezählt und ändert sich von selbst, wenn Vorfahren dazukommen. Einzelne Personen erscheinen erst ab den Großeltern.</p>`;
+  h+=`<div class="stTiles">${tile(IDS.length-1,"direkte Vorfahren")}${tile(MAXD+1,"Generationen")}${tile(by.length?Math.min(...by):"–","ältestes Geburtsjahr")}${tile(D.fams.length,"Familiennamen")}${tile(usedPl.size,"Orte auf der Karte")}</div><div class="stGrid">`;
+  /* 1 Vollständigkeit */
+  h+=`<section class="stSec"><h3>Wie vollständig ist der Baum?</h3>`+D.gens.map(g=>row(relName(g.g),g.n/g.max,f0(g.n)+" von "+f0(g.max),"",relName(g.g)+": "+g.n+" von "+g.max+" möglichen Vorfahren bekannt")).join("")+
+     `<p class="note">Jede Generation hat doppelt so viele mögliche Vorfahren wie die vorige. Zusammen entspricht das ${f1(eqg)} vollständig bekannten Generationen.</p></section>`;
+  /* 2 Linien */
+  h+=`<section class="stSec"><h3>Die vier Herkunftslinien</h3><table class="stTab"><tr><th>Linie</th><th>Vorfahren</th><th>zurück bis</th><th>ab Jahr</th></tr>`+
+     LN.map(l=>{const q=Q.filter(P=>P.line===l),y=q.map(P=>P.yr.b||P.by).filter(Boolean);return `<tr><td><i style="background:${LINES[l].c}"></i>${esc(LINES[l].n)}</td><td>${q.length}</td><td>${q.length?relName(Math.max(...q.map(P=>P.d))):"–"}</td><td>${y.length?Math.min(...y):"–"}</td></tr>`}).join("")+
+     `</table><h4>Anteil ohne Vorbehalt je Linie</h4>`+LN.map(l=>{const q=Q.filter(P=>P.line===l),ok=q.filter(P=>!P.u).length;return row(LINES[l].n,q.length?ok/q.length:0,q.length?ok+" von "+q.length:"–",LINES[l].c)}).join("")+
+     `<p class="note">„Unsicher“ heißt: nur wahrscheinlich oder nur aus der Familienüberlieferung bekannt.</p></section>`;
+  /* 3 Sterbealter */
+  const a=ages.map(x=>x.a),bands=[[0,39,"unter 40"],[40,49,"40–49"],[50,59,"50–59"],[60,69,"60–69"],[70,79,"70–79"],[80,200,"80 und älter"]].map(b=>({t:b[2],n:a.filter(x=>x>=b[0]&&x<=b[1]).length})),bm=Math.max(1,...bands.map(b=>b.n));
+  const old=[...ages].sort((x,y)=>y.a-x.a).slice(0,3);
+  h+=`<section class="stSec"><h3>Sterbealter</h3>`+(a.length?`<p class="note" style="margin:0 0 8px">Im Mittel <b style="color:#fff">${f1(D.mean(a))} Jahre</b>, Median ${f1(D.med(a))}, bei ${a.length} Vorfahren mit Geburts- und Sterbejahr.</p>`+
+     bands.map(b=>row(b.t,b.n/bm,b.n+(b.n===1?" Person":" Personen"))).join("")+
+     `<h4>Je Linie</h4>`+LN.map(l=>{const q=ages.filter(x=>x.P.line===l).map(x=>x.a);return row(LINES[l].n,q.length>=3?D.mean(q)/100:0,q.length>=3?f1(D.mean(q))+" J. (n="+q.length+(q.length<8?", wenige":"")+")":"zu wenige ("+q.length+")",LINES[l].c)}).join("")+
+     `<h4>Die Ältesten</h4><ul class="stList">`+old.map(x=>`<li><b>${esc(x.P.n)}</b> · ${x.ca?"etwa ":""}${x.a} Jahre (${x.P.yr.b}–${x.P.yr.d}), ${esc(LINES[x.P.line].n)}</li>`).join("")+`</ul>`:`<p class="note">Noch keine Vorfahren mit Geburts- und Sterbejahr.</p>`)+
+     `<p class="note">Gerechnet mit Jahreszahlen; als wahrscheinlich markierte Daten zählen nicht mit. Das ist keine Lebenserwartung: Alle Vorfahren wurden erwachsen und bekamen Kinder.</p></section>`;
+  /* 4 Orte */
+  const pm=Math.max(1,...D.places.map(x=>x[1])),same=D.pairs.filter(x=>x.km===0).length;
+  h+=`<section class="stSec"><h3>Orte und Wege</h3><h4 style="margin-top:0">Häufigste Orte auf der Karte</h4>`+D.places.map(x=>row(x[0],x[1]/pm,x[1]+" Vorfahren")).join("")+
+     (D.pairs.length?`<p class="note">In ${same} von ${D.pairs.length} Fällen steht das Kind am selben Kartenort wie der Elternteil (${f0(same/D.pairs.length*100)} %).</p>`:"")+
+     (D.stay.length?`<h4>Am längsten am selben Kartenort</h4><ul class="stList">`+D.stay.map(c=>`<li><b>${esc(PL[c[0].at][0])}</b> · ${c.length} Generationen in Folge, von ${esc(c[c.length-1].n)} bis ${esc(c[0].n)}${c[0].by?" (*"+c[0].by+")":""}</li>`).join("")+`</ul>`:"")+
+     (D.ways.length?`<h4>Weiteste Wege zwischen Eltern und Kind</h4><p class="note" style="margin:0 0 5px">Ort der Eltern → Geburtsort des Kindes</p><ul class="stList">`+D.ways.map(w=>`<li><b>${f0(w.km)} km</b> · ${esc(PL[w.E.at][0])} → ${esc(PL[w.C.at][0])} (${esc(w.C.n)}, *${w.C.yr.b||w.C.by||"?"})</li>`).join("")+`</ul>`:"")+
+     `<p class="note">Luftlinie zwischen den Ortspunkten der Karte; Vorfahren mit nur angenommenem Ort zählen nicht mit.</p></section>`;
+  /* 5 Namen und Berufe */
+  const fm=Math.max(1,...D.first.map(x=>x[1])),jm=Math.max(1,...D.jobs.map(x=>x[1])),fam=D.fams.filter(x=>x[1]>1).slice(0,6);
+  h+=`<section class="stSec"><h3>Vornamen</h3>`+D.first.map(x=>row(x[0],x[1]/fm,x[1]+"×")).join("")+
+     (fam.length?`<h4>Häufigste Familiennamen</h4><p class="note" style="margin:0">${fam.map(x=>esc(x[0])+" ("+x[1]+")").join(" · ")}</p>`:"")+
+     `<p class="note">Gezählt ist der erste Vorname. Frauen, von denen nur der Ehename bekannt ist, fehlen bei den Familiennamen.</p></section>`;
+  h+=`<section class="stSec"><h3>Berufe</h3>`+D.jobs.map(x=>row(x[0],x[1]/jm,x[1]+"×")).join("")+
+     `<p class="note">Ein Beruf ist bei ${D.nJob} von ${Q.length} Vorfahren überliefert, fast nur bei Männern. Gezählt ist die erste genannte Tätigkeit.</p></section>`;
+  h+=`</div><small>Grundlage sind nur die Angaben auf dieser Seite. Der vollständige Ancestry-Stammbaum enthält zusätzlich Geschwister und Angeheiratete und kann neuere Funde enthalten, die hier noch fehlen.</small>`;
+  $("statBody").innerHTML=h;
+}
+function openStats(){pause();buildStats();$("statBox").hidden=false;$("statClose").focus()}
+$("cntH").onclick=openStats;
+$("statClose").onclick=()=>{$("statBox").hidden=true;$("cntH").focus()};
+$("statBox").onclick=e=>{if(e.target===$("statBox"))$("statBox").hidden=true};
+
 $("namesBtn").onclick=()=>$("list").classList.toggle("open");
-addEventListener("keydown",e=>{if(e.key===" "&&!/BUTTON|SELECT|INPUT/.test(e.target.tagName)){e.preventDefault();$("play").click()}if(e.key==="ArrowRight")$("next").click();if(e.key==="ArrowLeft")$("prev").click();if(e.key==="Escape"){if(!$("nameBox").hidden)$("nameBox").hidden=true;else closeCard()}});
+addEventListener("keydown",e=>{if(e.key===" "&&!/BUTTON|SELECT|INPUT/.test(e.target.tagName)){e.preventDefault();$("play").click()}if(e.key==="ArrowRight")$("next").click();if(e.key==="ArrowLeft")$("prev").click();if(e.key==="Escape"){if(!$("statBox").hidden)$("statBox").hidden=true;else if(!$("nameBox").hidden)$("nameBox").hidden=true;else closeCard()}});
 $("legend").innerHTML=ORDER.filter(l=>l!=="M").map(l=>`<span data-l="${l}"><i style="background:${LINES[l].c}"></i>${LINES[l].n}</span>`).join("");
 $("steps").innerHTML=STEPNAME.map(n=>`<button type="button">${n}</button>`).join("");
 document.querySelectorAll("#steps button").forEach((b,j)=>{b.onclick=()=>go(j)});
@@ -771,6 +917,7 @@ try{
   world=window.WORLD;build();
   const q=new URLSearchParams(location.search);
   if(q.has("t")){$("intro").style.display="none";render(+q.get("t"))}else render(NS);
+  if(q.has("statistik")||location.hash==="#statistik"){$("intro").style.display="none";openStats()}
 }catch(err){$("cap").textContent="Karte konnte nicht geladen werden: "+err}
 </script>
 </body>
